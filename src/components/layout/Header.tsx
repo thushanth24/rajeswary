@@ -87,25 +87,26 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="lg:hidden pb-6 animate-fade-in">
-            <div className="flex flex-col gap-4">
+          <div className="lg:hidden pb-6 pt-4 animate-fade-in bg-card border-t border-primary/20">
+            <div className="flex flex-col gap-3 px-2">
               {navigation.map((item, index) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "text-base font-medium transition-colors hover:text-primary py-2 animate-fade-in-up",
+                    "text-base font-medium transition-colors hover:text-primary py-3 px-4 rounded-lg animate-fade-in-up",
                     location.pathname === item.href
-                      ? "text-primary"
-                      : "text-foreground/80"
+                      ? "text-primary bg-primary/10 border border-primary/20"
+                      : "text-foreground hover:bg-primary/5"
                   )}
                   style={{ animationDelay: `${index * 0.05}s` }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
+                  <span className="mr-2 text-secondary">✦</span>
                   {item.name}
                 </Link>
               ))}
-              <Button asChild className="mt-4 bg-gradient-to-r from-primary to-primary/90">
+              <Button asChild className="mt-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
                 <Link to="/booking" onClick={() => setMobileMenuOpen(false)}>
                   <span className="mr-2">🪷</span>
                   Book Now
