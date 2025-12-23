@@ -1,13 +1,10 @@
 import { Layout } from "@/components/layout/Layout";
 import { HallCard } from "@/components/ui/HallCard";
 import { halls } from "@/data/halls";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Calendar } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
-import { DiwaRow } from "@/components/animations/DiyaLamp";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
+import { CTASection } from "@/components/home/CTASection";
 
 const HallsPage = () => {
   return (
@@ -71,36 +68,7 @@ const HallsPage = () => {
         <DecorativeBorder position="bottom" />
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary via-primary to-primary/90 overflow-hidden">
-        <FloatingElements type="diyas" density="low" />
-        <div className="absolute inset-0 temple-border opacity-20" />
-        
-        <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
-          <DiwaRow count={5} className="mb-8" />
-          
-          <h2 className="font-serif text-2xl md:text-4xl font-bold text-primary-foreground mb-4">
-            Found Your Perfect Mandapam?
-          </h2>
-          <p className="text-primary-foreground/90 mb-8 max-w-xl mx-auto text-lg">
-            Begin your auspicious journey. Book a visit to experience our mandapams 
-            or select your muhurtham date.
-          </p>
-          <Button size="lg" variant="secondary" asChild className="gold-shimmer group">
-            <Link to="/booking">
-              <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-              Select Muhurtham Date
-            </Link>
-          </Button>
-          
-          {/* Bottom Decoration */}
-          <div className="flex items-center justify-center gap-4 mt-10">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-secondary/50" />
-            <span className="text-secondary/70">🪷</span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-secondary/50" />
-          </div>
-        </div>
-      </section>
+      <CTASection />
     </Layout>
   );
 };

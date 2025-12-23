@@ -1,14 +1,12 @@
 import { Layout } from "@/components/layout/Layout";
 import { menus } from "@/data/services";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "react-router-dom";
-import { Calendar, Check, Leaf, Drumstick } from "lucide-react";
+import { Check, Leaf, Drumstick } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
-import { DiwaRow } from "@/components/animations/DiyaLamp";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
+import { CTASection } from "@/components/home/CTASection";
 
 const MenusPage = () => {
   return (
@@ -202,37 +200,7 @@ const MenusPage = () => {
         </div>
       </section>
 
-      {/* Customization Note */}
-      <section className="relative py-20 bg-gradient-to-br from-primary via-primary to-primary/90 overflow-hidden">
-        <FloatingElements type="diyas" density="low" />
-        <div className="absolute inset-0 temple-border opacity-20" />
-        
-        <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
-          <DiwaRow count={5} className="mb-8" />
-          
-          <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary-foreground mb-4">
-            Menu Customization
-          </h2>
-          <p className="text-primary-foreground/90 max-w-2xl mx-auto mb-8 text-lg">
-            All menus can be customized to honor your family traditions and preferences. 
-            Our master cooks will work with you to create the perfect feast for your 
-            auspicious occasion. Final menu selection is made during booking.
-          </p>
-          <Button size="lg" variant="secondary" asChild className="gold-shimmer group">
-            <Link to="/booking">
-              <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-              Select Menu & Book
-            </Link>
-          </Button>
-          
-          {/* Bottom Decoration */}
-          <div className="flex items-center justify-center gap-4 mt-10">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-secondary/50" />
-            <span className="text-secondary/70">🪷</span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-secondary/50" />
-          </div>
-        </div>
-      </section>
+      <CTASection />
     </Layout>
   );
 };

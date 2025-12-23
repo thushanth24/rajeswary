@@ -1,13 +1,10 @@
 import { Layout } from "@/components/layout/Layout";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { services } from "@/data/services";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Calendar } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
-import { DiwaRow } from "@/components/animations/DiyaLamp";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
+import { CTASection } from "@/components/home/CTASection";
 
 const ServicesPage = () => {
   return (
@@ -116,36 +113,7 @@ const ServicesPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary via-primary to-primary/90 overflow-hidden">
-        <FloatingElements type="diyas" density="low" />
-        <div className="absolute inset-0 temple-border opacity-20" />
-        
-        <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
-          <DiwaRow count={5} className="mb-8" />
-          
-          <h2 className="font-serif text-2xl md:text-4xl font-bold text-primary-foreground mb-4">
-            Ready to Plan Your Sacred Union?
-          </h2>
-          <p className="text-primary-foreground/90 mb-8 max-w-xl mx-auto text-lg">
-            All our seva can be selected during the booking process. Begin your 
-            auspicious journey to create the perfect celebration package.
-          </p>
-          <Button size="lg" variant="secondary" asChild className="gold-shimmer group">
-            <Link to="/booking">
-              <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-              Begin Sacred Booking
-            </Link>
-          </Button>
-          
-          {/* Bottom Decoration */}
-          <div className="flex items-center justify-center gap-4 mt-10">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-secondary/50" />
-            <span className="text-secondary/70">🪷</span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-secondary/50" />
-          </div>
-        </div>
-      </section>
+      <CTASection />
     </Layout>
   );
 };
