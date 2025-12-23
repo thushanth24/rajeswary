@@ -12,21 +12,29 @@ interface HallCardProps {
 
 export function HallCard({ hall, featured = false }: HallCardProps) {
   return (
-    <Card className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300">
+    <Card className="group overflow-hidden border-2 border-border hover:border-primary/40 hover:shadow-traditional transition-all duration-300 bg-card">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={hall.image}
           alt={hall.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
         {featured && (
-          <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-            Featured
+          <Badge className="absolute top-4 left-4 bg-secondary text-secondary-foreground border-0">
+            ✦ Featured
           </Badge>
         )}
+        
+        {/* Decorative corner */}
+        <div className="absolute top-4 right-4 text-secondary/80 text-xl opacity-0 group-hover:opacity-100 transition-opacity">
+          🪔
+        </div>
       </div>
       <CardContent className="p-6">
-        <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
+        <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
           {hall.name}
         </h3>
         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
@@ -40,31 +48,33 @@ export function HallCard({ hall, featured = false }: HallCardProps) {
         
         <div className="flex flex-wrap gap-2">
           {hall.facilities.ac && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
-              <Snowflake className="h-3 w-3" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-2 py-1 rounded-md">
+              <Snowflake className="h-3 w-3 text-primary" />
               AC
             </div>
           )}
           {hall.facilities.parking && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
-              <Car className="h-3 w-3" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-2 py-1 rounded-md">
+              <Car className="h-3 w-3 text-primary" />
               Parking
             </div>
           )}
           {hall.facilities.dining && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
-              <UtensilsCrossed className="h-3 w-3" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-2 py-1 rounded-md">
+              <UtensilsCrossed className="h-3 w-3 text-primary" />
               Dining
             </div>
           )}
         </div>
       </CardContent>
       <CardFooter className="p-6 pt-0 flex gap-3">
-        <Button variant="outline" asChild className="flex-1">
+        <Button variant="outline" asChild className="flex-1 border-primary/30 hover:border-primary hover:bg-primary/5">
           <Link to={`/halls/${hall.slug}`}>View Details</Link>
         </Button>
-        <Button asChild className="flex-1">
-          <Link to={`/booking?hall=${hall.id}`}>Book Now</Link>
+        <Button asChild className="flex-1 bg-primary hover:bg-primary/90">
+          <Link to={`/booking?hall=${hall.id}`}>
+            <span className="mr-1">🪷</span> Book
+          </Link>
         </Button>
       </CardFooter>
     </Card>
