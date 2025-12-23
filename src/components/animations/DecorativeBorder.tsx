@@ -1,4 +1,10 @@
-export function DecorativeBorder({ variant = "top" }: { variant?: "top" | "bottom" | "both" }) {
+interface DecorativeBorderProps {
+  variant?: "top" | "bottom" | "both";
+  position?: "top" | "bottom"; // alias for variant
+}
+
+export function DecorativeBorder({ variant, position }: DecorativeBorderProps) {
+  const v = position || variant || "top";
   const BorderSVG = () => (
     <svg
       className="w-full h-4"
@@ -30,12 +36,12 @@ export function DecorativeBorder({ variant = "top" }: { variant?: "top" | "botto
 
   return (
     <>
-      {(variant === "top" || variant === "both") && (
+      {(v === "top" || v === "both") && (
         <div className="absolute top-0 left-0 right-0 overflow-hidden">
           <BorderSVG />
         </div>
       )}
-      {(variant === "bottom" || variant === "both") && (
+      {(v === "bottom" || v === "both") && (
         <div className="absolute bottom-0 left-0 right-0 overflow-hidden rotate-180">
           <BorderSVG />
         </div>
