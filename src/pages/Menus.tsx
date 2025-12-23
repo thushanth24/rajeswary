@@ -200,7 +200,13 @@ const MenusPage = () => {
         </div>
       </section>
 
-      <CTASection />
+      <CTASection 
+        subtitle="Customize Your Feast"
+        title="Ready to Select Your"
+        highlight="Virundhu Menu"
+        description="All menus can be customized to honor your family traditions and preferences. Our master cooks will work with you to create the perfect feast for your auspicious occasion."
+        primaryButtonText="Select Menu & Book"
+      />
     </Layout>
   );
 };

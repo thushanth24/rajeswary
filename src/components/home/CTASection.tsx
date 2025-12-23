@@ -1,14 +1,34 @@
 import { Link } from "react-router-dom";
-import { Calendar, Phone } from "lucide-react";
+import { Calendar, Phone, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const videoClips = [
-  "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4", // Indian wedding ceremony
-  "https://videos.pexels.com/video-files/3327291/3327291-uhd_2560_1440_25fps.mp4", // Traditional decorations
-  "https://videos.pexels.com/video-files/5765281/5765281-uhd_2560_1440_25fps.mp4", // Wedding celebration
+  "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4",
+  "https://videos.pexels.com/video-files/3327291/3327291-uhd_2560_1440_25fps.mp4",
+  "https://videos.pexels.com/video-files/5765281/5765281-uhd_2560_1440_25fps.mp4",
 ];
 
-export function CTASection() {
+interface CTASectionProps {
+  subtitle?: string;
+  title?: string;
+  highlight?: string;
+  description?: string;
+  primaryButtonText?: string;
+  primaryButtonLink?: string;
+  primaryButtonIcon?: LucideIcon;
+  showSecondaryButton?: boolean;
+}
+
+export function CTASection({
+  subtitle = "Begin Your Sacred Journey",
+  title = "Ready to Book Your",
+  highlight = "Muhurtham",
+  description = "Take the first step towards your dream traditional wedding. Check availability, customize your ceremonies, and secure your auspicious date today.",
+  primaryButtonText = "Book Your Sacred Day",
+  primaryButtonLink = "/booking",
+  primaryButtonIcon: PrimaryIcon = Calendar,
+  showSecondaryButton = true,
+}: CTASectionProps) {
   return (
     <section className="py-20 relative overflow-hidden">
       {/* Video Background Grid */}
@@ -33,17 +53,16 @@ export function CTASection() {
       <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
         <div className="max-w-3xl mx-auto py-8">
           <span className="text-primary font-medium tracking-widest uppercase text-sm mb-4 block">
-            Begin Your Sacred Journey
+            {subtitle}
           </span>
           
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Ready to Book Your{" "}
-            <span className="text-primary">Muhurtham</span>?
+            {title}{" "}
+            <span className="text-primary">{highlight}</span>?
           </h2>
           
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8 text-lg">
-            Take the first step towards your dream traditional wedding. Check availability, 
-            customize your ceremonies, and secure your auspicious date today.
+            {description}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -52,22 +71,24 @@ export function CTASection() {
               asChild 
               className="text-base"
             >
-              <Link to="/booking">
-                <Calendar className="mr-2 h-5 w-5" />
-                Book Your Sacred Day
+              <Link to={primaryButtonLink}>
+                <PrimaryIcon className="mr-2 h-5 w-5" />
+                {primaryButtonText}
               </Link>
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              asChild 
-              className="text-base"
-            >
-              <a href="tel:+919876543210">
-                <Phone className="mr-2 h-5 w-5" />
-                Speak With Us
-              </a>
-            </Button>
+            {showSecondaryButton && (
+              <Button 
+                size="lg" 
+                variant="outline" 
+                asChild 
+                className="text-base"
+              >
+                <a href="tel:+919876543210">
+                  <Phone className="mr-2 h-5 w-5" />
+                  Speak With Us
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>
