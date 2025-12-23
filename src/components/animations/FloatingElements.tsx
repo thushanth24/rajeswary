@@ -9,14 +9,24 @@ interface FloatingElement {
   size: number;
 }
 
-export function FloatingElements() {
+interface FloatingElementsProps {
+  type?: "petals" | "diyas" | "mixed";
+  density?: "low" | "medium" | "high";
+}
+
+export function FloatingElements({ type = "mixed", density = "medium" }: FloatingElementsProps) {
   const [elements, setElements] = useState<FloatingElement[]>([]);
+
+  const counts = { low: 8, medium: 15, high: 25 };
 
   useEffect(() => {
     const newElements: FloatingElement[] = [];
-    const types: ("flower" | "diya" | "sparkle")[] = ["flower", "flower", "sparkle", "diya"];
+    const types: ("flower" | "diya" | "sparkle")[] = 
+      type === "petals" ? ["flower", "flower", "sparkle"] :
+      type === "diyas" ? ["diya", "sparkle", "diya"] :
+      ["flower", "flower", "sparkle", "diya"];
     
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < counts[density]; i++) {
       newElements.push({
         id: i,
         left: Math.random() * 100,
@@ -27,10 +37,10 @@ export function FloatingElements() {
       });
     }
     setElements(newElements);
-  }, []);
+  }, [type, density]);
 
-  const getEmoji = (type: string) => {
-    switch (type) {
+  const getEmoji = (t: string) => {
+    switch (t) {
       case "flower": return "🌸";
       case "diya": return "✨";
       case "sparkle": return "⭐";
@@ -39,7 +49,7 @@ export function FloatingElements() {
   };
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-[5]">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-[5]">
       {elements.map((el) => (
         <div
           key={el.id}
