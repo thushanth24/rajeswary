@@ -1,5 +1,43 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface CollapsibleSectionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+function CollapsibleSection({ title, children, defaultOpen = false }: CollapsibleSectionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="text-center md:text-left">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full font-serif font-semibold text-primary mb-3 md:mb-5 flex items-center justify-between md:justify-start gap-2 cursor-pointer md:cursor-default"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-secondary">❋</span>
+          {title}
+        </div>
+        <ChevronDown 
+          className={cn(
+            "h-4 w-4 text-secondary transition-transform duration-300 md:hidden",
+            isOpen && "rotate-180"
+          )} 
+        />
+      </button>
+      <div className={cn(
+        "overflow-hidden transition-all duration-300 md:max-h-none md:opacity-100",
+        isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 md:max-h-none md:opacity-100"
+      )}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function Footer() {
   return (
@@ -21,7 +59,7 @@ export function Footer() {
       </div>
 
       {/* Kolam corner decorations */}
-      <div className="absolute top-4 left-4 w-16 h-16 opacity-20">
+      <div className="absolute top-4 left-4 w-16 h-16 opacity-20 hidden md:block">
         <svg viewBox="0 0 64 64" className="w-full h-full text-primary">
           <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="1"/>
           <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" strokeWidth="1"/>
@@ -38,7 +76,7 @@ export function Footer() {
           ))}
         </svg>
       </div>
-      <div className="absolute top-4 right-4 w-16 h-16 opacity-20">
+      <div className="absolute top-4 right-4 w-16 h-16 opacity-20 hidden md:block">
         <svg viewBox="0 0 64 64" className="w-full h-full text-primary">
           <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="1"/>
           <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" strokeWidth="1"/>
@@ -58,8 +96,8 @@ export function Footer() {
 
       <div className="container relative z-10 mx-auto px-4 pt-16 pb-8 lg:px-8">
         {/* Main content grid */}
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
+        <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
+          {/* Brand - Always visible */}
           <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
               <span className="text-3xl">🪔</span>
@@ -97,12 +135,8 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="text-center md:text-left">
-            <h3 className="font-serif font-semibold text-primary mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-secondary">❋</span> 
-              Quick Links
-            </h3>
+          {/* Quick Links - Collapsible on mobile */}
+          <CollapsibleSection title="Quick Links">
             <ul className="space-y-2.5 text-sm">
               {[
                 { name: "Our Halls", href: "/halls" },
@@ -123,14 +157,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </CollapsibleSection>
 
-          {/* Contact Info */}
-          <div className="text-center md:text-left">
-            <h3 className="font-serif font-semibold text-primary mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-secondary">❋</span> 
-              Contact Us
-            </h3>
+          {/* Contact Info - Collapsible on mobile */}
+          <CollapsibleSection title="Contact Us">
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3 justify-center md:justify-start">
                 <MapPin className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
@@ -153,14 +183,10 @@ export function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </CollapsibleSection>
 
-          {/* Hours */}
-          <div className="text-center md:text-left">
-            <h3 className="font-serif font-semibold text-primary mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-secondary">❋</span> 
-              Operating Hours
-            </h3>
+          {/* Hours - Collapsible on mobile */}
+          <CollapsibleSection title="Operating Hours">
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-3 justify-center md:justify-start">
                 <Clock className="h-5 w-5 text-secondary shrink-0" />
@@ -175,7 +201,7 @@ export function Footer() {
                 Sunday: 11 AM - 6 PM
               </li>
             </ul>
-          </div>
+          </CollapsibleSection>
         </div>
 
         {/* Decorative lotus divider */}
