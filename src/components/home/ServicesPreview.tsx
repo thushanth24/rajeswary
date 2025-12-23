@@ -12,63 +12,71 @@ import { Button } from "@/components/ui/button";
 const serviceItems = [
   {
     icon: UtensilsCrossed,
-    title: "Catering",
-    description: "Multi-cuisine menus crafted by expert chefs",
+    title: "Traditional Catering",
+    description: "Authentic South Indian cuisine with banana leaf service",
   },
   {
     icon: Camera,
     title: "Photography",
-    description: "Professional photo & video coverage",
+    description: "Capture every sacred ritual and joyous moment",
   },
   {
     icon: Car,
-    title: "Vehicles",
-    description: "Luxury cars for your grand arrival",
+    title: "Bridal Vehicles",
+    description: "Decorated cars for the ceremonial procession",
   },
   {
     icon: Palette,
-    title: "Decoration",
-    description: "Stunning floral & thematic setups",
+    title: "Mandapam Decoration",
+    description: "Traditional kolam, flowers & brass decorations",
   },
   {
     icon: Music,
-    title: "Entertainment",
-    description: "DJ, sound & lighting solutions",
+    title: "Nadaswaram & Music",
+    description: "Traditional temple music & modern entertainment",
   },
   {
     icon: Users,
-    title: "Coordination",
-    description: "Dedicated event managers",
+    title: "Pandit Services",
+    description: "Experienced priests for traditional ceremonies",
   },
 ];
 
 export function ServicesPreview() {
   return (
-    <section className="py-20 bg-card">
-      <div className="container mx-auto px-4 lg:px-8">
+    <section className="py-20 bg-card relative overflow-hidden">
+      {/* Decorative pattern */}
+      <div className="absolute inset-0 paisley-bg opacity-50" />
+      
+      <div className="container relative z-10 mx-auto px-4 lg:px-8">
         <div className="text-center mb-12">
-          <span className="text-primary font-medium tracking-wider uppercase text-sm">
-            Complete Solutions
-          </span>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <span className="text-secondary">✦</span>
+            <span className="text-secondary font-medium tracking-widest uppercase text-sm">
+              Complete Solutions
+            </span>
+            <span className="text-secondary">✦</span>
+          </div>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
-            Everything You Need
+            Everything for Your <span className="text-primary">Sacred Union</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Beyond beautiful venues, we offer comprehensive services to make your 
-            celebration seamless and stress-free.
+            From muhurtham consultation to the final aarti, we provide comprehensive 
+            services rooted in Jaffna Hindu traditions.
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {serviceItems.map((service) => (
+          {serviceItems.map((service, index) => (
             <div
               key={service.title}
-              className="group p-6 bg-background rounded-lg border border-border hover:border-primary/50 hover:shadow-md transition-all duration-300"
+              className="group p-6 bg-background rounded-lg border-2 border-border hover:border-primary/50 hover:shadow-traditional transition-all duration-300 animate-fade-in-up"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                <service.icon className="h-6 w-6 text-primary" />
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <service.icon className="h-7 w-7 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg text-foreground mb-2">
+              <h3 className="font-serif font-semibold text-lg text-foreground mb-2">
                 {service.title}
               </h3>
               <p className="text-sm text-muted-foreground">
@@ -79,8 +87,14 @@ export function ServicesPreview() {
         </div>
 
         <div className="text-center mt-12">
-          <Button asChild>
-            <Link to="/services">Explore All Services</Link>
+          <Button 
+            asChild 
+            className="bg-primary hover:bg-primary/90 shadow-traditional"
+          >
+            <Link to="/services">
+              <span className="mr-2">🪷</span>
+              Explore All Services
+            </Link>
           </Button>
         </div>
       </div>

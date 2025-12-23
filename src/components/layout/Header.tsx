@@ -18,14 +18,21 @@ export function Header() {
   const location = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-card/98 backdrop-blur-sm border-b-2 border-primary/20 temple-border">
       <nav className="container mx-auto px-4 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <span className="font-serif text-2xl font-bold text-primary">
-              Celebration Halls
-            </span>
+          <Link to="/" className="flex items-center gap-3 group">
+            {/* Traditional Om symbol */}
+            <span className="text-2xl text-secondary animate-glow-pulse">🪔</span>
+            <div>
+              <span className="font-serif text-2xl font-bold text-primary tracking-wide">
+                Celebration Halls
+              </span>
+              <span className="hidden sm:block text-xs text-secondary font-medium tracking-widest uppercase">
+                ✦ Traditional Wedding Venues ✦
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -35,32 +42,39 @@ export function Header() {
                 key={item.name}
                 to={item.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "relative text-sm font-medium transition-all duration-300 hover:text-primary py-2",
                   location.pathname === item.href
                     ? "text-primary"
                     : "text-foreground/80"
                 )}
               >
                 {item.name}
+                {location.pathname === item.href && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-secondary to-primary animate-border-dance" 
+                        style={{ backgroundSize: "200% 100%" }} />
+                )}
               </Link>
             ))}
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex lg:items-center lg:gap-4">
-            <a href="tel:+919876543210" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <a href="tel:+919876543210" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
               <Phone className="h-4 w-4" />
               +91 98765 43210
             </a>
-            <Button asChild>
-              <Link to="/booking">Book Now</Link>
+            <Button asChild className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-traditional transition-all duration-300 hover:shadow-gold-glow">
+              <Link to="/booking">
+                <span className="mr-2">🪷</span>
+                Book Now
+              </Link>
             </Button>
           </div>
 
           {/* Mobile menu button */}
           <button
             type="button"
-            className="lg:hidden p-2"
+            className="lg:hidden p-2 text-primary"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -73,25 +87,27 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="lg:hidden pb-6">
+          <div className="lg:hidden pb-6 animate-fade-in">
             <div className="flex flex-col gap-4">
-              {navigation.map((item) => (
+              {navigation.map((item, index) => (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "text-base font-medium transition-colors hover:text-primary py-2",
+                    "text-base font-medium transition-colors hover:text-primary py-2 animate-fade-in-up",
                     location.pathname === item.href
                       ? "text-primary"
                       : "text-foreground/80"
                   )}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <Button asChild className="mt-4">
+              <Button asChild className="mt-4 bg-gradient-to-r from-primary to-primary/90">
                 <Link to="/booking" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="mr-2">🪷</span>
                   Book Now
                 </Link>
               </Button>
