@@ -3,34 +3,44 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HallCard } from "@/components/ui/HallCard";
 import { halls } from "@/data/halls";
+import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 
 export function FeaturedHalls() {
   return (
-    <section className="py-20 bg-background lotus-bg relative">
-      {/* Decorative elements */}
-      <div className="absolute top-10 left-10 text-secondary/20 text-4xl animate-rotate-slow hidden lg:block">
+    <section className="py-20 bg-background lotus-bg relative overflow-hidden">
+      {/* Decorative borders */}
+      <DecorativeBorder variant="both" />
+      
+      {/* Animated corner decorations */}
+      <div className="absolute top-16 left-10 text-secondary/20 text-5xl animate-rangoli-spin hidden lg:block">
         ❈
       </div>
-      <div className="absolute bottom-10 right-10 text-secondary/20 text-4xl animate-rotate-slow hidden lg:block" style={{ animationDirection: "reverse" }}>
+      <div className="absolute bottom-16 right-10 text-secondary/20 text-5xl animate-rangoli-spin hidden lg:block" style={{ animationDirection: "reverse" }}>
         ❈
+      </div>
+      <div className="absolute top-1/2 left-6 text-primary/10 text-3xl animate-float hidden lg:block">
+        🪷
+      </div>
+      <div className="absolute top-1/2 right-6 text-primary/10 text-3xl animate-float hidden lg:block" style={{ animationDelay: "2s" }}>
+        🪷
       </div>
 
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-12 animate-fade-in">
-          {/* Decorative header */}
+      <div className="container mx-auto px-4 lg:px-8 relative z-10">
+        <div className="text-center mb-12">
+          {/* Animated decorative header */}
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-secondary" />
-            <span className="text-secondary text-2xl">🪔</span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-secondary" />
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-secondary animate-wave" style={{ backgroundSize: "200% 100%" }} />
+            <span className="text-secondary text-2xl animate-diya-flicker">🪔</span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-secondary animate-wave" style={{ backgroundSize: "200% 100%", animationDirection: "reverse" }} />
           </div>
           
-          <span className="text-secondary font-medium tracking-widest uppercase text-sm">
+          <span className="text-secondary font-medium tracking-widest uppercase text-sm animate-fade-in">
             Our Sacred Venues
           </span>
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             Exquisite Wedding <span className="text-primary">Mandapams</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
             Each of our five venues is designed with authentic Tamil Hindu traditions, 
             featuring temple-inspired architecture, traditional brass lamps, and sacred spaces 
             for your wedding rituals.
@@ -41,24 +51,27 @@ export function FeaturedHalls() {
           {halls.slice(0, 3).map((hall, index) => (
             <div 
               key={hall.id} 
-              className="animate-fade-in-up"
-              style={{ animationDelay: `${index * 0.15}s` }}
+              className="animate-fade-in-up opacity-0 group"
+              style={{ 
+                animationDelay: `${0.6 + index * 0.2}s`,
+                animationFillMode: "forwards"
+              }}
             >
               <HallCard hall={hall} featured={index === 0} />
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 animate-fade-in-up" style={{ animationDelay: "1.2s" }}>
           <Button 
             variant="outline" 
             size="lg" 
             asChild 
-            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 group"
           >
             <Link to="/halls">
               View All Mandapams
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
         </div>
