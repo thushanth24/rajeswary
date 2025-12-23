@@ -161,26 +161,20 @@ export function Footer() {
               <span className="text-secondary">❋</span> 
               Operating Hours
             </h3>
-            <div className="space-y-4 text-sm">
-              <div className="flex items-start gap-3 justify-center md:justify-start">
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-center gap-3 justify-center md:justify-start">
                 <Clock className="h-5 w-5 text-secondary shrink-0" />
-                <div className="text-left">
-                  <p className="font-medium text-foreground">Office Hours</p>
-                  <p className="text-muted-foreground">Mon - Sat: 10 AM - 8 PM</p>
-                  <p className="text-muted-foreground">Sunday: 11 AM - 6 PM</p>
-                </div>
-              </div>
-              
-              {/* Auspicious timings */}
-              <div className="bg-primary/5 rounded-lg p-3 border border-primary/10">
-                <p className="font-medium text-primary flex items-center gap-2 justify-center md:justify-start text-xs">
-                  <span>🕉️</span> Muhurtham Assistance
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  We help choose auspicious dates for your ceremonies
-                </p>
-              </div>
-            </div>
+                <span className="font-medium text-foreground">Office Hours</span>
+              </li>
+              <li className="flex items-center gap-3 justify-center md:justify-start text-muted-foreground">
+                <span className="w-5" />
+                Mon - Sat: 10 AM - 8 PM
+              </li>
+              <li className="flex items-center gap-3 justify-center md:justify-start text-muted-foreground">
+                <span className="w-5" />
+                Sunday: 11 AM - 6 PM
+              </li>
+            </ul>
           </div>
         </div>
 
