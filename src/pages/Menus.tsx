@@ -206,6 +206,11 @@ const MenusPage = () => {
         highlight="Virundhu Menu"
         description="All menus can be customized to honor your family traditions and preferences. Our master cooks will work with you to create the perfect feast for your auspicious occasion."
         primaryButtonText="Select Menu & Book"
+        videos={[
+          "https://videos.pexels.com/video-files/3298438/3298438-uhd_2560_1440_25fps.mp4",
+          "https://videos.pexels.com/video-files/5379808/5379808-uhd_2560_1440_25fps.mp4",
+          "https://videos.pexels.com/video-files/5779755/5779755-uhd_2560_1440_25fps.mp4",
+        ]}
       />
     </Layout>
   );
