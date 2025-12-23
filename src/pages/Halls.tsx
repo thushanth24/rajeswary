@@ -68,7 +68,13 @@ const HallsPage = () => {
         <DecorativeBorder position="bottom" />
       </section>
 
-      <CTASection />
+      <CTASection 
+        subtitle="Find Your Perfect Venue"
+        title="Found Your Perfect"
+        highlight="Mandapam"
+        description="Begin your auspicious journey. Book a visit to experience our mandapams or select your muhurtham date."
+        primaryButtonText="Select Muhurtham Date"
+      />
     </Layout>
   );
 };

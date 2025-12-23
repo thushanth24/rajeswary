@@ -113,7 +113,13 @@ const ServicesPage = () => {
         </div>
       </section>
 
-      <CTASection />
+      <CTASection 
+        subtitle="Complete Wedding Solutions"
+        title="Ready to Plan Your"
+        highlight="Sacred Union"
+        description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration package."
+        primaryButtonText="Begin Sacred Booking"
+      />
     </Layout>
   );
 };
