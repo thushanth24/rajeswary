@@ -40,25 +40,8 @@ function CollapsibleSection({ title, children, defaultOpen = false }: Collapsibl
 }
 
 export function Footer() {
-  const [isFooterOpen, setIsFooterOpen] = useState(true);
-
   return (
     <footer className="relative overflow-hidden bg-gradient-to-b from-secondary/10 via-card to-secondary/5">
-      {/* Footer toggle button */}
-      <button
-        onClick={() => setIsFooterOpen(!isFooterOpen)}
-        className="absolute top-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-primary/20 text-primary text-sm font-medium hover:bg-primary/5 transition-all duration-300 shadow-sm"
-      >
-        <span className="text-secondary text-xs">❋</span>
-        {isFooterOpen ? "Close Footer" : "Open Footer"}
-        <ChevronDown 
-          className={cn(
-            "h-4 w-4 text-secondary transition-transform duration-300",
-            !isFooterOpen && "rotate-180"
-          )} 
-        />
-      </button>
-
       {/* Decorative temple gopuram top border */}
       <div className="absolute top-0 left-0 right-0">
         <svg className="w-full h-8" viewBox="0 0 1200 32" preserveAspectRatio="none">
@@ -111,10 +94,7 @@ export function Footer() {
         </svg>
       </div>
 
-      <div className={cn(
-        "container relative z-10 mx-auto px-4 pt-16 pb-8 lg:px-8 transition-all duration-500 overflow-hidden",
-        isFooterOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 pt-0 pb-0"
-      )}>
+      <div className="container relative z-10 mx-auto px-4 pt-16 pb-8 lg:px-8">
         {/* Main content grid */}
         <div className="grid gap-6 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand - Always visible */}
