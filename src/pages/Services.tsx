@@ -119,6 +119,11 @@ const ServicesPage = () => {
         highlight="Sacred Union"
         description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration package."
         primaryButtonText="Begin Sacred Booking"
+        videos={[
+          "https://videos.pexels.com/video-files/3327287/3327287-uhd_2560_1440_25fps.mp4",
+          "https://videos.pexels.com/video-files/1654536/1654536-uhd_2560_1440_24fps.mp4",
+          "https://videos.pexels.com/video-files/3195426/3195426-uhd_2560_1440_25fps.mp4",
+        ]}
       />
     </Layout>
   );

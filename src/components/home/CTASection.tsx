@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Calendar, Phone, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const videoClips = [
+const defaultVideos = [
   "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4",
   "https://videos.pexels.com/video-files/3327291/3327291-uhd_2560_1440_25fps.mp4",
   "https://videos.pexels.com/video-files/5765281/5765281-uhd_2560_1440_25fps.mp4",
@@ -17,6 +17,7 @@ interface CTASectionProps {
   primaryButtonLink?: string;
   primaryButtonIcon?: LucideIcon;
   showSecondaryButton?: boolean;
+  videos?: string[];
 }
 
 export function CTASection({
@@ -28,7 +29,9 @@ export function CTASection({
   primaryButtonLink = "/booking",
   primaryButtonIcon: PrimaryIcon = Calendar,
   showSecondaryButton = true,
+  videos = defaultVideos,
 }: CTASectionProps) {
+  const videoClips = videos;
   return (
     <section className="py-20 relative overflow-hidden">
       {/* Video Background Grid */}

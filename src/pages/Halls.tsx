@@ -74,6 +74,11 @@ const HallsPage = () => {
         highlight="Mandapam"
         description="Begin your auspicious journey. Book a visit to experience our mandapams or select your muhurtham date."
         primaryButtonText="Select Muhurtham Date"
+        videos={[
+          "https://videos.pexels.com/video-files/3724593/3724593-uhd_2560_1440_24fps.mp4",
+          "https://videos.pexels.com/video-files/3993884/3993884-uhd_2560_1440_25fps.mp4",
+          "https://videos.pexels.com/video-files/3195440/3195440-uhd_2560_1440_25fps.mp4",
+        ]}
       />
     </Layout>
   );
