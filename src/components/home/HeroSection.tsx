@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
+import { FloatingElements } from "@/components/animations/FloatingElements";
+import { RangoliPattern } from "@/components/animations/RangoliPattern";
+import { DiyaLamp } from "@/components/animations/DiyaLamp";
 import heroImage from "@/assets/hero-traditional.jpg";
 
 export function HeroSection() {
@@ -13,64 +16,96 @@ export function HeroSection() {
           alt="Traditional Hindu Wedding Mandapam"
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/85 via-foreground/60 to-foreground/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/70 to-foreground/40" />
       </div>
 
-      {/* Decorative overlay pattern */}
-      <div className="absolute inset-0 z-[1] opacity-10">
-        <div className="absolute inset-0 paisley-bg" />
+      {/* Animated rangoli pattern overlay */}
+      <RangoliPattern />
+
+      {/* Floating flower petals */}
+      <FloatingElements />
+
+      {/* Animated corner diyas */}
+      <div className="absolute top-28 left-8 z-20 hidden lg:block animate-float">
+        <DiyaLamp size="lg" />
+      </div>
+      <div className="absolute top-28 right-8 z-20 hidden lg:block animate-float" style={{ animationDelay: "1s" }}>
+        <DiyaLamp size="lg" />
+      </div>
+      <div className="absolute bottom-32 left-8 z-20 hidden lg:block animate-float" style={{ animationDelay: "2s" }}>
+        <DiyaLamp size="md" />
+      </div>
+      <div className="absolute bottom-32 right-8 z-20 hidden lg:block animate-float" style={{ animationDelay: "1.5s" }}>
+        <DiyaLamp size="md" />
       </div>
 
-      {/* Decorative corner elements */}
-      <div className="absolute top-24 left-8 text-secondary/30 text-6xl animate-float hidden lg:block">
+      {/* Decorative floating elements */}
+      <div className="absolute top-40 left-1/4 text-secondary/40 text-4xl animate-swing hidden md:block">
         🪷
       </div>
-      <div className="absolute bottom-24 right-8 text-secondary/30 text-6xl animate-float hidden lg:block" style={{ animationDelay: "3s" }}>
-        🪔
+      <div className="absolute bottom-40 right-1/4 text-secondary/40 text-4xl animate-swing hidden md:block" style={{ animationDelay: "1s" }}>
+        🪷
       </div>
+
+      {/* Sparkle effects */}
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute text-secondary/60 text-xl animate-sparkle hidden md:block"
+          style={{
+            left: `${20 + Math.random() * 60}%`,
+            top: `${20 + Math.random() * 60}%`,
+            animationDelay: `${i * 0.5}s`,
+          }}
+        >
+          ✦
+        </div>
+      ))}
 
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 lg:px-8">
-        <div className="max-w-2xl animate-fade-in-up">
+        <div className="max-w-2xl">
           {/* Traditional decorative header */}
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-secondary text-2xl">✦</span>
+          <div className="flex items-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <span className="text-secondary text-2xl animate-pulse-glow">✦</span>
             <span className="text-secondary font-medium tracking-[0.3em] uppercase text-sm">
               Jaffna Hindu Traditional Venues
             </span>
-            <span className="text-secondary text-2xl">✦</span>
+            <span className="text-secondary text-2xl animate-pulse-glow" style={{ animationDelay: "0.5s" }}>✦</span>
           </div>
           
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-6 leading-tight">
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
             Sacred Unions,
             <br />
-            <span className="text-secondary animate-shimmer bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text" 
-                  style={{ backgroundSize: "200% 100%" }}>
+            <span 
+              className="inline-block bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent animate-shimmer"
+              style={{ backgroundSize: "200% 100%" }}
+            >
               Blessed Beginnings
             </span>
           </h1>
           
-          <p className="text-lg text-card/90 mb-8 max-w-xl leading-relaxed">
+          <p className="text-lg text-card/90 mb-8 max-w-xl leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
             Experience the grandeur of authentic Tamil Hindu weddings in our 
             beautifully crafted mandapams. Five sacred venues adorned with 
             traditional kolam, jasmine garlands, and the warm glow of kuthu vilakku.
           </p>
 
-          {/* Decorative divider */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-secondary/50 to-secondary" />
-            <span className="text-secondary">🪷</span>
-            <div className="h-px flex-1 bg-gradient-to-r from-secondary via-secondary/50 to-transparent" />
+          {/* Decorative divider with animation */}
+          <div className="flex items-center gap-4 mb-8 animate-fade-in" style={{ animationDelay: "0.7s" }}>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-secondary/50 to-secondary animate-wave" style={{ backgroundSize: "200% 100%" }} />
+            <span className="text-secondary animate-float">🪷</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-secondary via-secondary/50 to-transparent animate-wave" style={{ backgroundSize: "200% 100%", animationDirection: "reverse" }} />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
             <Button 
               size="lg" 
               asChild 
-              className="text-base bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-gold-glow transition-all duration-300 hover:shadow-xl"
+              className="text-base bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-gold-glow transition-all duration-300 hover:shadow-xl hover:scale-105 group"
             >
               <Link to="/booking">
-                <Calendar className="mr-2 h-5 w-5" />
+                <Calendar className="mr-2 h-5 w-5 group-hover:animate-swing" />
                 Book Your Muhurtham
               </Link>
             </Button>
@@ -78,7 +113,7 @@ export function HeroSection() {
               size="lg" 
               variant="outline" 
               asChild 
-              className="text-base bg-card/10 border-card/40 text-card hover:bg-card/20 hover:text-card transition-all duration-300"
+              className="text-base bg-card/10 border-card/40 text-card hover:bg-card/20 hover:text-card transition-all duration-300 hover:scale-105"
             >
               <Link to="/halls">
                 Explore Mandapams
@@ -87,7 +122,7 @@ export function HeroSection() {
             </Button>
           </div>
 
-          {/* Stats */}
+          {/* Stats with staggered animation */}
           <div className="mt-12 flex gap-8 md:gap-12">
             {[
               { value: "5", label: "Sacred Halls" },
@@ -96,10 +131,12 @@ export function HeroSection() {
             ].map((stat, index) => (
               <div 
                 key={stat.label} 
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+                className="animate-fade-in-up group cursor-default"
+                style={{ animationDelay: `${1 + index * 0.2}s` }}
               >
-                <p className="text-3xl font-serif font-bold text-secondary">{stat.value}</p>
+                <p className="text-3xl font-serif font-bold text-secondary group-hover:animate-pulse-glow transition-all">
+                  {stat.value}
+                </p>
                 <p className="text-sm text-card/70">{stat.label}</p>
               </div>
             ))}
@@ -107,8 +144,27 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Bottom decorative border */}
-      <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-primary via-secondary to-primary z-10" />
+      {/* Bottom decorative border with animation */}
+      <div className="absolute bottom-0 left-0 right-0 z-10">
+        <svg className="w-full h-6" viewBox="0 0 1200 24" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="bottomBorder" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="hsl(350 70% 35%)">
+                <animate attributeName="stop-color" values="hsl(350 70% 35%); hsl(38 80% 50%); hsl(350 70% 35%)" dur="3s" repeatCount="indefinite" />
+              </stop>
+              <stop offset="50%" stopColor="hsl(38 80% 50%)">
+                <animate attributeName="stop-color" values="hsl(38 80% 50%); hsl(350 70% 35%); hsl(38 80% 50%)" dur="3s" repeatCount="indefinite" />
+              </stop>
+              <stop offset="100%" stopColor="hsl(350 70% 35%)">
+                <animate attributeName="stop-color" values="hsl(350 70% 35%); hsl(38 80% 50%); hsl(350 70% 35%)" dur="3s" repeatCount="indefinite" />
+              </stop>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="1200" height="8" fill="url(#bottomBorder)" />
+          <rect x="0" y="10" width="1200" height="4" fill="hsl(38 80% 50%)" opacity="0.5" />
+          <rect x="0" y="16" width="1200" height="2" fill="hsl(350 70% 35%)" opacity="0.3" />
+        </svg>
+      </div>
     </section>
   );
 }
