@@ -1,69 +1,78 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube } from "lucide-react";
-import { DiyaLamp } from "../animations/DiyaLamp";
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-primary via-primary to-primary/95">
-      {/* Decorative temple-style top border */}
+    <footer className="relative overflow-hidden bg-gradient-to-b from-secondary/10 via-card to-secondary/5">
+      {/* Decorative temple gopuram top border */}
       <div className="absolute top-0 left-0 right-0">
-        <div className="h-1 bg-gradient-to-r from-transparent via-secondary to-transparent" />
-        <div className="flex justify-center -mt-4">
-          <div className="flex items-center gap-1">
-            {[...Array(7)].map((_, i) => (
-              <div 
-                key={i} 
-                className="w-3 h-6 bg-secondary/80 rounded-t-full"
-                style={{ 
-                  height: i === 3 ? '32px' : i === 2 || i === 4 ? '24px' : '16px',
-                  opacity: i === 3 ? 1 : i === 2 || i === 4 ? 0.9 : 0.7
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Kolam pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <pattern id="kolam-footer" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-            <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-            <circle cx="10" cy="10" r="4" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-            <circle cx="10" cy="10" r="1" fill="currentColor"/>
-            <line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" strokeWidth="0.3"/>
-            <line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" strokeWidth="0.3"/>
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#kolam-footer)" className="text-secondary"/>
+        <svg className="w-full h-8" viewBox="0 0 1200 32" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="temple-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.3"/>
+              <stop offset="50%" stopColor="hsl(var(--secondary))" stopOpacity="1"/>
+              <stop offset="100%" stopColor="hsl(var(--secondary))" stopOpacity="0.3"/>
+            </linearGradient>
+          </defs>
+          {/* Temple arch pattern */}
+          <path d="M0,32 L0,28 Q300,28 400,20 Q500,12 600,8 Q700,12 800,20 Q900,28 1200,28 L1200,32 Z" fill="url(#temple-gradient)" opacity="0.2"/>
+          <rect x="0" y="0" width="1200" height="3" fill="url(#temple-gradient)"/>
         </svg>
       </div>
 
-      {/* Floating diyas at top */}
-      <div className="absolute top-8 left-0 right-0 flex justify-center gap-32 opacity-60">
-        <DiyaLamp size="sm" />
-        <DiyaLamp size="sm" />
-        <DiyaLamp size="sm" />
+      {/* Kolam corner decorations */}
+      <div className="absolute top-4 left-4 w-16 h-16 opacity-20">
+        <svg viewBox="0 0 64 64" className="w-full h-full text-primary">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <circle cx="32" cy="32" r="12" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <circle cx="32" cy="32" r="4" fill="currentColor"/>
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+            <circle 
+              key={angle}
+              cx={32 + 20 * Math.cos(angle * Math.PI / 180)} 
+              cy={32 + 20 * Math.sin(angle * Math.PI / 180)} 
+              r="3" 
+              fill="currentColor"
+            />
+          ))}
+        </svg>
+      </div>
+      <div className="absolute top-4 right-4 w-16 h-16 opacity-20">
+        <svg viewBox="0 0 64 64" className="w-full h-full text-primary">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <circle cx="32" cy="32" r="12" fill="none" stroke="currentColor" strokeWidth="1"/>
+          <circle cx="32" cy="32" r="4" fill="currentColor"/>
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+            <circle 
+              key={angle}
+              cx={32 + 20 * Math.cos(angle * Math.PI / 180)} 
+              cy={32 + 20 * Math.sin(angle * Math.PI / 180)} 
+              r="3" 
+              fill="currentColor"
+            />
+          ))}
+        </svg>
       </div>
 
-      <div className="container relative z-10 mx-auto px-4 pt-20 pb-8 lg:px-8">
+      <div className="container relative z-10 mx-auto px-4 pt-16 pb-8 lg:px-8">
         {/* Main content grid */}
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
-              <div className="relative">
-                <span className="text-3xl animate-pulse-glow">🪔</span>
-              </div>
-              <Link to="/" className="font-serif text-2xl font-bold text-secondary gold-shimmer">
+              <span className="text-3xl">🪔</span>
+              <Link to="/" className="font-serif text-2xl font-bold text-primary">
                 Celebration Halls
               </Link>
             </div>
-            <p className="text-sm text-primary-foreground/70 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Creating sacred moments and unforgettable celebrations in the 
-              authentic Jaffna Hindu tradition. Your dream wedding, our devotion.
+              authentic Jaffna Hindu tradition.
             </p>
             
-            {/* Social links with traditional styling */}
+            {/* Social links */}
             <div className="mt-6 flex justify-center md:justify-start gap-3">
               {[
                 { icon: Facebook, label: "Facebook" },
@@ -73,21 +82,26 @@ export function Footer() {
                 <a 
                   key={label}
                   href="#" 
-                  className="w-10 h-10 rounded-full border border-secondary/30 flex items-center justify-center text-primary-foreground/60 hover:bg-secondary hover:text-primary hover:border-secondary transition-all duration-300 hover:scale-110"
+                  className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
                   aria-label={label}
                 >
                   <Icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
+
+            {/* Decorative element */}
+            <div className="mt-5 flex items-center justify-center md:justify-start gap-2">
+              <span className="text-secondary text-sm">✦</span>
+              <div className="w-20 h-px bg-gradient-to-r from-secondary to-transparent" />
+            </div>
           </div>
 
           {/* Quick Links */}
           <div className="text-center md:text-left">
-            <h3 className="font-serif font-semibold text-secondary mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-accent">✦</span> 
+            <h3 className="font-serif font-semibold text-primary mb-5 flex items-center justify-center md:justify-start gap-2">
+              <span className="text-secondary">❋</span> 
               Quick Links
-              <span className="text-accent">✦</span>
             </h3>
             <ul className="space-y-2.5 text-sm">
               {[
@@ -101,9 +115,9 @@ export function Footer() {
                 <li key={link.name}>
                   <Link 
                     to={link.href} 
-                    className="text-primary-foreground/70 hover:text-secondary transition-all duration-300 inline-flex items-center gap-2 group hover:translate-x-1"
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 inline-flex items-center gap-2 group"
                   >
-                    <span className="text-secondary/40 group-hover:text-secondary transition-colors text-xs">❯</span>
+                    <span className="text-secondary/60 group-hover:text-secondary transition-colors">›</span>
                     {link.name}
                   </Link>
                 </li>
@@ -113,35 +127,28 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="text-center md:text-left">
-            <h3 className="font-serif font-semibold text-secondary mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-accent">✦</span> 
+            <h3 className="font-serif font-semibold text-primary mb-5 flex items-center justify-center md:justify-start gap-2">
+              <span className="text-secondary">❋</span> 
               Contact Us
-              <span className="text-accent">✦</span>
             </h3>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                  <MapPin className="h-4 w-4 text-secondary" />
-                </div>
-                <span className="text-primary-foreground/70 text-left">
+                <MapPin className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
+                <span className="text-muted-foreground text-left">
                   123 Temple Road,<br />
                   Nallur, Jaffna,<br />
                   Sri Lanka
                 </span>
               </li>
               <li className="flex items-center gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                  <Phone className="h-4 w-4 text-secondary" />
-                </div>
-                <a href="tel:+919876543210" className="text-primary-foreground/70 hover:text-secondary transition-colors">
+                <Phone className="h-5 w-5 text-secondary shrink-0" />
+                <a href="tel:+919876543210" className="text-muted-foreground hover:text-primary transition-colors">
                   +91 98765 43210
                 </a>
               </li>
               <li className="flex items-center gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                  <Mail className="h-4 w-4 text-secondary" />
-                </div>
-                <a href="mailto:info@celebrationhalls.com" className="text-primary-foreground/70 hover:text-secondary transition-colors text-sm">
+                <Mail className="h-5 w-5 text-secondary shrink-0" />
+                <a href="mailto:info@celebrationhalls.com" className="text-muted-foreground hover:text-primary transition-colors">
                   info@celebrationhalls.com
                 </a>
               </li>
@@ -150,72 +157,64 @@ export function Footer() {
 
           {/* Hours */}
           <div className="text-center md:text-left">
-            <h3 className="font-serif font-semibold text-secondary mb-5 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-accent">✦</span> 
+            <h3 className="font-serif font-semibold text-primary mb-5 flex items-center justify-center md:justify-start gap-2">
+              <span className="text-secondary">❋</span> 
               Operating Hours
-              <span className="text-accent">✦</span>
             </h3>
             <div className="space-y-4 text-sm">
               <div className="flex items-start gap-3 justify-center md:justify-start">
-                <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                  <Clock className="h-4 w-4 text-secondary" />
-                </div>
+                <Clock className="h-5 w-5 text-secondary shrink-0" />
                 <div className="text-left">
-                  <p className="font-medium text-primary-foreground">Office Hours</p>
-                  <p className="text-primary-foreground/70">Mon - Sat: 10:00 AM - 8:00 PM</p>
-                  <p className="text-primary-foreground/70">Sunday: 11:00 AM - 6:00 PM</p>
+                  <p className="font-medium text-foreground">Office Hours</p>
+                  <p className="text-muted-foreground">Mon - Sat: 10 AM - 8 PM</p>
+                  <p className="text-muted-foreground">Sunday: 11 AM - 6 PM</p>
                 </div>
               </div>
               
-              {/* Auspicious timings card */}
-              <div className="bg-secondary/10 rounded-lg p-3 border border-secondary/20">
-                <p className="font-medium text-secondary flex items-center gap-2 justify-center md:justify-start">
-                  <span>🕉️</span> Auspicious Timings
+              {/* Auspicious timings */}
+              <div className="bg-primary/5 rounded-lg p-3 border border-primary/10">
+                <p className="font-medium text-primary flex items-center gap-2 justify-center md:justify-start text-xs">
+                  <span>🕉️</span> Muhurtham Assistance
                 </p>
-                <p className="text-xs text-primary-foreground/60 mt-1">
-                  We help you choose muhurtham dates for your ceremonies
+                <p className="text-xs text-muted-foreground mt-1">
+                  We help choose auspicious dates for your ceremonies
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Decorative divider */}
+        {/* Decorative lotus divider */}
         <div className="mt-10 flex items-center justify-center gap-4">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-secondary/30 to-secondary/50" />
-          <div className="flex items-center gap-2 text-secondary/60">
-            <span>❋</span>
-            <span className="text-lg">🪷</span>
-            <span>❋</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-primary/20" />
+          <div className="flex items-center gap-3 text-secondary">
+            <span className="text-xs">✦</span>
+            <span className="text-xl">🪷</span>
+            <span className="text-xs">✦</span>
           </div>
-          <div className="flex-1 h-px bg-gradient-to-l from-transparent via-secondary/30 to-secondary/50" />
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-primary/20" />
         </div>
 
         {/* Bottom section */}
         <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-primary-foreground/50 text-center md:text-left">
+          <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Celebration Halls. All rights reserved.
           </p>
           
-          {/* Tagline with traditional styling */}
-          <div className="flex items-center gap-3">
-            <span className="text-secondary/60 text-sm">✦</span>
-            <p className="text-xs text-primary-foreground/60 font-serif italic">
-              "Where Sacred Traditions Meet Joyful Celebrations"
-            </p>
-            <span className="text-secondary/60 text-sm">✦</span>
-          </div>
+          <p className="text-xs text-muted-foreground font-serif italic">
+            "Where Sacred Traditions Meet Joyful Celebrations"
+          </p>
           
-          <div className="flex items-center gap-2">
-            <span className="text-secondary animate-pulse-glow">🪔</span>
-            <span className="text-xs text-primary-foreground/50">Blessed Beginnings</span>
-            <span className="text-secondary animate-pulse-glow">🪔</span>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>🪔</span>
+            <span>Blessed Beginnings</span>
+            <span>🪔</span>
           </div>
         </div>
       </div>
 
-      {/* Bottom temple-style border */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary/50 to-transparent" />
+      {/* Bottom border */}
+      <div className="h-1 bg-gradient-to-r from-secondary/30 via-primary/50 to-secondary/30" />
     </footer>
   );
 }
