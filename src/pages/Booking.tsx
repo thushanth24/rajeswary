@@ -16,6 +16,10 @@ import { halls, getHallById } from "@/data/halls";
 import { menus } from "@/data/services";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { FloatingElements } from "@/components/animations/FloatingElements";
+import { RangoliPattern } from "@/components/animations/RangoliPattern";
+import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
+import { CTASection } from "@/components/home/CTASection";
 import {
   CalendarIcon,
   Check,
@@ -170,23 +174,36 @@ const BookingPage = () => {
   if (isSubmitted) {
     return (
       <Layout>
-        <section className="py-20 bg-background min-h-[70vh] flex items-center">
-          <div className="container mx-auto px-4 lg:px-8">
-            <Card className="max-w-2xl mx-auto border-border">
+        <section className="relative py-20 bg-gradient-to-b from-secondary/20 via-card to-background min-h-[70vh] flex items-center overflow-hidden">
+          <FloatingElements type="petals" density="low" />
+          <RangoliPattern position="center" size="lg" opacity={0.08} />
+          
+          <div className="container relative z-10 mx-auto px-4 lg:px-8">
+            <Card className="max-w-2xl mx-auto card-traditional">
               <CardContent className="p-8 text-center">
-                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 gold-shimmer">
                   <Check className="h-10 w-10 text-primary" />
                 </div>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <span className="text-secondary text-xl">✦</span>
+                  <span className="text-secondary font-medium tracking-wider uppercase text-sm">
+                    Shubham
+                  </span>
+                  <span className="text-secondary text-xl">✦</span>
+                </div>
                 <h1 className="font-serif text-3xl font-bold text-foreground mb-4">
-                  Booking Request Submitted!
+                  Booking Request <span className="text-gradient-gold">Submitted!</span>
                 </h1>
                 <p className="text-muted-foreground mb-8">
-                  Thank you for choosing Celebration Halls. Our team will contact you 
-                  within 24 hours to confirm your booking details.
+                  Thank you for choosing our sacred mandapams. Our team will contact you 
+                  within 24 hours to confirm your muhurtham details.
                 </p>
                 
-                <div className="bg-card p-6 rounded-lg border border-border text-left mb-8">
-                  <h3 className="font-semibold text-foreground mb-4">Booking Summary</h3>
+                <div className="bg-card p-6 rounded-lg border border-secondary/30 text-left mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-secondary">🪔</span>
+                    <h3 className="font-serif font-semibold text-foreground">Booking Summary</h3>
+                  </div>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Event Type:</span>
@@ -201,7 +218,7 @@ const BookingPage = () => {
                       <span className="text-foreground">{timeSlots.find(t => t.id === bookingData.timeSlot)?.label}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Hall:</span>
+                      <span className="text-muted-foreground">Mandapam:</span>
                       <span className="text-foreground">{selectedHall?.name}</span>
                     </div>
                     <div className="flex justify-between">
@@ -225,7 +242,7 @@ const BookingPage = () => {
                   </div>
                 </div>
                 
-                <Button asChild>
+                <Button asChild className="gold-shimmer">
                   <a href="/">Return to Home</a>
                 </Button>
               </CardContent>
@@ -238,47 +255,70 @@ const BookingPage = () => {
 
   return (
     <Layout>
-      {/* Header */}
-      <section className="py-12 bg-card">
-        <div className="container mx-auto px-4 lg:px-8 text-center">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Book Your Event
+      {/* Hero Header */}
+      <section className="relative py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
+        <FloatingElements type="petals" density="low" />
+        <RangoliPattern position="center" size="lg" opacity={0.08} />
+        
+        <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
+          {/* Decorative Top Element */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary" />
+            <span className="text-secondary text-2xl">🪔</span>
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary" />
+          </div>
+          
+          <span className="text-secondary font-medium tracking-wider uppercase text-sm animate-fade-in">
+            ✦ Sacred Booking ✦
+          </span>
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6 animate-fade-in-up">
+            Book Your <span className="text-gradient-gold">Muhurtham</span>
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             Complete the following steps to submit your booking request. Our team 
-            will contact you to confirm availability and finalize details.
+            will contact you to confirm availability and finalize your sacred ceremony details.
           </p>
+          
+          {/* Decorative Divider */}
+          <div className="divider-ornate mt-8" />
         </div>
       </section>
 
       {/* Progress Steps */}
-      <section className="py-6 bg-background border-b border-border">
+      <section className="relative py-6 bg-card border-b border-secondary/20">
+        <DecorativeBorder position="top" />
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex justify-between max-w-3xl mx-auto">
             {[
-              { num: 1, label: "Event" },
-              { num: 2, label: "Hall" },
-              { num: 3, label: "Menu" },
-              { num: 4, label: "Services" },
-              { num: 5, label: "Details" },
-            ].map((s) => (
+              { num: 1, label: "Event", icon: "📅" },
+              { num: 2, label: "Mandapam", icon: "🏛️" },
+              { num: 3, label: "Virundhu", icon: "🍽️" },
+              { num: 4, label: "Seva", icon: "✨" },
+              { num: 5, label: "Details", icon: "📝" },
+            ].map((s, index) => (
               <div key={s.num} className="flex flex-col items-center">
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors",
+                    "w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-all",
                     step >= s.num
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-gradient-to-br from-secondary/30 to-primary/20 text-primary gold-shimmer"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
-                  {step > s.num ? <Check className="h-5 w-5" /> : s.num}
+                  {step > s.num ? <Check className="h-5 w-5 text-primary" /> : <span className="text-lg">{s.icon}</span>}
                 </div>
                 <span className={cn(
-                  "text-xs mt-2 hidden sm:block",
+                  "text-xs mt-2 hidden sm:block font-medium",
                   step >= s.num ? "text-primary" : "text-muted-foreground"
                 )}>
                   {s.label}
                 </span>
+                {index < 4 && (
+                  <div className={cn(
+                    "absolute h-0.5 w-12 top-9 hidden md:block",
+                    step > s.num ? "bg-secondary" : "bg-border"
+                  )} style={{ left: `calc(${(index + 1) * 20}% - 1.5rem)` }} />
+                )}
               </div>
             ))}
           </div>
@@ -286,15 +326,19 @@ const BookingPage = () => {
       </section>
 
       {/* Form Steps */}
-      <section className="py-12 bg-background min-h-[60vh]">
-        <div className="container mx-auto px-4 lg:px-8">
-          <Card className="max-w-3xl mx-auto border-border">
+      <section className="relative py-12 bg-background min-h-[60vh] overflow-hidden">
+        <div className="absolute inset-0 paisley-bg opacity-20" />
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <Card className="max-w-3xl mx-auto card-traditional">
             <CardContent className="p-6 md:p-8">
               {/* Step 1: Event Details */}
               {step === 1 && (
                 <div className="space-y-6">
                   <CardHeader className="p-0 mb-6">
-                    <CardTitle className="font-serif text-2xl">Event Details</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-secondary text-xl">📅</span>
+                      <CardTitle className="font-serif text-2xl text-gradient-gold">Event Details</CardTitle>
+                    </div>
                   </CardHeader>
 
                   <div>
@@ -394,7 +438,10 @@ const BookingPage = () => {
               {step === 2 && (
                 <div className="space-y-6">
                   <CardHeader className="p-0 mb-6">
-                    <CardTitle className="font-serif text-2xl">Choose Hall</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-secondary text-xl">🏛️</span>
+                      <CardTitle className="font-serif text-2xl text-gradient-gold">Choose Mandapam</CardTitle>
+                    </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {guestCount > 0 && `For ${guestCount} guests`}
                     </p>
@@ -475,7 +522,10 @@ const BookingPage = () => {
               {step === 3 && (
                 <div className="space-y-6">
                   <CardHeader className="p-0 mb-6">
-                    <CardTitle className="font-serif text-2xl">Menu Selection</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-secondary text-xl">🍽️</span>
+                      <CardTitle className="font-serif text-2xl text-gradient-gold">Virundhu Selection</CardTitle>
+                    </div>
                   </CardHeader>
 
                   <div>
@@ -569,7 +619,10 @@ const BookingPage = () => {
               {step === 4 && (
                 <div className="space-y-6">
                   <CardHeader className="p-0 mb-6">
-                    <CardTitle className="font-serif text-2xl">Add-on Services</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-secondary text-xl">✨</span>
+                      <CardTitle className="font-serif text-2xl text-gradient-gold">Additional Seva</CardTitle>
+                    </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       Select any additional services you'd like to include
                     </p>
@@ -615,7 +668,10 @@ const BookingPage = () => {
               {step === 5 && (
                 <div className="space-y-6">
                   <CardHeader className="p-0 mb-6">
-                    <CardTitle className="font-serif text-2xl">Your Details</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-secondary text-xl">📝</span>
+                      <CardTitle className="font-serif text-2xl text-gradient-gold">Your Details</CardTitle>
+                    </div>
                   </CardHeader>
 
                   <div>
@@ -670,24 +726,25 @@ const BookingPage = () => {
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-border">
+              <div className="flex justify-between mt-8 pt-6 border-t border-secondary/20">
                 <Button
                   variant="outline"
                   onClick={handleBack}
                   disabled={step === 1}
+                  className="border-secondary/30 hover:bg-secondary/10"
                 >
                   <ChevronLeft className="mr-2 h-4 w-4" />
                   Back
                 </Button>
 
                 {step < 5 ? (
-                  <Button onClick={handleNext} disabled={!canProceed()}>
+                  <Button onClick={handleNext} disabled={!canProceed()} className="gold-shimmer">
                     Next
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={!canProceed() || isSubmitting}>
-                    {isSubmitting ? "Submitting..." : "Submit Booking Request"}
+                  <Button onClick={handleSubmit} disabled={!canProceed() || isSubmitting} className="gold-shimmer">
+                    {isSubmitting ? "Submitting..." : "Submit Sacred Booking"}
                   </Button>
                 )}
               </div>
@@ -695,6 +752,17 @@ const BookingPage = () => {
           </Card>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <CTASection 
+        subtitle="Need Assistance?"
+        title="Have Questions About Your"
+        highlight="Booking"
+        description="Our team is here to help you plan your perfect celebration. Reach out to us for personalized assistance."
+        primaryButtonText="Contact Us"
+        primaryButtonLink="/contact"
+        showSecondaryButton={true}
+      />
     </Layout>
   );
 };
