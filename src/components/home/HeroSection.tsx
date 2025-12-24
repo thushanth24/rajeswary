@@ -63,10 +63,10 @@ export function HeroSection() {
       ))}
 
       {/* Content */}
-      <div className="container relative z-10 mx-auto px-4 lg:px-8">
-        <div className="max-w-2xl">
+      <div className="container relative z-10 mx-auto px-4 lg:px-8 flex justify-center">
+        <div className="max-w-2xl text-center">
           {/* Traditional decorative header */}
-          <div className="flex items-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+          <div className="flex items-center justify-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <span className="text-secondary text-2xl animate-pulse-glow">✦</span>
             <span className="text-secondary font-medium tracking-[0.3em] uppercase text-sm">
               Jaffna Hindu Traditional Venues
@@ -85,7 +85,7 @@ export function HeroSection() {
             </span>
           </h1>
           
-          <p className="text-lg text-card/90 mb-8 max-w-xl leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
+          <p className="text-lg text-card/90 mb-8 max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
             Experience the grandeur of authentic Tamil Hindu weddings in our 
             beautifully crafted mandapams. Five sacred venues adorned with 
             traditional kolam, jasmine garlands, and the warm glow of kuthu vilakku.
@@ -98,7 +98,7 @@ export function HeroSection() {
             <div className="h-px flex-1 bg-gradient-to-r from-secondary via-secondary/50 to-transparent animate-wave" style={{ backgroundSize: "200% 100%", animationDirection: "reverse" }} />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
             <Button 
               size="lg" 
               asChild 
@@ -123,7 +123,7 @@ export function HeroSection() {
           </div>
 
           {/* Stats with staggered animation */}
-          <div className="mt-12 flex gap-8 md:gap-12">
+          <div className="mt-12 flex justify-center gap-8 md:gap-12">
             {[
               { value: "5", label: "Sacred Halls" },
               { value: "800+", label: "Max Guests" },
