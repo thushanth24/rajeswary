@@ -11,6 +11,7 @@ import Menus from "./pages/Menus";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
+import Bungalows from "./pages/Bungalows";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/bungalows" element={<Bungalows />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
