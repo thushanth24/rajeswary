@@ -20,6 +20,7 @@ import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
+import { supabase } from "@/integrations/supabase/client";
 import {
   CalendarIcon,
   Check,
@@ -159,13 +160,87 @@ const BookingPage = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast({
-      title: "Booking Request Submitted!",
-      description: "Our team will contact you within 24 hours to confirm your booking.",
-    });
+    
+    try {
+      // Get the hall UUID from Supabase based on the hall slug/id
+      const { data: hallData, error: hallError } = await supabase
+        .from('halls')
+        .select('id')
+        .eq('slug', bookingData.hallId)
+        .maybeSingle();
+
+      if (hallError || !hallData) {
+        console.error('Error finding hall:', hallError);
+        toast({
+          title: "Error",
+          description: "Could not find the selected hall. Please try again.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Map time slot to actual times
+      const timeSlotMap: Record<string, { start: string; end: string }> = {
+        morning: { start: "08:00", end: "16:00" },
+        evening: { start: "17:00", end: "00:00" },
+        fullday: { start: "08:00", end: "00:00" },
+      };
+      const times = timeSlotMap[bookingData.timeSlot] || { start: null, end: null };
+
+      // Build special requests from menu and services
+      const specialRequests = [
+        bookingData.mealType && `Meal Type: ${bookingData.mealType}`,
+        bookingData.menuPackage && `Menu: ${menus[bookingData.mealType as keyof typeof menus]?.find(m => m.id === bookingData.menuPackage)?.name}`,
+        bookingData.menuNotes && `Menu Notes: ${bookingData.menuNotes}`,
+        bookingData.services.length > 0 && `Services: ${bookingData.services.map(s => addOnServices.find(a => a.id === s)?.label).join(", ")}`,
+        bookingData.serviceNotes && `Service Notes: ${bookingData.serviceNotes}`,
+        bookingData.message && `Message: ${bookingData.message}`,
+      ].filter(Boolean).join("\n");
+
+      const { error: insertError } = await supabase
+        .from('bookings')
+        .insert({
+          hall_id: hallData.id,
+          event_date: bookingData.eventDate ? format(bookingData.eventDate, "yyyy-MM-dd") : null,
+          event_start_time: times.start,
+          event_end_time: times.end,
+          event_type: eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType,
+          customer_name: bookingData.name,
+          customer_phone: bookingData.phone,
+          customer_email: bookingData.email || null,
+          expected_guests: parseInt(bookingData.guestCount) || null,
+          special_requests: specialRequests || null,
+          status: 'new',
+          is_manual_booking: false,
+        });
+
+      if (insertError) {
+        console.error('Error creating booking:', insertError);
+        toast({
+          title: "Error",
+          description: "Could not submit booking. Please try again.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      setIsSubmitted(true);
+      toast({
+        title: "Booking Request Submitted!",
+        description: "Our team will contact you within 24 hours to confirm your booking.",
+      });
+    } catch (error) {
+      console.error('Booking submission error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const selectedHall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
