@@ -59,15 +59,21 @@ const ManagerAssignments = () => {
 
       if (hallsError) throw hallsError;
 
-      // Fetch profiles with hall_manager role
+      // Fetch profiles with hall_manager role - join user_roles with profiles
       const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
         .select('user_id')
         .eq('role', 'hall_manager');
 
-      if (rolesError) throw rolesError;
+      console.log('Roles data:', rolesData, 'Error:', rolesError);
+      
+      if (rolesError) {
+        console.error('Error fetching hall_manager roles:', rolesError);
+        throw rolesError;
+      }
 
       const managerUserIds = rolesData?.map(r => r.user_id) || [];
+      console.log('Manager user IDs:', managerUserIds);
 
       if (managerUserIds.length > 0) {
         const { data: profilesData, error: profilesError } = await supabase
@@ -75,8 +81,16 @@ const ManagerAssignments = () => {
           .select('id, full_name, email')
           .in('id', managerUserIds);
 
-        if (profilesError) throw profilesError;
+        console.log('Profiles data:', profilesData, 'Error:', profilesError);
+        
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          throw profilesError;
+        }
         setAvailableManagers(profilesData || []);
+      } else {
+        console.log('No hall_manager users found');
+        setAvailableManagers([]);
       }
 
       setAssignments((assignmentsData || []) as HallManager[]);
