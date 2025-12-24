@@ -64,8 +64,6 @@ const ManagerAssignments = () => {
         .from('user_roles')
         .select('user_id')
         .eq('role', 'hall_manager');
-
-      console.log('Roles data:', rolesData, 'Error:', rolesError);
       
       if (rolesError) {
         console.error('Error fetching hall_manager roles:', rolesError);
@@ -73,27 +71,36 @@ const ManagerAssignments = () => {
       }
 
       const managerUserIds = rolesData?.map(r => r.user_id) || [];
-      console.log('Manager user IDs:', managerUserIds);
 
+      // Fetch all profiles for managers (for both dropdown and assignments table)
+      let profilesMap: Record<string, Profile> = {};
       if (managerUserIds.length > 0) {
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('id, full_name, email')
           .in('id', managerUserIds);
-
-        console.log('Profiles data:', profilesData, 'Error:', profilesError);
         
         if (profilesError) {
           console.error('Error fetching profiles:', profilesError);
           throw profilesError;
         }
         setAvailableManagers(profilesData || []);
+        
+        // Create a map for quick lookup
+        (profilesData || []).forEach(p => {
+          profilesMap[p.id] = p;
+        });
       } else {
-        console.log('No hall_manager users found');
         setAvailableManagers([]);
       }
 
-      setAssignments((assignmentsData || []) as HallManager[]);
+      // Merge profile data into assignments
+      const assignmentsWithProfiles = (assignmentsData || []).map(assignment => ({
+        ...assignment,
+        profiles: profilesMap[assignment.user_id] || null,
+      }));
+
+      setAssignments(assignmentsWithProfiles as HallManager[]);
       setHalls(hallsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
