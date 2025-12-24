@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +64,12 @@ export function Header() {
               <Phone className="h-4 w-4" />
               +91 98765 43210
             </a>
+            <Button asChild variant="outline" size="sm" className="border-primary/30 text-primary hover:bg-primary/5">
+              <Link to="/auth">
+                <Shield className="h-4 w-4 mr-1" />
+                Staff
+              </Link>
+            </Button>
             <Button asChild className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-traditional transition-all duration-300 hover:shadow-gold-glow">
               <Link to="/booking">
                 <span className="mr-2">🪷</span>
@@ -107,12 +113,20 @@ export function Header() {
                   {item.name}
                 </Link>
               ))}
-              <Button asChild className="mt-4 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
-                <Link to="/booking" onClick={() => setMobileMenuOpen(false)}>
-                  <span className="mr-2">🪷</span>
-                  Book Now
-                </Link>
-              </Button>
+              <div className="flex gap-2 mt-4">
+                <Button asChild variant="outline" size="sm" className="flex-1 border-primary/30 text-primary">
+                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                    <Shield className="h-4 w-4 mr-1" />
+                    Staff Login
+                  </Link>
+                </Button>
+                <Button asChild className="flex-1 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
+                  <Link to="/booking" onClick={() => setMobileMenuOpen(false)}>
+                    <span className="mr-2">🪷</span>
+                    Book Now
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         )}
