@@ -15,6 +15,8 @@ interface CreateUserRequest {
 }
 
 serve(async (req) => {
+  console.log("create-user function called, method:", req.method);
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -23,7 +25,10 @@ serve(async (req) => {
   try {
     // Verify the requesting user is a super_admin
     const authHeader = req.headers.get("Authorization");
+    console.log("Auth header present:", !!authHeader);
+    
     if (!authHeader) {
+      console.log("No authorization header found");
       return new Response(
         JSON.stringify({ error: "No authorization header" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -32,7 +37,11 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    
+    console.log("Supabase URL:", supabaseUrl);
+    console.log("Service key present:", !!supabaseServiceKey);
+    console.log("Anon key present:", !!supabaseAnonKey);
 
     // Create client with user's token to verify they're a super_admin
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
