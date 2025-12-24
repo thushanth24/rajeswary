@@ -94,20 +94,52 @@ const UserManagement = () => {
       return;
     }
 
+    if (newUserPassword.length < 6) {
+      toast({
+        variant: 'destructive',
+        title: 'Validation Error',
+        description: 'Password must be at least 6 characters',
+      });
+      return;
+    }
+
     setCreating(true);
     try {
-      // Create user via Supabase Auth (this requires admin API, so we'll use edge function)
-      // For now, show a message that the user should be created via Supabase dashboard
-      toast({
-        title: 'Note',
-        description: 'To create a new user, go to the Supabase Dashboard > Authentication > Users. Then assign a role here.',
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      const response = await supabase.functions.invoke('create-user', {
+        body: {
+          email: newUserEmail,
+          password: newUserPassword,
+          full_name: newUserFullName,
+          role: newUserRole,
+        },
       });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+
+      toast({
+        title: 'Success',
+        description: response.data?.message || 'User created successfully',
+      });
+      
       setIsCreateDialogOpen(false);
+      setNewUserEmail('');
+      setNewUserPassword('');
+      setNewUserFullName('');
+      setNewUserRole('admin');
+      fetchUsers();
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: error.message,
+        description: error.message || 'Failed to create user',
       });
     } finally {
       setCreating(false);
