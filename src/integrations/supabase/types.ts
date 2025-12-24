@@ -14,16 +14,373 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          customer_address: string | null
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          event_date: string
+          event_end_time: string | null
+          event_start_time: string | null
+          event_type: string
+          expected_guests: number | null
+          hall_id: string
+          id: string
+          internal_notes: string | null
+          is_manual_booking: boolean
+          special_requests: string | null
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name: string
+          customer_phone: string
+          event_date: string
+          event_end_time?: string | null
+          event_start_time?: string | null
+          event_type: string
+          expected_guests?: number | null
+          hall_id: string
+          id?: string
+          internal_notes?: string | null
+          is_manual_booking?: boolean
+          special_requests?: string | null
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string
+          event_date?: string
+          event_end_time?: string | null
+          event_start_time?: string | null
+          event_type?: string
+          expected_guests?: number | null
+          hall_id?: string
+          id?: string
+          internal_notes?: string | null
+          is_manual_booking?: boolean
+          special_requests?: string | null
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hall_managers: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          hall_id: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          hall_id: string
+          id?: string
+          is_active?: boolean
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          hall_id?: string
+          id?: string
+          is_active?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hall_managers_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: true
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      halls: {
+        Row: {
+          capacity_max: number
+          capacity_min: number
+          created_at: string
+          description: string | null
+          event_types: string[] | null
+          features: string[] | null
+          has_ac: boolean | null
+          has_bride_room: boolean | null
+          has_dining: boolean | null
+          has_groom_room: boolean | null
+          has_parking: boolean | null
+          has_power_backup: boolean | null
+          has_stage: boolean | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          price_range: string | null
+          short_description: string | null
+          slug: string
+          updated_at: string
+          washrooms_count: number | null
+        }
+        Insert: {
+          capacity_max?: number
+          capacity_min?: number
+          created_at?: string
+          description?: string | null
+          event_types?: string[] | null
+          features?: string[] | null
+          has_ac?: boolean | null
+          has_bride_room?: boolean | null
+          has_dining?: boolean | null
+          has_groom_room?: boolean | null
+          has_parking?: boolean | null
+          has_power_backup?: boolean | null
+          has_stage?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          price_range?: string | null
+          short_description?: string | null
+          slug: string
+          updated_at?: string
+          washrooms_count?: number | null
+        }
+        Update: {
+          capacity_max?: number
+          capacity_min?: number
+          created_at?: string
+          description?: string | null
+          event_types?: string[] | null
+          features?: string[] | null
+          has_ac?: boolean | null
+          has_bride_room?: boolean | null
+          has_dining?: boolean | null
+          has_groom_room?: boolean | null
+          has_parking?: boolean | null
+          has_power_backup?: boolean | null
+          has_stage?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          price_range?: string | null
+          short_description?: string | null
+          slug?: string
+          updated_at?: string
+          washrooms_count?: number | null
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          hall_id: string
+          id: string
+          item_name: string
+          last_checked_at: string | null
+          last_checked_by: string | null
+          quantity: number
+          status: Database["public"]["Enums"]["inventory_status"]
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          hall_id: string
+          id?: string
+          item_name: string
+          last_checked_at?: string | null
+          last_checked_by?: string | null
+          quantity?: number
+          status?: Database["public"]["Enums"]["inventory_status"]
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          hall_id?: string
+          id?: string
+          item_name?: string
+          last_checked_at?: string | null
+          last_checked_by?: string | null
+          quantity?: number
+          status?: Database["public"]["Enums"]["inventory_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          is_active: boolean
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          is_active?: boolean
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_manager_hall_id: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin_or_above: { Args: { _user_id: string }; Returns: boolean }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "admin" | "hall_manager"
+      booking_status:
+        | "new"
+        | "acknowledged"
+        | "confirmed"
+        | "cancelled"
+        | "completed"
+      inventory_status: "available" | "in_use" | "under_repair" | "disposed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +507,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "admin", "hall_manager"],
+      booking_status: [
+        "new",
+        "acknowledged",
+        "confirmed",
+        "cancelled",
+        "completed",
+      ],
+      inventory_status: ["available", "in_use", "under_repair", "disposed"],
+    },
   },
 } as const
