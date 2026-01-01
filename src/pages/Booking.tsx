@@ -162,6 +162,118 @@ const BookingPage = () => {
     setIsSubmitting(true);
     
     try {
+      // Input validation
+      const trimmedName = bookingData.name.trim();
+      const trimmedPhone = bookingData.phone.trim();
+      const trimmedEmail = bookingData.email.trim();
+      
+      // Validate name (required, max 200 chars)
+      if (!trimmedName || trimmedName.length > 200) {
+        toast({
+          title: "Validation Error",
+          description: "Please enter a valid name (max 200 characters).",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validate phone (required, 10-20 digits, common formats)
+      const phoneRegex = /^[\d\s\-+()]{10,20}$/;
+      if (!trimmedPhone || !phoneRegex.test(trimmedPhone)) {
+        toast({
+          title: "Validation Error",
+          description: "Please enter a valid phone number (10-20 digits).",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validate email (optional, but if provided must be valid format, max 255 chars)
+      if (trimmedEmail) {
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!emailRegex.test(trimmedEmail) || trimmedEmail.length > 255) {
+          toast({
+            title: "Validation Error",
+            description: "Please enter a valid email address.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Validate guest count (positive number, reasonable max)
+      const guestCount = parseInt(bookingData.guestCount);
+      if (isNaN(guestCount) || guestCount <= 0 || guestCount > 10000) {
+        toast({
+          title: "Validation Error",
+          description: "Please enter a valid guest count (1-10000).",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validate event date (must be today or future, within 2 years)
+      if (!bookingData.eventDate) {
+        toast({
+          title: "Validation Error",
+          description: "Please select an event date.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const maxDate = new Date();
+      maxDate.setFullYear(maxDate.getFullYear() + 2);
+      
+      if (bookingData.eventDate < today || bookingData.eventDate > maxDate) {
+        toast({
+          title: "Validation Error",
+          description: "Event date must be between today and 2 years from now.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Limit free text fields to prevent abuse
+      const maxTextLength = 2000;
+      if (bookingData.message && bookingData.message.length > maxTextLength) {
+        toast({
+          title: "Validation Error",
+          description: `Message must be less than ${maxTextLength} characters.`,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (bookingData.menuNotes && bookingData.menuNotes.length > maxTextLength) {
+        toast({
+          title: "Validation Error",
+          description: `Menu notes must be less than ${maxTextLength} characters.`,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (bookingData.serviceNotes && bookingData.serviceNotes.length > maxTextLength) {
+        toast({
+          title: "Validation Error",
+          description: `Service notes must be less than ${maxTextLength} characters.`,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Get the hall UUID from Supabase based on the hall slug/id
       const { data: hallData, error: hallError } = await supabase
         .from('halls')
@@ -170,7 +282,6 @@ const BookingPage = () => {
         .maybeSingle();
 
       if (hallError || !hallData) {
-        console.error('Error finding hall:', hallError);
         toast({
           title: "Error",
           description: "Could not find the selected hall. Please try again.",
@@ -188,35 +299,36 @@ const BookingPage = () => {
       };
       const times = timeSlotMap[bookingData.timeSlot] || { start: null, end: null };
 
-      // Build special requests from menu and services
-      const specialRequests = [
-        bookingData.mealType && `Meal Type: ${bookingData.mealType}`,
-        bookingData.menuPackage && `Menu: ${menus[bookingData.mealType as keyof typeof menus]?.find(m => m.id === bookingData.menuPackage)?.name}`,
-        bookingData.menuNotes && `Menu Notes: ${bookingData.menuNotes}`,
-        bookingData.services.length > 0 && `Services: ${bookingData.services.map(s => addOnServices.find(a => a.id === s)?.label).join(", ")}`,
-        bookingData.serviceNotes && `Service Notes: ${bookingData.serviceNotes}`,
-        bookingData.message && `Message: ${bookingData.message}`,
-      ].filter(Boolean).join("\n");
+      // Build special requests from menu and services (sanitize by limiting length)
+      const specialRequestsParts = [
+        bookingData.mealType && `Meal Type: ${bookingData.mealType.substring(0, 50)}`,
+        bookingData.menuPackage && `Menu: ${menus[bookingData.mealType as keyof typeof menus]?.find(m => m.id === bookingData.menuPackage)?.name?.substring(0, 100) || ''}`,
+        bookingData.menuNotes && `Menu Notes: ${bookingData.menuNotes.substring(0, maxTextLength)}`,
+        bookingData.services.length > 0 && `Services: ${bookingData.services.map(s => addOnServices.find(a => a.id === s)?.label).filter(Boolean).join(", ").substring(0, 500)}`,
+        bookingData.serviceNotes && `Service Notes: ${bookingData.serviceNotes.substring(0, maxTextLength)}`,
+        bookingData.message && `Message: ${bookingData.message.substring(0, maxTextLength)}`,
+      ].filter(Boolean);
+      
+      const specialRequests = specialRequestsParts.join("\n").substring(0, 5000);
 
       const { error: insertError } = await supabase
         .from('bookings')
         .insert({
           hall_id: hallData.id,
-          event_date: bookingData.eventDate ? format(bookingData.eventDate, "yyyy-MM-dd") : null,
+          event_date: format(bookingData.eventDate, "yyyy-MM-dd"),
           event_start_time: times.start,
           event_end_time: times.end,
-          event_type: eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType,
-          customer_name: bookingData.name,
-          customer_phone: bookingData.phone,
-          customer_email: bookingData.email || null,
-          expected_guests: parseInt(bookingData.guestCount) || null,
+          event_type: eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType.substring(0, 100),
+          customer_name: trimmedName.substring(0, 200),
+          customer_phone: trimmedPhone.substring(0, 20),
+          customer_email: trimmedEmail ? trimmedEmail.substring(0, 255) : null,
+          expected_guests: guestCount,
           special_requests: specialRequests || null,
           status: 'new',
           is_manual_booking: false,
         });
 
       if (insertError) {
-        console.error('Error creating booking:', insertError);
         toast({
           title: "Error",
           description: "Could not submit booking. Please try again.",
@@ -232,7 +344,6 @@ const BookingPage = () => {
         description: "Our team will contact you within 24 hours to confirm your booking.",
       });
     } catch (error) {
-      console.error('Booking submission error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
