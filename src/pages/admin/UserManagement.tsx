@@ -94,11 +94,11 @@ const UserManagement = () => {
       return;
     }
 
-    if (newUserPassword.length < 6) {
+    if (newUserPassword.length < 8) {
       toast({
         variant: 'destructive',
         title: 'Validation Error',
-        description: 'Password must be at least 6 characters',
+        description: 'Password must be at least 8 characters',
       });
       return;
     }
