@@ -1,6 +1,6 @@
-import hallGrandBallroom from "@/assets/hall-grand-ballroom.jpg";
-import hallRoyalBanquet from "@/assets/hall-royal-banquet.jpg";
-import hallCrystalPalace from "@/assets/hall-crystal-palace.jpg";
+import hallGrandBallroom from "@/assets/hall-grand-ballroom.webp";
+import hallRoyalBanquet from "@/assets/hall-royal-banquet.webp";
+import hallCrystalPalace from "@/assets/hall-crystal-palace.webp";
 import hallEmeraldGarden from "@/assets/hall-emerald-garden.jpg";
 import hallSunsetTerrace from "@/assets/hall-sunset-terrace.jpg";
 
