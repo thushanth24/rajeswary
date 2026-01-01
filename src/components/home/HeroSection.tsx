@@ -4,7 +4,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DiyaLamp } from "@/components/animations/DiyaLamp";
-import heroImage from "@/assets/hero-traditional.jpg";
+import heroImage from "@/assets/hero-traditional.webp";
 
 export function HeroSection() {
   return (
