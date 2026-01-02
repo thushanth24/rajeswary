@@ -21,6 +21,7 @@ import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
 import { supabase } from "@/integrations/supabase/client";
+import { useBlockedDates } from "@/hooks/useBlockedDates";
 import {
   CalendarIcon,
   Check,
@@ -34,6 +35,7 @@ import {
   Music,
   UserCheck,
   Sparkles,
+  Lock,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -92,6 +94,7 @@ const BookingPage = () => {
   const [step, setStep] = useState<BookingStep>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedHallUUID, setSelectedHallUUID] = useState<string | null>(null);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -110,6 +113,31 @@ const BookingPage = () => {
     message: "",
   });
 
+  // Fetch blocked dates for the selected hall
+  const { isDateBlocked, getBlockedReason } = useBlockedDates(selectedHallUUID);
+
+  // Fetch hall UUID when hall is selected
+  useEffect(() => {
+    const fetchHallUUID = async () => {
+      if (!bookingData.hallId) {
+        setSelectedHallUUID(null);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("halls")
+        .select("id")
+        .eq("slug", bookingData.hallId)
+        .maybeSingle();
+
+      if (!error && data) {
+        setSelectedHallUUID(data.id);
+      }
+    };
+
+    fetchHallUUID();
+  }, [bookingData.hallId]);
+
   useEffect(() => {
     if (preselectedHall) {
       setBookingData((prev) => ({ ...prev, hallId: preselectedHall }));
@@ -117,7 +145,13 @@ const BookingPage = () => {
   }, [preselectedHall]);
 
   const updateBookingData = (field: keyof BookingData, value: string | string[] | Date | undefined) => {
-    setBookingData((prev) => ({ ...prev, [field]: value }));
+    setBookingData((prev) => {
+      // Clear date if hall changes (different halls may have different blocked dates)
+      if (field === "hallId" && typeof value === "string" && value !== prev.hallId) {
+        return { ...prev, hallId: value, eventDate: undefined };
+      }
+      return { ...prev, [field]: value } as BookingData;
+    });
   };
 
   const toggleService = (serviceId: string) => {
@@ -289,6 +323,22 @@ const BookingPage = () => {
         });
         setIsSubmitting(false);
         return;
+      }
+
+      // Check if the date is blocked (confirmed booking or closed date)
+      if (bookingData.eventDate && selectedHallUUID) {
+        const blockedReason = getBlockedReason(bookingData.eventDate);
+        if (blockedReason) {
+          toast({
+            title: "Date Unavailable",
+            description: blockedReason === "confirmed" 
+              ? "This date is already booked for this hall. Please select another date."
+              : "This date is closed for bookings. Please select another date.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       // Map time slot to actual times
@@ -559,6 +609,12 @@ const BookingPage = () => {
 
                   <div>
                     <Label>Event Date</Label>
+                    {selectedHallUUID && (
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                        <Lock className="h-3 w-3" />
+                        Dates with confirmed bookings or closures are unavailable
+                      </p>
+                    )}
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -576,8 +632,24 @@ const BookingPage = () => {
                         <Calendar
                           mode="single"
                           selected={bookingData.eventDate}
-                          onSelect={(date) => updateBookingData("eventDate", date)}
-                          disabled={(date) => date < new Date()}
+                          onSelect={(date) => {
+                            if (date && selectedHallUUID && isDateBlocked(date)) {
+                              toast({
+                                title: "Date Unavailable",
+                                description: getBlockedReason(date) === "confirmed" 
+                                  ? "This date is already booked."
+                                  : "This date is closed for bookings.",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            updateBookingData("eventDate", date);
+                          }}
+                          disabled={(date) => {
+                            if (date < new Date()) return true;
+                            if (selectedHallUUID && isDateBlocked(date)) return true;
+                            return false;
+                          }}
                           initialFocus
                           className="p-3 pointer-events-auto"
                         />
