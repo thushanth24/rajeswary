@@ -169,12 +169,17 @@ const BookingPage = () => {
   };
 
   const canProceed = (): boolean => {
+    const hall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
+    const guests = parseInt(bookingData.guestCount) || 0;
+    const overCapacity = hall && guests > hall.capacity.max;
+
     switch (step) {
       case 1:
         // Step 1 is now Hall selection
         return !!bookingData.hallId;
       case 2:
-        // Step 2 is now Event details
+        // Step 2 is now Event details - block if over capacity
+        if (overCapacity) return false;
         return !!(bookingData.eventType && bookingData.eventDate && bookingData.timeSlot && bookingData.guestCount);
       case 3:
         return !!(bookingData.mealType && bookingData.menuPackage);
@@ -444,6 +449,7 @@ const BookingPage = () => {
 
   const selectedHall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
   const guestCount = parseInt(bookingData.guestCount) || 0;
+  const isOverCapacity = selectedHall && guestCount > selectedHall.capacity.max;
 
   if (isSubmitted) {
     return (
@@ -794,21 +800,35 @@ const BookingPage = () => {
                       onChange={(e) => updateBookingData("guestCount", e.target.value)}
                       placeholder="e.g., 300"
                       min="50"
-                      max="1000"
-                      className="mt-1"
+                      max="10000"
+                      className={cn(
+                        "mt-1",
+                        isOverCapacity && "border-destructive focus-visible:ring-destructive"
+                      )}
                     />
                     {selectedHall && guestCount > 0 && (
-                      <p className={cn(
-                        "text-xs mt-1",
-                        guestCount > selectedHall.capacity.max 
-                          ? "text-destructive" 
-                          : guestCount < selectedHall.capacity.min * 0.5
-                          ? "text-yellow-600"
-                          : "text-muted-foreground"
-                      )}>
-                        {selectedHall.name} capacity: {selectedHall.capacity.min} - {selectedHall.capacity.max} guests
-                        {guestCount > selectedHall.capacity.max && " (Exceeds capacity)"}
-                      </p>
+                      <>
+                        {isOverCapacity ? (
+                          <div className="flex items-center gap-2 mt-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                            <p className="text-sm text-destructive">
+                              <strong>Exceeds capacity!</strong> {selectedHall.name} can accommodate max {selectedHall.capacity.max} guests. 
+                              Please reduce guest count or select a larger venue.
+                            </p>
+                          </div>
+                        ) : guestCount < selectedHall.capacity.min * 0.5 ? (
+                          <div className="flex items-center gap-2 mt-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                            <Users className="h-4 w-4 text-yellow-600 shrink-0" />
+                            <p className="text-sm text-yellow-600">
+                              Hall may be too large for {guestCount} guests. Consider a smaller venue.
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-xs mt-1 text-muted-foreground">
+                            {selectedHall.name} capacity: {selectedHall.capacity.min} - {selectedHall.capacity.max} guests ✓
+                          </p>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
