@@ -440,6 +440,30 @@ const BookingPage = () => {
       // Store the reference number for display
       if (insertedBooking?.reference_number) {
         setBookingReference(insertedBooking.reference_number);
+        
+        // Send confirmation email (fire and forget - don't block the UI)
+        if (trimmedEmail) {
+          const hallName = halls.find(h => h.slug === bookingData.hallId)?.name || 'Hall';
+          const eventTypeName = eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType;
+          
+          supabase.functions.invoke('send-booking-confirmation', {
+            body: {
+              customerName: trimmedName,
+              customerEmail: trimmedEmail,
+              referenceNumber: insertedBooking.reference_number,
+              hallName: hallName,
+              eventDate: format(bookingData.eventDate!, "PPP"),
+              eventType: eventTypeName,
+              expectedGuests: guestCount,
+            },
+          }).then(({ error }) => {
+            if (error) {
+              console.error('Failed to send confirmation email:', error);
+            } else {
+              console.log('Confirmation email sent successfully');
+            }
+          });
+        }
       }
 
       setIsSubmitted(true);
