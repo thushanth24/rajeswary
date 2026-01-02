@@ -2,10 +2,13 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HallCard } from "@/components/ui/HallCard";
-import { halls } from "@/data/halls";
+import { useHalls } from "@/hooks/useHalls";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function FeaturedHalls() {
+  const { halls, loading } = useHalls();
+
   return (
     <section className="py-20 bg-background lotus-bg relative overflow-hidden">
       {/* Decorative borders */}
@@ -48,18 +51,31 @@ export function FeaturedHalls() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {halls.slice(0, 3).map((hall, index) => (
-            <div 
-              key={hall.id} 
-              className="animate-fade-in-up opacity-0 group"
-              style={{ 
-                animationDelay: `${0.6 + index * 0.2}s`,
-                animationFillMode: "forwards"
-              }}
-            >
-              <HallCard hall={hall} featured={index === 0} />
-            </div>
-          ))}
+          {loading ? (
+            <>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              ))}
+            </>
+          ) : (
+            halls.slice(0, 3).map((hall, index) => (
+              <div 
+                key={hall.id} 
+                className="animate-fade-in-up opacity-0 group"
+                style={{ 
+                  animationDelay: `${0.6 + index * 0.2}s`,
+                  animationFillMode: "forwards"
+                }}
+              >
+                <HallCard hall={hall} featured={index === 0} />
+              </div>
+            ))
+          )}
         </div>
 
         <div className="text-center mt-12 animate-fade-in-up" style={{ animationDelay: "1.2s" }}>

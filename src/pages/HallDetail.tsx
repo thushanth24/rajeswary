@@ -1,8 +1,9 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { getHallBySlug } from "@/data/halls";
+import { useHall } from "@/hooks/useHalls";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users,
   Snowflake,
@@ -22,9 +23,36 @@ import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 
 const HallDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const hall = slug ? getHallBySlug(slug) : undefined;
+  const { hall, loading, error } = useHall(slug);
 
-  if (!hall) {
+  if (loading) {
+    return (
+      <Layout>
+        <section className="relative h-[65vh] flex items-end overflow-hidden bg-muted">
+          <div className="container mx-auto px-4 lg:px-8 pb-16">
+            <Skeleton className="h-8 w-32 mb-4" />
+            <Skeleton className="h-12 w-96 mb-4" />
+            <Skeleton className="h-6 w-64" />
+          </div>
+        </section>
+        <section className="py-20">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-3">
+              <div className="lg:col-span-2 space-y-8">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-48 w-full" />
+              </div>
+              <div>
+                <Skeleton className="h-64 w-full" />
+              </div>
+            </div>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
+  if (error || !hall) {
     return <Navigate to="/halls" replace />;
   }
 
@@ -197,7 +225,7 @@ const HallDetailPage = () => {
                   Secure your auspicious muhurtham date at {hall.name}.
                 </p>
                 <Button asChild className="w-full mb-3 gold-shimmer group">
-                  <Link to={`/booking?hall=${hall.id}`}>
+                  <Link to={`/booking?hall=${hall.slug}`}>
                     <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                     Book Now
                   </Link>

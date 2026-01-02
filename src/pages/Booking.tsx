@@ -12,7 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { halls, getHallById } from "@/data/halls";
+import { useHalls } from "@/hooks/useHalls";
 import { menus } from "@/data/services";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -93,6 +93,9 @@ const addOnServices = [
 const BookingPage = () => {
   const [searchParams] = useSearchParams();
   const preselectedHall = searchParams.get("hall");
+  
+  // Fetch halls from database
+  const { halls, loading: hallsLoading, getHallById } = useHalls();
 
   // Auto-skip to step 2 if hall is pre-selected
   const [step, setStep] = useState<BookingStep>(preselectedHall ? 2 : 1);
@@ -652,11 +655,16 @@ const BookingPage = () => {
                     </p>
                   </CardHeader>
 
-                  <RadioGroup
-                    value={bookingData.hallId}
-                    onValueChange={(value) => updateBookingData("hallId", value)}
-                    className="grid gap-4"
-                  >
+                  {hallsLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    <RadioGroup
+                      value={bookingData.hallId}
+                      onValueChange={(value) => updateBookingData("hallId", value)}
+                      className="grid gap-4"
+                    >
                     {halls.map((hall) => (
                       <div key={hall.id}>
                         <RadioGroupItem
@@ -701,6 +709,7 @@ const BookingPage = () => {
                       </div>
                     ))}
                   </RadioGroup>
+                  )}
                 </div>
               )}
 

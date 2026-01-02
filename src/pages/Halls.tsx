@@ -1,12 +1,15 @@
 import { Layout } from "@/components/layout/Layout";
 import { HallCard } from "@/components/ui/HallCard";
-import { halls } from "@/data/halls";
+import { useHalls } from "@/hooks/useHalls";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const HallsPage = () => {
+  const { halls, loading, error } = useHalls();
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -52,17 +55,34 @@ const HallsPage = () => {
             </h2>
           </div>
           
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {halls.map((hall, index) => (
-              <div 
-                key={hall.id} 
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <HallCard hall={hall} showAvailability />
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>{error}</p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {halls.map((hall, index) => (
+                <div 
+                  key={hall.id} 
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <HallCard hall={hall} showAvailability />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         
         <DecorativeBorder position="bottom" />
