@@ -38,9 +38,14 @@ export function HallCard({ hall, featured = false, showAvailability = false }: H
         </div>
       </div>
       <CardContent className="p-6">
-        <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-          {hall.name}
-        </h3>
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="font-serif text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
+            {hall.name}
+          </h3>
+          <span className="text-sm font-semibold text-primary whitespace-nowrap shrink-0">
+            {hall.priceRange}
+          </span>
+        </div>
         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
           {hall.shortDescription}
         </p>
