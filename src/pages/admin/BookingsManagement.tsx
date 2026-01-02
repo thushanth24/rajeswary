@@ -673,7 +673,7 @@ const BookingsManagement = () => {
                   </div>
                 )}
 
-                {isHallManager && selectedBooking.status === 'acknowledged' && (
+                {isHallManager && ['new', 'acknowledged', 'confirmed'].includes(selectedBooking.status) && (
                   <DialogFooter className="gap-2">
                     <Button
                       variant="destructive"
@@ -682,10 +682,12 @@ const BookingsManagement = () => {
                       <XCircle className="w-4 h-4 mr-2" />
                       Cancel Booking
                     </Button>
-                    <Button onClick={() => handleConfirm(selectedBooking.id)}>
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Confirm Booking
-                    </Button>
+                    {selectedBooking.status === 'acknowledged' && (
+                      <Button onClick={() => handleConfirm(selectedBooking.id)}>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Confirm Booking
+                      </Button>
+                    )}
                   </DialogFooter>
                 )}
               </div>
