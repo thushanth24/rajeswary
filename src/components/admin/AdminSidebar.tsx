@@ -29,6 +29,7 @@ import {
   AlertTriangle,
   BarChart3,
   Settings,
+  MessageSquare,
 } from 'lucide-react';
 
 const AdminSidebar = () => {
@@ -52,6 +53,7 @@ const AdminSidebar = () => {
     { title: 'User Management', url: '/admin/users', icon: Users },
     { title: 'All Halls', url: '/admin/halls', icon: Building2 },
     { title: 'All Bookings', url: '/admin/bookings', icon: Calendar },
+    { title: 'Contact Messages', url: '/admin/contact-messages', icon: MessageSquare },
     { title: 'All Inventory', url: '/admin/inventory', icon: Package },
     { title: 'Audit Logs', url: '/admin/audit-logs', icon: FileText },
     { title: 'Reports', url: '/admin/reports', icon: BarChart3 },
@@ -63,6 +65,7 @@ const AdminSidebar = () => {
     { title: 'Manager Assignments', url: '/admin/managers', icon: UserCog },
     { title: 'All Bookings', url: '/admin/bookings', icon: Calendar },
     { title: 'Unacknowledged', url: '/admin/unacknowledged', icon: AlertTriangle },
+    { title: 'Contact Messages', url: '/admin/contact-messages', icon: MessageSquare },
     { title: 'All Inventory', url: '/admin/inventory', icon: Package },
     { title: 'Reports', url: '/admin/reports', icon: BarChart3 },
   ];
