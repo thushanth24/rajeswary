@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, CheckCircle, XCircle, Clock, Eye, AlertTriangle, Search, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, CheckCircle, XCircle, Clock, Eye, AlertTriangle, Search, Download, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { format, differenceInHours } from 'date-fns';
 
 interface Booking {
@@ -45,60 +45,74 @@ const BookingsManagement = () => {
   const [internalNotes, setInternalNotes] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const fetchBookings = async () => {
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Reset page when status filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
+
+  const fetchBookings = useCallback(async () => {
     setLoading(true);
     try {
+      const from = (currentPage - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      // Build the query with filters
       let query = supabase
         .from('bookings')
-        .select('*, halls(name)')
+        .select('*, halls(name)', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter as any);
       }
 
-      const { data, error } = await query;
+      // Server-side search using ilike for text fields
+      if (debouncedSearch.trim()) {
+        const searchTerm = `%${debouncedSearch.trim()}%`;
+        query = query.or(
+          `customer_name.ilike.${searchTerm},customer_phone.ilike.${searchTerm},customer_email.ilike.${searchTerm},reference_number.ilike.${searchTerm}`
+        );
+      }
+
+      // Apply pagination
+      query = query.range(from, to);
+
+      const { data, error, count } = await query;
 
       if (error) throw error;
       setBookings(data || []);
+      setTotalCount(count || 0);
     } catch (error) {
       console.error('Error fetching bookings:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to load bookings',
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, statusFilter, debouncedSearch, toast]);
 
   useEffect(() => {
     fetchBookings();
-  }, [statusFilter]);
+  }, [fetchBookings]);
 
-  // Filter bookings by search query
-  const filteredBookings = useMemo(() => {
-    if (!searchQuery.trim()) return bookings;
-    
-    const query = searchQuery.toLowerCase();
-    return bookings.filter(booking => 
-      booking.customer_name.toLowerCase().includes(query) ||
-      booking.customer_phone.includes(query) ||
-      booking.customer_email?.toLowerCase().includes(query) ||
-      booking.reference_number?.toLowerCase().includes(query) ||
-      booking.halls?.name?.toLowerCase().includes(query)
-    );
-  }, [bookings, searchQuery]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
-  const paginatedBookings = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredBookings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredBookings, currentPage]);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, statusFilter]);
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const handleAcknowledge = async (bookingId: string) => {
     try {
@@ -208,56 +222,89 @@ const BookingsManagement = () => {
     }
   };
 
-  const exportToCSV = () => {
-    const headers = [
-      'Reference',
-      'Customer Name',
-      'Phone',
-      'Email',
-      'Hall',
-      'Event Type',
-      'Event Date',
-      'Expected Guests',
-      'Status',
-      'Booking Type',
-      'Created At',
-      'Special Requests'
-    ];
+  const exportToCSV = async () => {
+    setIsExporting(true);
+    try {
+      // Fetch ALL bookings matching current filters for export (no pagination)
+      let query = supabase
+        .from('bookings')
+        .select('*, halls(name)')
+        .order('created_at', { ascending: false });
 
-    const csvData = filteredBookings.map(booking => [
-      booking.reference_number || '',
-      booking.customer_name,
-      booking.customer_phone,
-      booking.customer_email || '',
-      booking.halls?.name || '',
-      booking.event_type,
-      format(new Date(booking.event_date), 'yyyy-MM-dd'),
-      booking.expected_guests?.toString() || '',
-      booking.status,
-      booking.is_manual_booking ? 'Manual' : 'Online',
-      format(new Date(booking.created_at), 'yyyy-MM-dd HH:mm'),
-      (booking.special_requests || '').replace(/"/g, '""').replace(/\n/g, ' ')
-    ]);
+      if (statusFilter !== 'all') {
+        query = query.eq('status', statusFilter as any);
+      }
 
-    const csvContent = [
-      headers.join(','),
-      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
+      if (debouncedSearch.trim()) {
+        const searchTerm = `%${debouncedSearch.trim()}%`;
+        query = query.or(
+          `customer_name.ilike.${searchTerm},customer_phone.ilike.${searchTerm},customer_email.ilike.${searchTerm},reference_number.ilike.${searchTerm}`
+        );
+      }
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `bookings_export_${format(new Date(), 'yyyy-MM-dd')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const { data: allBookings, error } = await query;
 
-    toast({
-      title: 'Export Complete',
-      description: `Exported ${filteredBookings.length} bookings to CSV`,
-    });
+      if (error) throw error;
+
+      const headers = [
+        'Reference',
+        'Customer Name',
+        'Phone',
+        'Email',
+        'Hall',
+        'Event Type',
+        'Event Date',
+        'Expected Guests',
+        'Status',
+        'Booking Type',
+        'Created At',
+        'Special Requests'
+      ];
+
+      const csvData = (allBookings || []).map(booking => [
+        booking.reference_number || '',
+        booking.customer_name,
+        booking.customer_phone,
+        booking.customer_email || '',
+        booking.halls?.name || '',
+        booking.event_type,
+        format(new Date(booking.event_date), 'yyyy-MM-dd'),
+        booking.expected_guests?.toString() || '',
+        booking.status,
+        booking.is_manual_booking ? 'Manual' : 'Online',
+        format(new Date(booking.created_at), 'yyyy-MM-dd HH:mm'),
+        (booking.special_requests || '').replace(/"/g, '""').replace(/\n/g, ' ')
+      ]);
+
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `bookings_export_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: 'Export Complete',
+        description: `Exported ${allBookings?.length || 0} bookings to CSV`,
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Export Failed',
+        description: 'Could not export bookings',
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const getStatusBadge = (booking: Booking) => {
@@ -341,7 +388,8 @@ const BookingsManagement = () => {
             </Select>
 
             {/* Export Button */}
-            <Button variant="outline" onClick={exportToCSV} disabled={filteredBookings.length === 0}>
+            <Button variant="outline" onClick={exportToCSV} disabled={totalCount === 0 || isExporting}>
+              {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
               <Download className="h-4 w-4 mr-2" />
               Export CSV
             </Button>
@@ -356,8 +404,8 @@ const BookingsManagement = () => {
                 All Bookings
               </div>
               <span className="text-sm font-normal text-muted-foreground">
-                {filteredBookings.length} {filteredBookings.length === 1 ? 'booking' : 'bookings'}
-                {searchQuery && ` matching "${searchQuery}"`}
+                {totalCount} {totalCount === 1 ? 'booking' : 'bookings'}
+                {debouncedSearch && ` matching "${debouncedSearch}"`}
               </span>
             </CardTitle>
           </CardHeader>
@@ -377,7 +425,7 @@ const BookingsManagement = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedBookings.map((booking) => (
+                  {bookings.map((booking) => (
                     <TableRow key={booking.id}>
                       <TableCell>
                         <span className="font-mono text-sm text-primary">
@@ -424,10 +472,10 @@ const BookingsManagement = () => {
                       </TableCell>
                     </TableRow>
                   ))}
-                  {paginatedBookings.length === 0 && (
+                  {bookings.length === 0 && !loading && (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        {searchQuery ? `No bookings found matching "${searchQuery}"` : 'No bookings found'}
+                        {debouncedSearch ? `No bookings found matching "${debouncedSearch}"` : 'No bookings found'}
                       </TableCell>
                     </TableRow>
                   )}
@@ -439,7 +487,7 @@ const BookingsManagement = () => {
             {totalPages > 1 && (
               <div className="flex items-center justify-between mt-4 pt-4 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredBookings.length)} of {filteredBookings.length}
+                  Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of {totalCount}
                 </p>
                 <div className="flex items-center gap-2">
                   <Button
