@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -49,6 +50,10 @@ const BookingsManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
+  const [cancellationReason, setCancellationReason] = useState('');
+  const [isCancelling, setIsCancelling] = useState(false);
 
   // Debounce search query
   useEffect(() => {
@@ -169,31 +174,80 @@ const BookingsManagement = () => {
     }
   };
 
-  const handleCancel = async (bookingId: string) => {
+  const openCancelDialog = (booking: Booking) => {
+    setBookingToCancel(booking);
+    setCancellationReason('');
+    setIsCancelDialogOpen(true);
+  };
+
+  const handleCancel = async () => {
+    if (!bookingToCancel) return;
+    
+    setIsCancelling(true);
     try {
-      const { error } = await supabase
+      // 1. Update booking status with cancellation reason
+      const { error: bookingError } = await supabase
         .from('bookings')
         .update({
           status: 'cancelled',
           cancelled_at: new Date().toISOString(),
           cancelled_by: user?.id,
+          cancellation_reason: cancellationReason || null,
         })
-        .eq('id', bookingId);
+        .eq('id', bookingToCancel.id);
 
-      if (error) throw error;
+      if (bookingError) throw bookingError;
+
+      // 2. Delete all inventory allocations for this booking
+      const { error: inventoryError } = await supabase
+        .from('booking_inventory')
+        .delete()
+        .eq('booking_id', bookingToCancel.id);
+
+      if (inventoryError) {
+        console.error('Failed to delete inventory allocations:', inventoryError);
+        // Don't throw - booking is already cancelled, this is cleanup
+      }
+
+      // 3. Send cancellation email (fire and forget)
+      if (bookingToCancel.customer_email) {
+        supabase.functions.invoke('send-booking-cancellation', {
+          body: {
+            customerName: bookingToCancel.customer_name,
+            customerEmail: bookingToCancel.customer_email,
+            referenceNumber: bookingToCancel.reference_number || 'N/A',
+            hallName: bookingToCancel.halls?.name || 'Hall',
+            eventDate: format(new Date(bookingToCancel.event_date), 'PPP'),
+            eventType: bookingToCancel.event_type,
+            cancellationReason: cancellationReason,
+          },
+        }).then(({ error }) => {
+          if (error) {
+            console.error('Failed to send cancellation email:', error);
+          } else {
+            console.log('Cancellation email sent successfully');
+          }
+        });
+      }
 
       toast({
-        title: 'Cancelled',
-        description: 'Booking has been cancelled',
+        title: 'Booking Cancelled',
+        description: 'Booking has been cancelled and customer notified',
       });
-      fetchBookings();
+      
+      setIsCancelDialogOpen(false);
       setIsDetailDialogOpen(false);
+      setBookingToCancel(null);
+      setCancellationReason('');
+      fetchBookings();
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Error',
         description: error.message,
       });
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -623,7 +677,7 @@ const BookingsManagement = () => {
                   <DialogFooter className="gap-2">
                     <Button
                       variant="destructive"
-                      onClick={() => handleCancel(selectedBooking.id)}
+                      onClick={() => openCancelDialog(selectedBooking)}
                     >
                       <XCircle className="w-4 h-4 mr-2" />
                       Cancel Booking
@@ -636,6 +690,63 @@ const BookingsManagement = () => {
                 )}
               </div>
             )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Cancellation Dialog */}
+        <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Cancel Booking</DialogTitle>
+              <DialogDescription>
+                This will cancel the booking and notify the customer via email.
+              </DialogDescription>
+            </DialogHeader>
+            {bookingToCancel && (
+              <div className="space-y-4 py-4">
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="font-medium">{bookingToCancel.customer_name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {bookingToCancel.event_type} • {format(new Date(bookingToCancel.event_date), 'PPP')}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {bookingToCancel.halls?.name} • {bookingToCancel.reference_number}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cancellation-reason">Reason for Cancellation *</Label>
+                  <Textarea
+                    id="cancellation-reason"
+                    placeholder="Please provide a reason for cancellation..."
+                    value={cancellationReason}
+                    onChange={(e) => setCancellationReason(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsCancelDialogOpen(false)} disabled={isCancelling}>
+                Keep Booking
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleCancel}
+                disabled={!cancellationReason.trim() || isCancelling}
+              >
+                {isCancelling ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Cancelling...
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-4 h-4 mr-2" />
+                    Confirm Cancellation
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
