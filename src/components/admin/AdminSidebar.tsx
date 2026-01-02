@@ -20,6 +20,7 @@ import {
   Users,
   Building2,
   Calendar,
+  CalendarDays,
   Package,
   FileText,
   Shield,
@@ -47,7 +48,7 @@ const AdminSidebar = () => {
   // Define menu items based on role
   const superAdminItems = [
     { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
-    { title: 'Calendar', url: '/admin/calendar', icon: Calendar },
+    { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
     { title: 'User Management', url: '/admin/users', icon: Users },
     { title: 'All Halls', url: '/admin/halls', icon: Building2 },
     { title: 'All Bookings', url: '/admin/bookings', icon: Calendar },
@@ -58,7 +59,7 @@ const AdminSidebar = () => {
 
   const adminItems = [
     { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
-    { title: 'Calendar', url: '/admin/calendar', icon: Calendar },
+    { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
     { title: 'Manager Assignments', url: '/admin/managers', icon: UserCog },
     { title: 'All Bookings', url: '/admin/bookings', icon: Calendar },
     { title: 'Unacknowledged', url: '/admin/unacknowledged', icon: AlertTriangle },
@@ -68,7 +69,7 @@ const AdminSidebar = () => {
 
   const managerItems = [
     { title: 'My Dashboard', url: '/admin', icon: LayoutDashboard },
-    { title: 'Calendar', url: '/admin/calendar', icon: Calendar },
+    { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
     { title: 'My Bookings', url: '/admin/bookings', icon: Calendar },
     { title: 'New Booking', url: '/admin/new-booking', icon: Calendar },
     { title: 'My Inventory', url: '/admin/inventory', icon: Package },
