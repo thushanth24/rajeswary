@@ -1,6 +1,6 @@
 import { Users, Building2, CalendarIcon, Clock, X } from "lucide-react";
 import { format } from "date-fns";
-import type { Hall } from "@/data/halls";
+import type { Hall } from "@/hooks/useHalls";
 import { cn } from "@/lib/utils";
 
 interface SelectedHallSummaryProps {

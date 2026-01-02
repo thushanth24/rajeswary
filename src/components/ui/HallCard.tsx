@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { HallAvailabilityIndicator } from "@/components/ui/HallAvailabilityIndicator";
-import type { Hall } from "@/data/halls";
+import type { Hall } from "@/hooks/useHalls";
 
 interface HallCardProps {
   hall: Hall;
