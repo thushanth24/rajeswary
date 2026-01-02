@@ -11,6 +11,7 @@ import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DiwaRow } from "@/components/animations/DiyaLamp";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -20,20 +21,104 @@ const ContactPage = () => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    // Name validation
+    const trimmedName = formData.name.trim();
+    if (!trimmedName) {
+      newErrors.name = "Name is required";
+    } else if (trimmedName.length > 200) {
+      newErrors.name = "Name must be less than 200 characters";
+    }
+
+    // Email validation
+    const trimmedEmail = formData.email.trim();
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!trimmedEmail) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(trimmedEmail)) {
+      newErrors.email = "Please enter a valid email address";
+    } else if (trimmedEmail.length > 255) {
+      newErrors.email = "Email must be less than 255 characters";
+    }
+
+    // Phone validation
+    const trimmedPhone = formData.phone.trim();
+    const phoneRegex = /^[\d\s\-+()]{10,20}$/;
+    if (!trimmedPhone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!phoneRegex.test(trimmedPhone)) {
+      newErrors.phone = "Please enter a valid phone number (10-20 digits)";
+    }
+
+    // Message validation
+    const trimmedMessage = formData.message.trim();
+    if (!trimmedMessage) {
+      newErrors.message = "Message is required";
+    } else if (trimmedMessage.length > 2000) {
+      newErrors.message = "Message must be less than 2000 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
     
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "🪔 Message Sent!",
-      description: "We'll get back to you within 24 hours. Nandri!",
-    });
-    
-    setFormData({ name: "", email: "", phone: "", message: "" });
-    setIsSubmitting(false);
+    try {
+      const trimmedData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+      };
+
+      // Save to database
+      const { error: dbError } = await supabase
+        .from('contact_messages')
+        .insert(trimmedData);
+
+      if (dbError) {
+        console.error("Database error:", dbError);
+        throw new Error("Failed to save message");
+      }
+
+      // Send email notifications (fire and forget - don't block on email failure)
+      supabase.functions.invoke('send-contact-notification', {
+        body: trimmedData,
+      }).then(({ error }) => {
+        if (error) {
+          console.error("Email notification error:", error);
+        }
+      });
+      
+      toast({
+        title: "🪔 Message Sent!",
+        description: "We'll get back to you within 24 hours. Nandri!",
+      });
+      
+      setFormData({ name: "", email: "", phone: "", message: "" });
+      setErrors({});
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -186,54 +271,67 @@ const ContactPage = () => {
                 <CardContent className="p-6">
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                      <Label htmlFor="name" className="font-serif">பெயர் (Full Name)</Label>
+                      <Label htmlFor="name" className="font-serif">பெயர் (Full Name) *</Label>
                       <Input
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, name: e.target.value });
+                          if (errors.name) setErrors({ ...errors, name: "" });
+                        }}
                         placeholder="Your name"
-                        required
-                        className="mt-1 border-border/50 focus:border-primary"
+                        className={`mt-1 border-border/50 focus:border-primary ${errors.name ? 'border-destructive' : ''}`}
                       />
+                      {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
                     </div>
                     
                     <div>
-                      <Label htmlFor="email" className="font-serif">மின்னஞ்சல் (Email)</Label>
+                      <Label htmlFor="email" className="font-serif">மின்னஞ்சல் (Email) *</Label>
                       <Input
                         id="email"
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          if (errors.email) setErrors({ ...errors, email: "" });
+                        }}
                         placeholder="your@email.com"
-                        required
-                        className="mt-1 border-border/50 focus:border-primary"
+                        className={`mt-1 border-border/50 focus:border-primary ${errors.email ? 'border-destructive' : ''}`}
                       />
+                      {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                     </div>
                     
                     <div>
-                      <Label htmlFor="phone" className="font-serif">தொலைபேசி (Phone)</Label>
+                      <Label htmlFor="phone" className="font-serif">தொலைபேசி (Phone) *</Label>
                       <Input
                         id="phone"
                         type="tel"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, phone: e.target.value });
+                          if (errors.phone) setErrors({ ...errors, phone: "" });
+                        }}
                         placeholder="+94 77 123 4567"
-                        required
-                        className="mt-1 border-border/50 focus:border-primary"
+                        className={`mt-1 border-border/50 focus:border-primary ${errors.phone ? 'border-destructive' : ''}`}
                       />
+                      {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone}</p>}
                     </div>
                     
                     <div>
-                      <Label htmlFor="message" className="font-serif">செய்தி (Message)</Label>
+                      <Label htmlFor="message" className="font-serif">செய்தி (Message) *</Label>
                       <Textarea
                         id="message"
                         value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, message: e.target.value });
+                          if (errors.message) setErrors({ ...errors, message: "" });
+                        }}
                         placeholder="How can we help you with your celebration?"
-                        required
                         rows={5}
-                        className="mt-1 border-border/50 focus:border-primary"
+                        className={`mt-1 border-border/50 focus:border-primary ${errors.message ? 'border-destructive' : ''}`}
                       />
+                      {errors.message && <p className="text-xs text-destructive mt-1">{errors.message}</p>}
+                      <p className="text-xs text-muted-foreground mt-1">{formData.message.length}/2000 characters</p>
                     </div>
                     
                     <Button type="submit" className="w-full gold-shimmer" disabled={isSubmitting}>
