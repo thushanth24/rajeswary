@@ -32,6 +32,7 @@ import NewManualBooking from "./pages/admin/NewManualBooking";
 import AuditLogs from "./pages/admin/AuditLogs";
 import Reports from "./pages/admin/Reports";
 import AdminCalendar from "./pages/admin/Calendar";
+import ContactMessages from "./pages/admin/ContactMessages";
 
 const queryClient = new QueryClient();
 
@@ -142,6 +143,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <AdminCalendar />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/contact-messages"
+                element={
+                  <ProtectedRoute allowedRoles={['super_admin', 'admin']}>
+                    <ContactMessages />
                   </ProtectedRoute>
                 }
               />
