@@ -159,10 +159,10 @@ export function HallAvailabilityIndicator({ hallSlug }: HallAvailabilityIndicato
                 className={cn(
                   "aspect-square flex items-center justify-center text-[9px] rounded-sm",
                   past && "text-muted-foreground/40",
-                  !past && !isBooked && !isClosed && "text-primary bg-primary/10",
+                  !past && !isBooked && !isClosed && "text-green-700 bg-green-500/15",
                   isBooked && !past && "text-destructive bg-destructive/15 font-medium",
                   isClosed && !past && "text-yellow-600 bg-yellow-500/15",
-                  today && "ring-1 ring-primary"
+                  today && "ring-1 ring-green-600"
                 )}
                 title={
                   isBooked
@@ -183,7 +183,7 @@ export function HallAvailabilityIndicator({ hallSlug }: HallAvailabilityIndicato
 
       <div className="flex items-center justify-center gap-2 mt-2 text-[9px] text-muted-foreground flex-wrap">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-sm bg-primary/10 border border-primary/30" />
+          <div className="w-2 h-2 rounded-sm bg-green-500/15 border border-green-500/30" />
           <span>Available</span>
         </div>
         <div className="flex items-center gap-1">
