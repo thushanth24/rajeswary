@@ -100,6 +100,7 @@ const BookingPage = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedHallUUID, setSelectedHallUUID] = useState<string | null>(null);
   const [isRevalidating, setIsRevalidating] = useState(false);
+  const [bookingReference, setBookingReference] = useState<string | null>(null);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -404,7 +405,7 @@ const BookingPage = () => {
       
       const specialRequests = specialRequestsParts.join("\n").substring(0, 5000);
 
-      const { error: insertError } = await supabase
+      const { data: insertedBooking, error: insertError } = await supabase
         .from('bookings')
         .insert({
           hall_id: hallData.id,
@@ -419,7 +420,9 @@ const BookingPage = () => {
           special_requests: specialRequests || null,
           status: 'new',
           is_manual_booking: false,
-        });
+        })
+        .select('reference_number')
+        .single();
 
       if (insertError) {
         toast({
@@ -429,6 +432,11 @@ const BookingPage = () => {
         });
         setIsSubmitting(false);
         return;
+      }
+
+      // Store the reference number for display
+      if (insertedBooking?.reference_number) {
+        setBookingReference(insertedBooking.reference_number);
       }
 
       setIsSubmitted(true);
@@ -474,6 +482,20 @@ const BookingPage = () => {
                 <h1 className="font-serif text-3xl font-bold text-foreground mb-4">
                   Booking Request <span className="text-gradient-gold">Submitted!</span>
                 </h1>
+                
+                {/* Reference Number Display */}
+                {bookingReference && (
+                  <div className="bg-gradient-to-r from-secondary/20 to-primary/10 border-2 border-secondary/40 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-muted-foreground mb-1">Your Booking Reference</p>
+                    <p className="font-mono text-2xl font-bold text-primary tracking-wider">
+                      {bookingReference}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Please save this reference number to track your booking
+                    </p>
+                  </div>
+                )}
+                
                 <p className="text-muted-foreground mb-8">
                   Thank you for choosing our sacred mandapams. Our team will contact you 
                   within 24 hours to confirm your muhurtham details.
@@ -485,6 +507,12 @@ const BookingPage = () => {
                     <h3 className="font-serif font-semibold text-foreground">Booking Summary</h3>
                   </div>
                   <div className="space-y-2 text-sm">
+                    {bookingReference && (
+                      <div className="flex justify-between pb-2 border-b border-secondary/20">
+                        <span className="text-muted-foreground">Reference:</span>
+                        <span className="font-mono font-semibold text-primary">{bookingReference}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Event Type:</span>
                       <span className="text-foreground">{eventTypes.find(e => e.id === bookingData.eventType)?.label}</span>
