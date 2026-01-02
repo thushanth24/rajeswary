@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.send-booking-cancellation]
 verify_jwt = false
+
+[functions.mark-completed-bookings]
+verify_jwt = false

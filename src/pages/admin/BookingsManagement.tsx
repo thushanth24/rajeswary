@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar, CheckCircle, XCircle, Clock, Eye, AlertTriangle, Search, Download, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { format, differenceInHours } from 'date-fns';
+import { format, differenceInHours, isPast, startOfDay } from 'date-fns';
 
 interface Booking {
   id: string;
@@ -364,6 +364,13 @@ const BookingsManagement = () => {
   const getStatusBadge = (booking: Booking) => {
     const hoursOld = differenceInHours(new Date(), new Date(booking.created_at));
     const isOverdue = booking.status === 'new' && !booking.acknowledged_at && hoursOld > 24;
+    const eventDate = new Date(booking.event_date);
+    const isPastEvent = isPast(startOfDay(eventDate)) && startOfDay(eventDate) < startOfDay(new Date());
+
+    // Show as completed if event date has passed and status is confirmed
+    if (isPastEvent && booking.status === 'confirmed') {
+      return <Badge variant="default" className="bg-purple-600">Completed</Badge>;
+    }
 
     switch (booking.status) {
       case 'new':
@@ -382,7 +389,7 @@ const BookingsManagement = () => {
       case 'cancelled':
         return <Badge variant="destructive">Cancelled</Badge>;
       case 'completed':
-        return <Badge variant="default">Completed</Badge>;
+        return <Badge variant="default" className="bg-purple-600">Completed</Badge>;
       default:
         return <Badge variant="outline">{booking.status}</Badge>;
     }
