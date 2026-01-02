@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isBefore, startOfToday } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isBefore, startOfToday } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -84,11 +84,6 @@ export function HallAvailabilityIndicator({ hallSlug }: HallAvailabilityIndicato
     return eachDayOfInterval({ start, end });
   }, [currentMonth]);
 
-  const isBlocked = (date: Date) => {
-    const dateStr = format(date, "yyyy-MM-dd");
-    return blockedDates.some((b) => b.date === dateStr);
-  };
-
   const isPast = (date: Date) => {
     return isBefore(date, startOfToday());
   };
@@ -151,7 +146,10 @@ export function HallAvailabilityIndicator({ hallSlug }: HallAvailabilityIndicato
             <div key={`empty-${i}`} />
           ))}
           {days.map((day) => {
-            const blocked = isBlocked(day);
+            const dateStr = format(day, "yyyy-MM-dd");
+            const blockedInfo = blockedDates.find((b) => b.date === dateStr);
+            const isBooked = blockedInfo?.reason === "confirmed";
+            const isClosed = blockedInfo?.reason === "closed";
             const past = isPast(day);
             const today = isToday(day);
             
@@ -161,13 +159,16 @@ export function HallAvailabilityIndicator({ hallSlug }: HallAvailabilityIndicato
                 className={cn(
                   "aspect-square flex items-center justify-center text-[9px] rounded-sm",
                   past && "text-muted-foreground/40",
-                  !past && !blocked && "text-primary bg-primary/10",
-                  blocked && !past && "text-destructive/70 bg-destructive/10",
+                  !past && !isBooked && !isClosed && "text-primary bg-primary/10",
+                  isBooked && !past && "text-destructive bg-destructive/15 font-medium",
+                  isClosed && !past && "text-yellow-600 bg-yellow-500/15",
                   today && "ring-1 ring-primary"
                 )}
                 title={
-                  blocked
+                  isBooked
                     ? "Booked"
+                    : isClosed
+                    ? "Closed"
                     : past
                     ? "Past date"
                     : "Available"
@@ -180,14 +181,18 @@ export function HallAvailabilityIndicator({ hallSlug }: HallAvailabilityIndicato
         </div>
       )}
 
-      <div className="flex items-center justify-center gap-3 mt-2 text-[9px] text-muted-foreground">
+      <div className="flex items-center justify-center gap-2 mt-2 text-[9px] text-muted-foreground flex-wrap">
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-sm bg-primary/10 border border-primary/30" />
           <span>Available</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-sm bg-destructive/10 border border-destructive/30" />
+          <div className="w-2 h-2 rounded-sm bg-destructive/15 border border-destructive/30" />
           <span>Booked</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-sm bg-yellow-500/15 border border-yellow-500/30" />
+          <span>Closed</span>
         </div>
       </div>
     </div>
