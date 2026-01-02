@@ -139,6 +139,41 @@ export type Database = {
           },
         ]
       }
+      hall_closed_dates: {
+        Row: {
+          closed_date: string
+          created_at: string
+          created_by: string | null
+          hall_id: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          closed_date: string
+          created_at?: string
+          created_by?: string | null
+          hall_id: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          closed_date?: string
+          created_at?: string
+          created_by?: string | null
+          hall_id?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hall_closed_dates_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hall_managers: {
         Row: {
           assigned_at: string

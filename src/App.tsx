@@ -31,6 +31,7 @@ import UnacknowledgedBookings from "./pages/admin/UnacknowledgedBookings";
 import NewManualBooking from "./pages/admin/NewManualBooking";
 import AuditLogs from "./pages/admin/AuditLogs";
 import Reports from "./pages/admin/Reports";
+import AdminCalendar from "./pages/admin/Calendar";
 
 const queryClient = new QueryClient();
 
@@ -133,6 +134,14 @@ const App = () => (
                 element={
                   <ProtectedRoute allowedRoles={['super_admin', 'admin']}>
                     <Reports />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/calendar"
+                element={
+                  <ProtectedRoute>
+                    <AdminCalendar />
                   </ProtectedRoute>
                 }
               />
