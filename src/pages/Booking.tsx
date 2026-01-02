@@ -41,13 +41,13 @@ import {
 type BookingStep = 1 | 2 | 3 | 4 | 5;
 
 interface BookingData {
-  // Step 1 - Event Details
+  // Step 1 - Hall (NEW ORDER)
+  hallId: string;
+  // Step 2 - Event Details (NEW ORDER)
   eventType: string;
   eventDate: Date | undefined;
   timeSlot: string;
   guestCount: string;
-  // Step 2 - Hall
-  hallId: string;
   // Step 3 - Menu
   mealType: string;
   menuPackage: string;
@@ -166,9 +166,11 @@ const BookingPage = () => {
   const canProceed = (): boolean => {
     switch (step) {
       case 1:
-        return !!(bookingData.eventType && bookingData.eventDate && bookingData.timeSlot && bookingData.guestCount);
-      case 2:
+        // Step 1 is now Hall selection
         return !!bookingData.hallId;
+      case 2:
+        // Step 2 is now Event details
+        return !!(bookingData.eventType && bookingData.eventDate && bookingData.timeSlot && bookingData.guestCount);
       case 3:
         return !!(bookingData.mealType && bookingData.menuPackage);
       case 4:
@@ -526,8 +528,8 @@ const BookingPage = () => {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex justify-between max-w-3xl mx-auto">
             {[
-              { num: 1, label: "Event", icon: "📅" },
-              { num: 2, label: "Mandapam", icon: "🏛️" },
+              { num: 1, label: "Mandapam", icon: "🏛️" },
+              { num: 2, label: "Event", icon: "📅" },
               { num: 3, label: "Virundhu", icon: "🍽️" },
               { num: 4, label: "Seva", icon: "✨" },
               { num: 5, label: "Details", icon: "📝" },
@@ -567,14 +569,84 @@ const BookingPage = () => {
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <Card className="max-w-3xl mx-auto card-traditional">
             <CardContent className="p-6 md:p-8">
-              {/* Step 1: Event Details */}
+              {/* Step 1: Choose Hall (NEW ORDER) */}
               {step === 1 && (
+                <div className="space-y-6">
+                  <CardHeader className="p-0 mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-secondary text-xl">🏛️</span>
+                      <CardTitle className="font-serif text-2xl text-gradient-gold">Choose Mandapam</CardTitle>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Select your preferred venue to see available dates
+                    </p>
+                  </CardHeader>
+
+                  <RadioGroup
+                    value={bookingData.hallId}
+                    onValueChange={(value) => updateBookingData("hallId", value)}
+                    className="grid gap-4"
+                  >
+                    {halls.map((hall) => (
+                      <div key={hall.id}>
+                        <RadioGroupItem
+                          value={hall.id}
+                          id={hall.id}
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor={hall.id}
+                          className={cn(
+                            "flex gap-4 p-4 rounded-lg border cursor-pointer transition-all",
+                            bookingData.hallId === hall.id
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/50"
+                          )}
+                        >
+                          <img
+                            src={hall.image}
+                            alt={hall.name}
+                            className="w-24 h-20 object-cover rounded-md shrink-0"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-foreground">{hall.name}</h3>
+                            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                              <Users className="h-4 w-4" />
+                              <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                              {hall.facilities.ac && (
+                                <span className="text-xs bg-muted/50 px-2 py-0.5 rounded flex items-center gap-1">
+                                  <Snowflake className="h-3 w-3" /> AC
+                                </span>
+                              )}
+                              {hall.facilities.parking && (
+                                <span className="text-xs bg-muted/50 px-2 py-0.5 rounded flex items-center gap-1">
+                                  <Car className="h-3 w-3" /> Parking
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              )}
+
+              {/* Step 2: Event Details (NEW ORDER - with blocked dates now available) */}
+              {step === 2 && (
                 <div className="space-y-6">
                   <CardHeader className="p-0 mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-xl">📅</span>
                       <CardTitle className="font-serif text-2xl text-gradient-gold">Event Details</CardTitle>
                     </div>
+                    {selectedHall && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Booking for <span className="text-primary font-medium">{selectedHall.name}</span>
+                      </p>
+                    )}
                   </CardHeader>
 
                   <div>
@@ -609,12 +681,10 @@ const BookingPage = () => {
 
                   <div>
                     <Label>Event Date</Label>
-                    {selectedHallUUID && (
-                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                        <Lock className="h-3 w-3" />
-                        Dates with confirmed bookings or closures are unavailable
-                      </p>
-                    )}
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <Lock className="h-3 w-3" />
+                      Dates with confirmed bookings or closures are unavailable
+                    </p>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -688,91 +758,20 @@ const BookingPage = () => {
                       max="1000"
                       className="mt-1"
                     />
+                    {selectedHall && guestCount > 0 && (
+                      <p className={cn(
+                        "text-xs mt-1",
+                        guestCount > selectedHall.capacity.max 
+                          ? "text-destructive" 
+                          : guestCount < selectedHall.capacity.min * 0.5
+                          ? "text-yellow-600"
+                          : "text-muted-foreground"
+                      )}>
+                        {selectedHall.name} capacity: {selectedHall.capacity.min} - {selectedHall.capacity.max} guests
+                        {guestCount > selectedHall.capacity.max && " (Exceeds capacity)"}
+                      </p>
+                    )}
                   </div>
-                </div>
-              )}
-
-              {/* Step 2: Choose Hall */}
-              {step === 2 && (
-                <div className="space-y-6">
-                  <CardHeader className="p-0 mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-secondary text-xl">🏛️</span>
-                      <CardTitle className="font-serif text-2xl text-gradient-gold">Choose Mandapam</CardTitle>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {guestCount > 0 && `For ${guestCount} guests`}
-                    </p>
-                  </CardHeader>
-
-                  <RadioGroup
-                    value={bookingData.hallId}
-                    onValueChange={(value) => updateBookingData("hallId", value)}
-                    className="grid gap-4"
-                  >
-                    {halls.map((hall) => {
-                      const isSuitable = guestCount <= hall.capacity.max && guestCount >= hall.capacity.min * 0.5;
-                      const isOverCapacity = guestCount > hall.capacity.max;
-                      
-                      return (
-                        <div key={hall.id}>
-                          <RadioGroupItem
-                            value={hall.id}
-                            id={hall.id}
-                            className="peer sr-only"
-                            disabled={isOverCapacity}
-                          />
-                          <Label
-                            htmlFor={hall.id}
-                            className={cn(
-                              "flex gap-4 p-4 rounded-lg border cursor-pointer transition-all",
-                              bookingData.hallId === hall.id
-                                ? "border-primary bg-primary/5"
-                                : "border-border hover:border-primary/50",
-                              isOverCapacity && "opacity-50 cursor-not-allowed"
-                            )}
-                          >
-                            <img
-                              src={hall.image}
-                              alt={hall.name}
-                              className="w-24 h-20 object-cover rounded-md shrink-0"
-                            />
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-foreground">{hall.name}</h3>
-                                {isOverCapacity && (
-                                  <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded">
-                                    Capacity exceeded
-                                  </span>
-                                )}
-                                {isSuitable && !isOverCapacity && (
-                                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                                    Recommended
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                                <Users className="h-4 w-4" />
-                                <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
-                              </div>
-                              <div className="flex gap-2 mt-2">
-                                {hall.facilities.ac && (
-                                  <span className="text-xs bg-muted/50 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <Snowflake className="h-3 w-3" /> AC
-                                  </span>
-                                )}
-                                {hall.facilities.parking && (
-                                  <span className="text-xs bg-muted/50 px-2 py-0.5 rounded flex items-center gap-1">
-                                    <Car className="h-3 w-3" /> Parking
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </Label>
-                        </div>
-                      );
-                    })}
-                  </RadioGroup>
                 </div>
               )}
 
