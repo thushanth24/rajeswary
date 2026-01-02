@@ -73,6 +73,7 @@ export type Database = {
           id: string
           internal_notes: string | null
           is_manual_booking: boolean
+          reference_number: string | null
           special_requests: string | null
           status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
@@ -99,6 +100,7 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           is_manual_booking?: boolean
+          reference_number?: string | null
           special_requests?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
@@ -125,6 +127,7 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           is_manual_booking?: boolean
+          reference_number?: string | null
           special_requests?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
@@ -426,6 +429,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_booking_reference: { Args: never; Returns: string }
       get_manager_hall_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
