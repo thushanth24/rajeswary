@@ -22,6 +22,7 @@ import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedDates } from "@/hooks/useBlockedDates";
+import { SelectedHallSummary } from "@/components/booking/SelectedHallSummary";
 import {
   CalendarIcon,
   Check,
@@ -36,6 +37,8 @@ import {
   UserCheck,
   Sparkles,
   Lock,
+  AlertTriangle,
+  Building2,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -91,10 +94,12 @@ const BookingPage = () => {
   const [searchParams] = useSearchParams();
   const preselectedHall = searchParams.get("hall");
 
-  const [step, setStep] = useState<BookingStep>(1);
+  // Auto-skip to step 2 if hall is pre-selected
+  const [step, setStep] = useState<BookingStep>(preselectedHall ? 2 : 1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedHallUUID, setSelectedHallUUID] = useState<string | null>(null);
+  const [isRevalidating, setIsRevalidating] = useState(false);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -327,17 +332,48 @@ const BookingPage = () => {
         return;
       }
 
-      // Check if the date is blocked (confirmed booking or closed date)
-      if (bookingData.eventDate && selectedHallUUID) {
-        const blockedReason = getBlockedReason(bookingData.eventDate);
-        if (blockedReason) {
+      // Real-time date revalidation - fresh check from database before submitting
+      if (bookingData.eventDate && hallData.id) {
+        setIsRevalidating(true);
+        const eventDateStr = format(bookingData.eventDate, "yyyy-MM-dd");
+        
+        // Check for confirmed bookings
+        const { data: existingBookings } = await supabase
+          .from('bookings')
+          .select('id')
+          .eq('hall_id', hallData.id)
+          .eq('event_date', eventDateStr)
+          .eq('status', 'confirmed')
+          .limit(1);
+
+        // Check for closed dates
+        const { data: closedDates } = await supabase
+          .from('hall_closed_dates')
+          .select('id')
+          .eq('hall_id', hallData.id)
+          .eq('closed_date', eventDateStr)
+          .limit(1);
+
+        setIsRevalidating(false);
+
+        if (existingBookings && existingBookings.length > 0) {
           toast({
-            title: "Date Unavailable",
-            description: blockedReason === "confirmed" 
-              ? "This date is already booked for this hall. Please select another date."
-              : "This date is closed for bookings. Please select another date.",
+            title: "Date No Longer Available",
+            description: "Someone else has booked this date while you were filling the form. Please select another date.",
             variant: "destructive",
           });
+          setStep(2); // Go back to date selection
+          setIsSubmitting(false);
+          return;
+        }
+
+        if (closedDates && closedDates.length > 0) {
+          toast({
+            title: "Date Now Closed",
+            description: "This date has been closed for bookings. Please select another date.",
+            variant: "destructive",
+          });
+          setStep(2); // Go back to date selection
           setIsSubmitting(false);
           return;
         }
@@ -637,16 +673,19 @@ const BookingPage = () => {
               {/* Step 2: Event Details (NEW ORDER - with blocked dates now available) */}
               {step === 2 && (
                 <div className="space-y-6">
+                  {/* Hall Summary */}
+                  {selectedHall && (
+                    <SelectedHallSummary
+                      hall={selectedHall}
+                      onChangeHall={() => setStep(1)}
+                    />
+                  )}
+
                   <CardHeader className="p-0 mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-xl">📅</span>
                       <CardTitle className="font-serif text-2xl text-gradient-gold">Event Details</CardTitle>
                     </div>
-                    {selectedHall && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Booking for <span className="text-primary font-medium">{selectedHall.name}</span>
-                      </p>
-                    )}
                   </CardHeader>
 
                   <div>
@@ -778,6 +817,17 @@ const BookingPage = () => {
               {/* Step 3: Menu Selection */}
               {step === 3 && (
                 <div className="space-y-6">
+                  {/* Hall Summary */}
+                  {selectedHall && (
+                    <SelectedHallSummary
+                      hall={selectedHall}
+                      eventDate={bookingData.eventDate}
+                      timeSlot={bookingData.timeSlot}
+                      guestCount={guestCount}
+                      onChangeHall={() => setStep(1)}
+                    />
+                  )}
+
                   <CardHeader className="p-0 mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-xl">🍽️</span>
@@ -875,6 +925,17 @@ const BookingPage = () => {
               {/* Step 4: Add-on Services */}
               {step === 4 && (
                 <div className="space-y-6">
+                  {/* Hall Summary */}
+                  {selectedHall && (
+                    <SelectedHallSummary
+                      hall={selectedHall}
+                      eventDate={bookingData.eventDate}
+                      timeSlot={bookingData.timeSlot}
+                      guestCount={guestCount}
+                      onChangeHall={() => setStep(1)}
+                    />
+                  )}
+
                   <CardHeader className="p-0 mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-xl">✨</span>
@@ -924,6 +985,17 @@ const BookingPage = () => {
               {/* Step 5: Customer Details */}
               {step === 5 && (
                 <div className="space-y-6">
+                  {/* Hall Summary */}
+                  {selectedHall && (
+                    <SelectedHallSummary
+                      hall={selectedHall}
+                      eventDate={bookingData.eventDate}
+                      timeSlot={bookingData.timeSlot}
+                      guestCount={guestCount}
+                      onChangeHall={() => setStep(1)}
+                    />
+                  )}
+
                   <CardHeader className="p-0 mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-xl">📝</span>
