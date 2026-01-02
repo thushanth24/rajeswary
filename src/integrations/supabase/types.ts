@@ -50,6 +50,69 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_inventory: {
+        Row: {
+          booking_id: string
+          checked_out_at: string | null
+          checked_out_by: string | null
+          created_at: string
+          id: string
+          inventory_id: string
+          notes: string | null
+          quantity_allocated: number
+          quantity_returned: number | null
+          returned_at: string | null
+          returned_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id: string
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          created_at?: string
+          id?: string
+          inventory_id: string
+          notes?: string | null
+          quantity_allocated?: number
+          quantity_returned?: number | null
+          returned_at?: string | null
+          returned_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string
+          checked_out_at?: string | null
+          checked_out_by?: string | null
+          created_at?: string
+          id?: string
+          inventory_id?: string
+          notes?: string | null
+          quantity_allocated?: number
+          quantity_returned?: number | null
+          returned_at?: string | null
+          returned_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_inventory_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_inventory_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           acknowledged_at: string | null
