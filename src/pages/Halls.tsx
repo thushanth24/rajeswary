@@ -59,7 +59,7 @@ const HallsPage = () => {
                 className="animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <HallCard hall={hall} />
+                <HallCard hall={hall} showAvailability />
               </div>
             ))}
           </div>

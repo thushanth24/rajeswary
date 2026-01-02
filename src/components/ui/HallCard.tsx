@@ -3,14 +3,16 @@ import { Users, Car, Snowflake, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { HallAvailabilityIndicator } from "@/components/ui/HallAvailabilityIndicator";
 import type { Hall } from "@/data/halls";
 
 interface HallCardProps {
   hall: Hall;
   featured?: boolean;
+  showAvailability?: boolean;
 }
 
-export function HallCard({ hall, featured = false }: HallCardProps) {
+export function HallCard({ hall, featured = false, showAvailability = false }: HallCardProps) {
   return (
     <Card className="group overflow-hidden border-2 border-border hover:border-primary/40 hover:shadow-traditional transition-all duration-300 bg-card">
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -68,6 +70,10 @@ export function HallCard({ hall, featured = false }: HallCardProps) {
             </div>
           )}
         </div>
+
+        {showAvailability && (
+          <HallAvailabilityIndicator hallSlug={hall.slug} />
+        )}
       </CardContent>
       <CardFooter className="p-6 pt-0 flex gap-3">
         <Button variant="outline" asChild className="flex-1 border-primary/30 hover:border-primary hover:bg-primary/5">
