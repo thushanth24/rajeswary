@@ -69,11 +69,8 @@ const MenusPage = () => {
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <CardHeader className="pb-2">
-                      <CardTitle className="font-serif text-xl flex justify-between items-center">
+                      <CardTitle className="font-serif text-xl">
                         <span className="text-gradient-gold">{menu.name}</span>
-                        <span className="text-secondary font-sans text-lg">
-                          {menu.price}
-                        </span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -102,9 +99,6 @@ const MenusPage = () => {
                     <CardHeader className="pb-2">
                       <CardTitle className="font-serif text-xl">
                         <span className="text-gradient-gold">{menu.name}</span>
-                        <span className="block text-secondary font-sans text-lg mt-1">
-                          {menu.price}
-                        </span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -133,9 +127,6 @@ const MenusPage = () => {
                     <CardHeader className="pb-2">
                       <CardTitle className="font-serif text-xl">
                         <span className="text-gradient-gold">{menu.name}</span>
-                        <span className="block text-secondary font-sans text-lg mt-1">
-                          {menu.price}
-                        </span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>

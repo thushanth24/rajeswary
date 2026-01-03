@@ -98,9 +98,6 @@ const HallDetailPage = () => {
                 <Users className="h-5 w-5 text-secondary" />
                 <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
               </div>
-              <span className="text-secondary font-semibold text-lg gold-shimmer inline-block">
-                {hall.priceRange}
-              </span>
             </div>
           </div>
         </div>

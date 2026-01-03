@@ -37,7 +37,6 @@ export interface Hall {
     washrooms: number;
   };
   eventTypes: string[];
-  priceRange: string;
 }
 
 interface DBHall {
@@ -51,7 +50,6 @@ interface DBHall {
   short_description: string | null;
   features: string[] | null;
   event_types: string[] | null;
-  price_range: string | null;
   has_ac: boolean | null;
   has_parking: boolean | null;
   has_dining: boolean | null;
@@ -87,7 +85,6 @@ function mapDBHallToHall(dbHall: DBHall): Hall {
       washrooms: dbHall.washrooms_count ?? 0,
     },
     eventTypes: dbHall.event_types || [],
-    priceRange: dbHall.price_range || '',
   };
 }
 

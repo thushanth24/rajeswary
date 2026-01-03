@@ -33,7 +33,7 @@ const AboutPage = () => {
           </div>
           
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-6 animate-fade-in-up">
-            About <span className="text-gradient-gold">Celebration Halls</span>
+            About <span className="text-gradient-gold">Raajeshwariy Groups of Company PVT LTD</span>
           </h1>
           <p className="text-card/90 max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             For over 15 years, we've been creating blessed celebrations, 
@@ -59,7 +59,7 @@ const AboutPage = () => {
               Our <span className="text-gradient-gold">Story</span>
             </h2>
             <p className="text-muted-foreground mb-6 leading-relaxed text-lg">
-              Celebration Halls began with a sacred vision: to create divine spaces 
+              Raajeshwariy Groups of Company PVT LTD began with a sacred vision: to create divine spaces 
               where love stories unfold according to cherished Tamil Hindu traditions. 
               What started as a single mandapam has grown into a collection of five 
               stunning venues, each designed with devotion and blessed ambiance.
@@ -165,7 +165,7 @@ const AboutPage = () => {
               {[
                 "Impeccable seva from first inquiry to muhurtham day",
                 "Flexible packages honoring your family traditions",
-                "Transparent pricing with no hidden costs",
+                "Clear guidance with no hidden surprises",
                 "Premium vendors ensuring quality for every ritual",
                 "Dedicated event coordinator for your celebration",
                 "Backup systems for uninterrupted sacred ceremonies",

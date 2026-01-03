@@ -1,4 +1,4 @@
-import serviceCatering from "@/assets/catering-buffet.jpg";
+﻿import serviceCatering from "@/assets/catering-buffet.jpg";
 import servicePhotography from "@/assets/service-photography.jpg";
 import serviceVehicle from "@/assets/service-vehicle.jpg";
 import serviceDecoration from "@/assets/service-decoration.jpg";
@@ -41,7 +41,7 @@ export const services: Service[] = [
       "Same-day edits",
       "Photo albums & prints",
     ],
-    bookingNote: "Multiple packages available",
+    bookingNote: "Multiple options available",
   },
   {
     id: "vehicles",
@@ -86,7 +86,7 @@ export const services: Service[] = [
       "Special effects",
       "Live band arrangements",
     ],
-    bookingNote: "Equipment packages available",
+    bookingNote: "Equipment options available",
   },
   {
     id: "coordination",
@@ -101,7 +101,7 @@ export const services: Service[] = [
       "Emergency handling",
       "Post-event cleanup",
     ],
-    bookingNote: "Included with premium packages",
+    bookingNote: "Included with select options",
   },
 ];
 
@@ -111,53 +111,46 @@ export const menus = {
       name: "Classic Breakfast",
       id: "breakfast-classic",
       items: ["Poori Bhaji", "Idli Sambar", "Upma", "Fresh Fruits", "Tea & Coffee"],
-      price: "₹350/person",
     },
     {
       name: "Premium Breakfast",
       id: "breakfast-premium",
       items: ["Continental Spread", "South Indian", "North Indian", "Live Dosa", "Juices & Beverages"],
-      price: "₹550/person",
     },
   ],
   lunch: [
     {
-      name: "Package A - Traditional",
+      name: "Menu A - Traditional",
       id: "lunch-a",
       items: ["Welcome Drink", "2 Starters", "3 Main Course", "Rice & Breads", "2 Desserts"],
-      price: "₹800/person",
     },
     {
-      name: "Package B - Premium",
+      name: "Menu B - Premium",
       id: "lunch-b",
       items: ["Welcome Drink", "4 Starters", "5 Main Course", "Live Stations", "3 Desserts"],
-      price: "₹1,200/person",
     },
     {
-      name: "Package C - Royal",
+      name: "Menu C - Royal",
       id: "lunch-c",
       items: ["Mocktails", "6 Starters", "8 Main Course", "Live Counters", "5 Desserts", "Ice Cream Bar"],
-      price: "₹1,800/person",
     },
   ],
   dinner: [
     {
-      name: "Package A - Elegant",
+      name: "Menu A - Elegant",
       id: "dinner-a",
       items: ["Welcome Drink", "3 Starters", "4 Main Course", "Live Chaat", "2 Desserts"],
-      price: "₹900/person",
     },
     {
-      name: "Package B - Grand",
+      name: "Menu B - Grand",
       id: "dinner-b",
       items: ["Cocktail Hour", "5 Starters", "6 Main Course", "Multiple Live Stations", "4 Desserts"],
-      price: "₹1,400/person",
     },
     {
-      name: "Package C - Imperial",
+      name: "Menu C - Imperial",
       id: "dinner-c",
       items: ["Premium Mocktails", "8 Starters", "10 Main Course", "Interactive Stations", "6 Desserts", "Midnight Snacks"],
-      price: "₹2,200/person",
     },
   ],
 };
+

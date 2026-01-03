@@ -171,10 +171,18 @@ const ContactPage = () => {
       title: "முகவரி (Address)",
       content: (
         <p className="text-muted-foreground">
-          123 Temple Street,<br />
-          Nallur, Jaffna,<br />
-          Sri Lanka - 40000
+         Address 132,<br />
+         Palali Road,<br />
+         Kondavil, Jaffna,<br />
+         Sri Lanka - 40000  
         </p>
+
+
+
+
+
+
+
       ),
     },
     {
@@ -183,7 +191,7 @@ const ContactPage = () => {
       content: (
         <p className="text-muted-foreground">
           Mon - Sat: 9:00 AM - 7:00 PM<br />
-          Sunday: 10:00 AM - 5:00 PM<br />
+          Sunday: 10:00 AM - 6:00 PM<br />
           <span className="text-secondary text-sm">*Special hours for auspicious days</span>
         </p>
       ),
@@ -361,14 +369,13 @@ const ContactPage = () => {
           
           <div className="aspect-[21/9] rounded-lg overflow-hidden border-2 border-secondary/30 shadow-lg">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3932.8474!2d80.0290!3d9.6615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMzknNDEuNCJOIDgwwrAwMSc0NC40IkU!5e0!3m2!1sen!2slk!4v1234567890"
-              width="100%"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.0848270389934!2d80.01801457478913!3d9.673793290415562!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3afe541b37ea397b%3A0xed7b213b96a86540!2s132%20Palali%20Rd%2C%20Jaffna!5e0!3m2!1sen!2slk!4v1767358467884!5m2!1sen!2slk"              width="100%"
               height="100%"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Celebration Halls Location - Jaffna"
+              title="Raajeshwariy Groups of Company PVT LTD Location - Jaffna"
             />
           </div>
         </div>

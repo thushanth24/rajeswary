@@ -42,9 +42,6 @@ export function HallCard({ hall, featured = false, showAvailability = false }: H
           <h3 className="font-serif text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
             {hall.name}
           </h3>
-          <span className="text-sm font-semibold text-primary whitespace-nowrap shrink-0">
-            {hall.priceRange}
-          </span>
         </div>
         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
           {hall.shortDescription}

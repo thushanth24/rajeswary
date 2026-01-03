@@ -7,7 +7,7 @@ const testimonials = [
   {
     name: "Priya & Karthik",
     event: "Traditional Wedding",
-    text: "Our wedding at Celebration Halls was exactly as we dreamed - authentic Jaffna traditions, beautiful mandapam decorations with jasmine and marigolds. The team understood our cultural requirements perfectly.",
+    text: "Our wedding at Raajeshwariy Groups of Company PVT LTD was exactly as we dreamed - authentic Jaffna traditions, beautiful mandapam decorations with jasmine and marigolds. The team understood our cultural requirements perfectly.",
     rating: 5,
   },
   {

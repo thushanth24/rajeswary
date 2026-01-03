@@ -81,6 +81,18 @@ const timeSlots = [
   { id: "fullday", label: "Full Day (8:00 AM - 12:00 AM)" },
 ];
 
+const BOOKING_REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function generateBookingReference() {
+  const year = new Date().getFullYear();
+  const bytes = new Uint8Array(5);
+  crypto.getRandomValues(bytes);
+  const suffix = Array.from(bytes)
+    .map((b) => BOOKING_REF_CHARS[b % BOOKING_REF_CHARS.length])
+    .join("");
+  return `CH-${year}-${suffix}`;
+}
+
 const addOnServices = [
   { id: "photography", label: "Photography & Videography", icon: Camera },
   { id: "vehicles", label: "Wedding Vehicles", icon: Car },
@@ -408,7 +420,11 @@ const BookingPage = () => {
       
       const specialRequests = specialRequestsParts.join("\n").substring(0, 5000);
 
-      const { data: insertedBooking, error: insertError } = await supabase
+      // Generate a customer-facing reference locally so we don't need to read the (private) booking row back.
+      // Reading back would require SELECT policies on a table that contains PII.
+      const referenceNumber = generateBookingReference();
+
+      const { error: insertError } = await supabase
         .from('bookings')
         .insert({
           hall_id: hallData.id,
@@ -423,47 +439,42 @@ const BookingPage = () => {
           special_requests: specialRequests || null,
           status: 'new',
           is_manual_booking: false,
-        })
-        .select('reference_number')
-        .single();
+          reference_number: referenceNumber,
+        });
 
       if (insertError) {
+        console.error("Booking submit failed:", insertError);
         toast({
-          title: "Error",
-          description: "Could not submit booking. Please try again.",
+          title: "Booking submission failed",
+          description: `${insertError.message}${insertError.code ? ` (code: ${insertError.code})` : ""}`,
           variant: "destructive",
         });
         setIsSubmitting(false);
         return;
       }
 
-      // Store the reference number for display
-      if (insertedBooking?.reference_number) {
-        setBookingReference(insertedBooking.reference_number);
-        
-        // Send confirmation email (fire and forget - don't block the UI)
-        if (trimmedEmail) {
-          const hallName = halls.find(h => h.slug === bookingData.hallId)?.name || 'Hall';
-          const eventTypeName = eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType;
-          
-          supabase.functions.invoke('send-booking-confirmation', {
-            body: {
-              customerName: trimmedName,
-              customerEmail: trimmedEmail,
-              referenceNumber: insertedBooking.reference_number,
-              hallName: hallName,
-              eventDate: format(bookingData.eventDate!, "PPP"),
-              eventType: eventTypeName,
-              expectedGuests: guestCount,
-            },
-          }).then(({ error }) => {
-            if (error) {
-              console.error('Failed to send confirmation email:', error);
-            } else {
-              console.log('Confirmation email sent successfully');
-            }
-          });
-        }
+      setBookingReference(referenceNumber);
+
+      // Send confirmation email (fire and forget - don't block the UI)
+      if (trimmedEmail) {
+        const hallName = halls.find(h => h.slug === bookingData.hallId)?.name || 'Hall';
+        const eventTypeName = eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType;
+
+        supabase.functions.invoke('send-booking-confirmation', {
+          body: {
+            customerName: trimmedName,
+            customerEmail: trimmedEmail,
+            referenceNumber,
+            hallName: hallName,
+            eventDate: format(bookingData.eventDate!, "PPP"),
+            eventType: eventTypeName,
+            expectedGuests: guestCount,
+          },
+        }).then(({ error }) => {
+          if (error) {
+            console.error('Failed to send confirmation email:', error);
+          }
+        });
       }
 
       setIsSubmitted(true);
@@ -577,7 +588,7 @@ const BookingPage = () => {
                   </div>
                 </div>
                 
-                <Button asChild className="gold-shimmer">
+                <Button asChild variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/5">
                   <a href="/">Return to Home</a>
                 </Button>
               </CardContent>
@@ -951,7 +962,7 @@ const BookingPage = () => {
 
                   {bookingData.mealType && (
                     <div>
-                      <Label className="mb-3 block">Menu Package</Label>
+                      <Label className="mb-3 block">Menu Selection</Label>
                       <RadioGroup
                         value={bookingData.menuPackage}
                         onValueChange={(value) => updateBookingData("menuPackage", value)}
@@ -979,9 +990,6 @@ const BookingPage = () => {
                                   {menu.items.join(" • ")}
                                 </p>
                               </div>
-                              <span className="text-primary font-semibold shrink-0 ml-4">
-                                {menu.price}
-                              </span>
                             </Label>
                           </div>
                         ))}
@@ -1135,8 +1143,11 @@ const BookingPage = () => {
                 </div>
               )}
 
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-secondary/20">
+            </CardContent>
+
+            {/* Navigation Buttons - Sticky at bottom */}
+            <div className="sticky bottom-0 bg-card border-t border-secondary/20 px-6 py-4 rounded-b-lg">
+              <div className="flex justify-between">
                 <Button
                   variant="outline"
                   onClick={handleBack}
@@ -1148,17 +1159,17 @@ const BookingPage = () => {
                 </Button>
 
                 {step < 5 ? (
-                  <Button onClick={handleNext} disabled={!canProceed()} className="gold-shimmer">
+                  <Button variant="outline" onClick={handleNext} disabled={!canProceed()} className="border-secondary/30 hover:bg-secondary/10">
                     Next
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={!canProceed() || isSubmitting} className="gold-shimmer">
+                  <Button variant="outline" onClick={handleSubmit} disabled={!canProceed() || isSubmitting} className="border-foreground/30 text-foreground hover:bg-foreground/5">
                     {isSubmitting ? "Submitting..." : "Submit Sacred Booking"}
                   </Button>
                 )}
               </div>
-            </CardContent>
+            </div>
           </Card>
         </div>
       </section>

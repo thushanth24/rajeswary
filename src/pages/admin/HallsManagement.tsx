@@ -12,7 +12,6 @@ interface Hall {
   slug: string;
   capacity_min: number;
   capacity_max: number;
-  price_range: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -66,7 +65,6 @@ const HallsManagement = () => {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Capacity</TableHead>
-                <TableHead>Price Range</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -75,7 +73,6 @@ const HallsManagement = () => {
                 <TableRow key={hall.id}>
                   <TableCell className="font-medium">{hall.name}</TableCell>
                   <TableCell>{hall.capacity_min} - {hall.capacity_max} guests</TableCell>
-                  <TableCell>{hall.price_range || 'Not set'}</TableCell>
                   <TableCell>
                     <Badge variant={hall.is_active ? 'default' : 'secondary'}>
                       {hall.is_active ? 'Active' : 'Inactive'}

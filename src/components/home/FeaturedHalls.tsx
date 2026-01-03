@@ -44,7 +44,7 @@ export function FeaturedHalls() {
             Exquisite Wedding <span className="text-primary">Mandapams</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-            Each of our five venues is designed with authentic Tamil Hindu traditions, 
+            Each of our five venues is designed with authentic Tamil traditions, 
             featuring temple-inspired architecture, traditional brass lamps, and sacred spaces 
             for your wedding rituals.
           </p>

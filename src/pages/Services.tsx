@@ -117,7 +117,7 @@ const ServicesPage = () => {
         subtitle="Complete Wedding Solutions"
         title="Ready to Plan Your"
         highlight="Sacred Union"
-        description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration package."
+        description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration."
         primaryButtonText="Begin Sacred Booking"
         videos={[
           "https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4",
