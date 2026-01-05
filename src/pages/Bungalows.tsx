@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  IndianRupee,
   User,
   Baby,
   Phone,
@@ -150,7 +151,14 @@ const BungalowCard = ({ bungalow, onViewDetails, onBookNow }: {
         )}
       </div>
       
-      <div className="flex items-center justify-end pt-2 border-t border-border">
+      <div className="flex items-center justify-between pt-2 border-t border-border">
+        <div>
+          <span className="text-xs text-muted-foreground">Per Day</span>
+          <div className="flex items-center text-xl font-bold text-primary">
+            <IndianRupee className="h-4 w-4" />
+            {bungalow.tariff.perDay.toLocaleString()}
+          </div>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onViewDetails}>
             View Details
@@ -237,6 +245,13 @@ const BungalowDetailModal = ({ bungalow, onBookNow }: { bungalow: Bungalow; onBo
             {bungalow.location}
           </p>
         </div>
+        <div className="text-right">
+          <span className="text-sm text-muted-foreground">Starting from</span>
+          <div className="flex items-center text-2xl font-bold text-primary">
+            <IndianRupee className="h-5 w-5" />
+            {bungalow.tariff.perDay.toLocaleString()}/day
+          </div>
+        </div>
       </div>
 
       {/* Description */}
@@ -271,6 +286,37 @@ const BungalowDetailModal = ({ bungalow, onBookNow }: { bungalow: Bungalow; onBo
             Check-out
           </div>
           <span className="font-semibold text-foreground">{bungalow.checkOutTime}</span>
+        </div>
+      </div>
+
+      {/* Tariff Details */}
+      <div className="bg-gradient-to-r from-secondary/10 to-primary/10 p-4 rounded-lg border border-secondary/30">
+        <h3 className="font-serif font-semibold text-foreground mb-3 flex items-center gap-2">
+          <span className="text-secondary">💰</span>
+          Tariff Details
+        </h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <span className="text-sm text-muted-foreground block">Per Day</span>
+            <span className="font-bold text-lg text-primary flex items-center">
+              <IndianRupee className="h-4 w-4" />
+              {bungalow.tariff.perDay.toLocaleString()}
+            </span>
+          </div>
+          <div>
+            <span className="text-sm text-muted-foreground block">Per Week</span>
+            <span className="font-bold text-lg text-primary flex items-center">
+              <IndianRupee className="h-4 w-4" />
+              {bungalow.tariff.perWeek.toLocaleString()}
+            </span>
+          </div>
+          <div>
+            <span className="text-sm text-muted-foreground block">Extra Person</span>
+            <span className="font-bold text-lg text-primary flex items-center">
+              <IndianRupee className="h-4 w-4" />
+              {bungalow.tariff.extraPerson.toLocaleString()}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -617,7 +663,7 @@ const BungalowsPage = () => {
                   <SelectContent>
                     {bungalows.filter(b => b.available).map((bungalow) => (
                       <SelectItem key={bungalow.id} value={bungalow.id}>
-                        {bungalow.name} ({bungalow.type})
+                        {bungalow.name} ({bungalow.type}) - ₹{bungalow.tariff.perDay}/day
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -777,5 +823,3 @@ const BungalowsPage = () => {
 };
 
 export default BungalowsPage;
-
-

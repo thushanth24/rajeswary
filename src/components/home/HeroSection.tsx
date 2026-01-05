@@ -70,7 +70,7 @@ export function HeroSection() {
           <div className="flex items-center justify-center gap-3 mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
             <span className="text-secondary text-2xl animate-pulse-glow">✦</span>
             <span className="text-secondary font-medium tracking-[0.3em] uppercase text-sm">
-              Jaffna Traditional Wedding Venues
+              Jaffna Hindu Traditional Venues
             </span>
             <span className="text-secondary text-2xl animate-pulse-glow" style={{ animationDelay: "0.5s" }}>✦</span>
           </div>
@@ -87,7 +87,7 @@ export function HeroSection() {
           </h1>
           
           <p className="text-lg text-card/90 mb-8 max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
-            Experience the grandeur of authentic Tamil Traditional weddings in our 
+            Experience the grandeur of authentic Tamil Hindu weddings in our 
             beautifully crafted mandapams. Five sacred venues adorned with 
             traditional kolam, jasmine garlands, and the warm glow of kuthu vilakku.
           </p>

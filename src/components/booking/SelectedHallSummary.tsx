@@ -42,14 +42,14 @@ export function SelectedHallSummary({
         />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <Building2 className="h-4 w-4 text-primary shrink-0" />
-              <h4 className="font-semibold text-foreground truncate">{hall.name}</h4>
+              <h4 className="font-semibold text-foreground truncate text-sm md:text-base">{hall.name}</h4>
             </div>
             {onChangeHall && (
               <button
                 onClick={onChangeHall}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors shrink-0"
               >
                 Change
               </button>

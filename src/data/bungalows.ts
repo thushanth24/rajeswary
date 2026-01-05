@@ -1,4 +1,4 @@
-﻿export interface Bungalow {
+export interface Bungalow {
   id: string;
   name: string;
   location: string;
@@ -6,6 +6,11 @@
   maxOccupancy: {
     adults: number;
     children: number;
+  };
+  tariff: {
+    perDay: number;
+    perWeek: number;
+    extraPerson: number;
   };
   images: string[];
   amenities: string[];
@@ -23,6 +28,7 @@ export const bungalows: Bungalow[] = [
     location: "East Wing - Near Temple Garden",
     type: "Deluxe",
     maxOccupancy: { adults: 4, children: 2 },
+    tariff: { perDay: 3500, perWeek: 20000, extraPerson: 500 },
     images: [
       "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800",
       "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
@@ -41,6 +47,7 @@ export const bungalows: Bungalow[] = [
     location: "West Wing - Near Main Hall",
     type: "Suite",
     maxOccupancy: { adults: 6, children: 3 },
+    tariff: { perDay: 5500, perWeek: 35000, extraPerson: 700 },
     images: [
       "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800",
       "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=800",
@@ -59,6 +66,7 @@ export const bungalows: Bungalow[] = [
     location: "North Block - Garden View",
     type: "AC",
     maxOccupancy: { adults: 2, children: 1 },
+    tariff: { perDay: 2000, perWeek: 12000, extraPerson: 400 },
     images: [
       "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800",
       "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800",
@@ -77,6 +85,7 @@ export const bungalows: Bungalow[] = [
     location: "South Block - Peaceful Corner",
     type: "Non-AC",
     maxOccupancy: { adults: 3, children: 2 },
+    tariff: { perDay: 1200, perWeek: 7000, extraPerson: 300 },
     images: [
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
       "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800",
@@ -95,6 +104,7 @@ export const bungalows: Bungalow[] = [
     location: "East Wing - Premium Section",
     type: "Deluxe",
     maxOccupancy: { adults: 4, children: 2 },
+    tariff: { perDay: 4000, perWeek: 24000, extraPerson: 600 },
     images: [
       "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800",
       "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
@@ -113,6 +123,7 @@ export const bungalows: Bungalow[] = [
     location: "West Wing - Near Parking",
     type: "AC",
     maxOccupancy: { adults: 3, children: 1 },
+    tariff: { perDay: 2500, perWeek: 15000, extraPerson: 450 },
     images: [
       "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800",
       "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800",
@@ -134,4 +145,3 @@ export const getBungalowById = (id: string): Bungalow | undefined => {
 export const getAvailableBungalows = (): Bungalow[] => {
   return bungalows.filter((bungalow) => bungalow.available);
 };
-

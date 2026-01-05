@@ -347,7 +347,7 @@ const ContactMessages = () => {
                     variant="outline"
                     asChild
                   >
-                    <a href={`mailto:${selectedMessage.email}?subject=Re: Your inquiry to Raajeshwariy Groups of Company PVT LTD`}>
+                    <a href={`mailto:${selectedMessage.email}?subject=Re: Your inquiry to Celebration Halls`}>
                       <Mail className="h-4 w-4 mr-2" />
                       Reply via Email
                     </a>

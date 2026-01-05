@@ -23,6 +23,7 @@ import { CTASection } from "@/components/home/CTASection";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedDates } from "@/hooks/useBlockedDates";
 import { SelectedHallSummary } from "@/components/booking/SelectedHallSummary";
+import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
 import {
   CalendarIcon,
   Check,
@@ -39,6 +40,7 @@ import {
   Lock,
   AlertTriangle,
   Building2,
+  Eye,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -52,6 +54,8 @@ interface BookingData {
   timeSlot: string;
   guestCount: string;
   // Step 3 - Menu
+  menuSection: string;
+  menuVariant: string;
   mealType: string;
   menuPackage: string;
   menuNotes: string;
@@ -116,6 +120,7 @@ const BookingPage = () => {
   const [selectedHallUUID, setSelectedHallUUID] = useState<string | null>(null);
   const [isRevalidating, setIsRevalidating] = useState(false);
   const [bookingReference, setBookingReference] = useState<string | null>(null);
+  const [previewMenu, setPreviewMenu] = useState<{ menu: any; variant: "veg" | "nonveg" | "special" } | null>(null);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -123,6 +128,8 @@ const BookingPage = () => {
     timeSlot: "",
     guestCount: "",
     hallId: preselectedHall || "",
+    menuSection: "",
+    menuVariant: "",
     mealType: "",
     menuPackage: "",
     menuNotes: "",
@@ -602,38 +609,37 @@ const BookingPage = () => {
   return (
     <Layout>
       {/* Hero Header */}
-      <section className="relative py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
+      <section className="relative py-12 md:py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
         <FloatingElements type="petals" density="low" />
         <RangoliPattern position="center" size="lg" opacity={0.08} />
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
           {/* Decorative Top Element */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary" />
-            <span className="text-secondary text-2xl">🪔</span>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary" />
+          <div className="flex items-center justify-center gap-3 mb-4 md:mb-6">
+            <div className="h-px w-8 md:w-12 bg-gradient-to-r from-transparent to-secondary" />
+            <span className="text-secondary text-xl md:text-2xl">🪔</span>
+            <div className="h-px w-8 md:w-12 bg-gradient-to-l from-transparent to-secondary" />
           </div>
           
-          <span className="text-secondary font-medium tracking-wider uppercase text-sm animate-fade-in">
+          <span className="text-secondary font-medium tracking-wider uppercase text-xs md:text-sm animate-fade-in">
             ✦ Sacred Booking ✦
           </span>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6 animate-fade-in-up">
+          <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-3 md:mt-4 mb-4 md:mb-6 animate-fade-in-up">
             Book Your <span className="text-gradient-gold">Muhurtham</span>
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Complete the following steps to submit your booking request. Our team 
-            will contact you to confirm availability and finalize your sacred ceremony details.
+          <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-lg animate-fade-in-up px-2" style={{ animationDelay: '0.2s' }}>
+            Complete the following steps to submit your booking request.
           </p>
           
           {/* Decorative Divider */}
-          <div className="divider-ornate mt-8" />
+          <div className="divider-ornate mt-6 md:mt-8" />
         </div>
       </section>
 
       {/* Progress Steps */}
-      <section className="relative py-6 bg-card border-b border-secondary/20">
+      <section className="relative py-4 md:py-6 bg-card border-b border-secondary/20">
         <DecorativeBorder position="top" />
-        <div className="container mx-auto px-4 lg:px-8">
+        <div className="container mx-auto px-2 md:px-4 lg:px-8">
           <div className="flex justify-between max-w-3xl mx-auto">
             {[
               { num: 1, label: "Mandapam", icon: "🏛️" },
@@ -642,29 +648,23 @@ const BookingPage = () => {
               { num: 4, label: "Seva", icon: "✨" },
               { num: 5, label: "Details", icon: "📝" },
             ].map((s, index) => (
-              <div key={s.num} className="flex flex-col items-center">
+              <div key={s.num} className="flex flex-col items-center flex-1">
                 <div
                   className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-all",
+                    "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-all",
                     step >= s.num
                       ? "bg-gradient-to-br from-secondary/30 to-primary/20 text-primary gold-shimmer"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
-                  {step > s.num ? <Check className="h-5 w-5 text-primary" /> : <span className="text-lg">{s.icon}</span>}
+                  {step > s.num ? <Check className="h-4 w-4 md:h-5 md:w-5 text-primary" /> : <span className="text-base md:text-lg">{s.icon}</span>}
                 </div>
                 <span className={cn(
-                  "text-xs mt-2 hidden sm:block font-medium",
+                  "text-[10px] md:text-xs mt-1 md:mt-2 font-medium text-center",
                   step >= s.num ? "text-primary" : "text-muted-foreground"
                 )}>
                   {s.label}
                 </span>
-                {index < 4 && (
-                  <div className={cn(
-                    "absolute h-0.5 w-12 top-9 hidden md:block",
-                    step > s.num ? "bg-secondary" : "bg-border"
-                  )} style={{ left: `calc(${(index + 1) * 20}% - 1.5rem)` }} />
-                )}
               </div>
             ))}
           </div>
@@ -672,20 +672,20 @@ const BookingPage = () => {
       </section>
 
       {/* Form Steps */}
-      <section className="relative py-12 bg-background min-h-[60vh] overflow-hidden">
+      <section className="relative py-6 md:py-12 bg-background min-h-[60vh] overflow-hidden">
         <div className="absolute inset-0 paisley-bg opacity-20" />
-        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+        <div className="container relative z-10 mx-auto px-2 sm:px-4 lg:px-8">
           <Card className="max-w-3xl mx-auto card-traditional">
-            <CardContent className="p-6 md:p-8">
+            <CardContent className="p-4 sm:p-6 md:p-8">
               {/* Step 1: Choose Hall (NEW ORDER) */}
               {step === 1 && (
-                <div className="space-y-6">
-                  <CardHeader className="p-0 mb-6">
+                <div className="space-y-4 md:space-y-6">
+                  <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-secondary text-xl">🏛️</span>
-                      <CardTitle className="font-serif text-2xl text-gradient-gold">Choose Mandapam</CardTitle>
+                      <span className="text-secondary text-lg md:text-xl">🏛️</span>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Choose Mandapam</CardTitle>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">
                       Select your preferred venue to see available dates
                     </p>
                   </CardHeader>
@@ -698,7 +698,7 @@ const BookingPage = () => {
                     <RadioGroup
                       value={bookingData.hallId}
                       onValueChange={(value) => updateBookingData("hallId", value)}
-                      className="grid gap-4"
+                      className="grid gap-3 md:gap-4"
                     >
                     {halls.map((hall) => (
                       <div key={hall.id}>
@@ -710,7 +710,7 @@ const BookingPage = () => {
                         <Label
                           htmlFor={hall.id}
                           className={cn(
-                            "flex gap-4 p-4 rounded-lg border cursor-pointer transition-all",
+                            "flex gap-3 md:gap-4 p-3 md:p-4 rounded-lg border cursor-pointer transition-all",
                             bookingData.hallId === hall.id
                               ? "border-primary bg-primary/5"
                               : "border-border hover:border-primary/50"
@@ -719,23 +719,23 @@ const BookingPage = () => {
                           <img
                             src={hall.image}
                             alt={hall.name}
-                            className="w-24 h-20 object-cover rounded-md shrink-0"
+                            className="w-16 h-14 md:w-24 md:h-20 object-cover rounded-md shrink-0"
                           />
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-foreground">{hall.name}</h3>
-                            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                              <Users className="h-4 w-4" />
-                              <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground text-sm md:text-base truncate">{hall.name}</h3>
+                            <div className="flex items-center gap-1 md:gap-2 mt-1 text-xs md:text-sm text-muted-foreground">
+                              <Users className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
+                              <span className="truncate">{hall.capacity.min} - {hall.capacity.max} guests</span>
                             </div>
-                            <div className="flex gap-2 mt-2">
+                            <div className="flex gap-1 md:gap-2 mt-1 md:mt-2 flex-wrap">
                               {hall.facilities.ac && (
-                                <span className="text-xs bg-muted/50 px-2 py-0.5 rounded flex items-center gap-1">
-                                  <Snowflake className="h-3 w-3" /> AC
+                                <span className="text-[10px] md:text-xs bg-muted/50 px-1.5 md:px-2 py-0.5 rounded flex items-center gap-0.5 md:gap-1">
+                                  <Snowflake className="h-2.5 w-2.5 md:h-3 md:w-3" /> AC
                                 </span>
                               )}
                               {hall.facilities.parking && (
-                                <span className="text-xs bg-muted/50 px-2 py-0.5 rounded flex items-center gap-1">
-                                  <Car className="h-3 w-3" /> Parking
+                                <span className="text-[10px] md:text-xs bg-muted/50 px-1.5 md:px-2 py-0.5 rounded flex items-center gap-0.5 md:gap-1">
+                                  <Car className="h-2.5 w-2.5 md:h-3 md:w-3" /> Parking
                                 </span>
                               )}
                             </div>
@@ -750,7 +750,7 @@ const BookingPage = () => {
 
               {/* Step 2: Event Details (NEW ORDER - with blocked dates now available) */}
               {step === 2 && (
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
                     <SelectedHallSummary
@@ -759,19 +759,19 @@ const BookingPage = () => {
                     />
                   )}
 
-                  <CardHeader className="p-0 mb-6">
+                  <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-secondary text-xl">📅</span>
-                      <CardTitle className="font-serif text-2xl text-gradient-gold">Event Details</CardTitle>
+                      <span className="text-secondary text-lg md:text-xl">📅</span>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Event Details</CardTitle>
                     </div>
                   </CardHeader>
 
                   <div>
-                    <Label className="mb-3 block">Event Type</Label>
+                    <Label className="mb-2 md:mb-3 block text-sm">Event Type</Label>
                     <RadioGroup
                       value={bookingData.eventType}
                       onValueChange={(value) => updateBookingData("eventType", value)}
-                      className="grid grid-cols-2 md:grid-cols-3 gap-3"
+                      className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3"
                     >
                       {eventTypes.map((type) => (
                         <div key={type.id}>
@@ -783,7 +783,7 @@ const BookingPage = () => {
                           <Label
                             htmlFor={type.id}
                             className={cn(
-                              "flex items-center justify-center p-3 rounded-lg border cursor-pointer transition-all",
+                              "flex items-center justify-center p-2 md:p-3 rounded-lg border cursor-pointer transition-all text-xs md:text-sm",
                               bookingData.eventType === type.id
                                 ? "border-primary bg-primary/5 text-primary"
                                 : "border-border hover:border-primary/50"
@@ -881,23 +881,23 @@ const BookingPage = () => {
                     {selectedHall && guestCount > 0 && (
                       <>
                         {isOverCapacity ? (
-                          <div className="flex items-center gap-2 mt-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
-                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
-                            <p className="text-sm text-destructive">
-                              <strong>Exceeds capacity!</strong> {selectedHall.name} can accommodate max {selectedHall.capacity.max} guests. 
-                              Please reduce guest count or select a larger venue.
+                          <div className="flex items-start gap-2 mt-2 p-2 md:p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                            <p className="text-xs md:text-sm text-destructive">
+                              <strong>Exceeds capacity!</strong> Max {selectedHall.capacity.max} guests. 
+                              <span className="hidden sm:inline"> Please reduce guest count or select a larger venue.</span>
                             </p>
                           </div>
                         ) : guestCount < selectedHall.capacity.min * 0.5 ? (
-                          <div className="flex items-center gap-2 mt-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-                            <Users className="h-4 w-4 text-yellow-600 shrink-0" />
-                            <p className="text-sm text-yellow-600">
-                              Hall may be too large for {guestCount} guests. Consider a smaller venue.
+                          <div className="flex items-start gap-2 mt-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+                            <Users className="h-4 w-4 text-yellow-600 shrink-0 mt-0.5" />
+                            <p className="text-xs md:text-sm text-yellow-600">
+                              Hall may be too large for {guestCount} guests.
                             </p>
                           </div>
                         ) : (
                           <p className="text-xs mt-1 text-muted-foreground">
-                            {selectedHall.name} capacity: {selectedHall.capacity.min} - {selectedHall.capacity.max} guests ✓
+                            Capacity: {selectedHall.capacity.min} - {selectedHall.capacity.max} guests ✓
                           </p>
                         )}
                       </>
@@ -908,7 +908,7 @@ const BookingPage = () => {
 
               {/* Step 3: Menu Selection */}
               {step === 3 && (
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
                     <SelectedHallSummary
@@ -920,79 +920,173 @@ const BookingPage = () => {
                     />
                   )}
 
-                  <CardHeader className="p-0 mb-6">
+                  <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-secondary text-xl">🍽️</span>
-                      <CardTitle className="font-serif text-2xl text-gradient-gold">Virundhu Selection</CardTitle>
+                      <span className="text-secondary text-lg md:text-xl">🍽️</span>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Virundhu Selection</CardTitle>
                     </div>
                   </CardHeader>
 
                   <div>
-                    <Label className="mb-3 block">Meal Type</Label>
+                    <Label className="mb-2 md:mb-3 block text-sm">Select Menu Category</Label>
                     <RadioGroup
-                      value={bookingData.mealType}
+                      value={bookingData.menuSection}
                       onValueChange={(value) => {
-                        updateBookingData("mealType", value);
+                        updateBookingData("menuSection", value);
+                        updateBookingData("menuVariant", "");
+                        updateBookingData("mealType", "");
                         updateBookingData("menuPackage", "");
                       }}
-                      className="grid grid-cols-3 gap-3"
+                      className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3"
                     >
-                      {["breakfast", "lunch", "dinner"].map((type) => (
-                        <div key={type}>
+                      {[
+                        { id: "pubert", label: "Pubert (Lunch)", icon: "☀️" },
+                        { id: "dinner", label: "Dinner", icon: "🌙" },
+                        { id: "wedding", label: "Wedding", icon: "💒" },
+                        { id: "registration", label: "Registration", icon: "📝" },
+                      ].map((section) => (
+                        <div key={section.id}>
                           <RadioGroupItem
-                            value={type}
-                            id={`meal-${type}`}
+                            value={section.id}
+                            id={`section-${section.id}`}
                             className="peer sr-only"
                           />
                           <Label
-                            htmlFor={`meal-${type}`}
+                            htmlFor={`section-${section.id}`}
                             className={cn(
-                              "flex items-center justify-center p-3 rounded-lg border cursor-pointer transition-all capitalize",
-                              bookingData.mealType === type
+                              "flex flex-col items-center justify-center p-3 md:p-4 rounded-lg border cursor-pointer transition-all text-center min-h-[70px] md:min-h-[80px]",
+                              bookingData.menuSection === section.id
                                 ? "border-primary bg-primary/5 text-primary"
                                 : "border-border hover:border-primary/50"
                             )}
                           >
-                            {type}
+                            <span className="text-xl md:text-2xl mb-1 md:mb-2">{section.icon}</span>
+                            <span className="text-xs md:text-sm font-medium leading-tight">{section.label}</span>
                           </Label>
                         </div>
                       ))}
                     </RadioGroup>
                   </div>
 
-                  {bookingData.mealType && (
+                  {bookingData.menuSection && (
                     <div>
-                      <Label className="mb-3 block">Menu Selection</Label>
+                      <Label className="mb-2 md:mb-3 block text-sm">Select Type</Label>
+                      {(() => {
+                        const hasSpecial = ["pubert", "dinner", "wedding"].includes(bookingData.menuSection);
+                        const variants = [
+                          { id: "veg", label: "Veg", fullLabel: "Vegetarian", icon: "🥬", activeClass: "border-green-500 bg-green-500/10 text-green-700", hoverClass: "hover:border-green-500/50" },
+                          { id: "nonveg", label: "Non-Veg", fullLabel: "Non-Vegetarian", icon: "🍗", activeClass: "border-orange-500 bg-orange-500/10 text-orange-700", hoverClass: "hover:border-orange-500/50" },
+                          ...(hasSpecial ? [{ id: "special", label: "Special", fullLabel: "Special", icon: "✨", activeClass: "border-primary bg-primary/10 text-primary", hoverClass: "hover:border-primary/50" }] : []),
+                        ];
+                        return (
+                          <RadioGroup
+                            value={bookingData.menuVariant}
+                            onValueChange={(value) => {
+                              updateBookingData("menuVariant", value);
+                              let mealTypeKey = "";
+                              if (value === "veg") {
+                                mealTypeKey = `${bookingData.menuSection}Veg`;
+                              } else if (value === "nonveg") {
+                                mealTypeKey = `${bookingData.menuSection}NonVeg`;
+                              } else if (value === "special") {
+                                mealTypeKey = `${bookingData.menuSection}Special`;
+                              }
+                              updateBookingData("mealType", mealTypeKey);
+                              updateBookingData("menuPackage", "");
+                            }}
+                            className={cn("grid gap-2 md:gap-3", hasSpecial ? "grid-cols-3" : "grid-cols-2", "max-w-xl")}
+                          >
+                            {variants.map((variant) => (
+                              <div key={variant.id}>
+                                <RadioGroupItem
+                                  value={variant.id}
+                                  id={`variant-${variant.id}`}
+                                  className="peer sr-only"
+                                />
+                                <Label
+                                  htmlFor={`variant-${variant.id}`}
+                                  className={cn(
+                                    "flex items-center justify-center gap-1 md:gap-2 p-2 md:p-4 rounded-lg border cursor-pointer transition-all",
+                                    bookingData.menuVariant === variant.id
+                                      ? variant.activeClass
+                                      : `border-border ${variant.hoverClass}`
+                                  )}
+                                >
+                                  <span className="text-lg md:text-xl">{variant.icon}</span>
+                                  <span className="font-medium text-xs md:text-sm">
+                                    <span className="hidden sm:inline">{variant.fullLabel}</span>
+                                    <span className="sm:hidden">{variant.label}</span>
+                                  </span>
+                                </Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {bookingData.mealType && menus[bookingData.mealType as keyof typeof menus] && (
+                    <div>
+                      <Label className="mb-2 md:mb-3 block text-sm">Select Package</Label>
                       <RadioGroup
                         value={bookingData.menuPackage}
                         onValueChange={(value) => updateBookingData("menuPackage", value)}
-                        className="grid gap-4"
+                        className="grid gap-3 md:gap-4"
                       >
-                        {menus[bookingData.mealType as keyof typeof menus]?.map((menu) => (
-                          <div key={menu.id}>
-                            <RadioGroupItem
-                              value={menu.id}
-                              id={menu.id}
-                              className="peer sr-only"
-                            />
-                            <Label
-                              htmlFor={menu.id}
-                              className={cn(
-                                "flex justify-between items-start p-4 rounded-lg border cursor-pointer transition-all",
-                                bookingData.menuPackage === menu.id
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border hover:border-primary/50"
-                              )}
-                            >
-                              <div>
-                                <h3 className="font-semibold text-foreground">{menu.name}</h3>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {menu.items.join(" • ")}
-                                </p>
-                              </div>
-                            </Label>
-                          </div>
-                        ))}
+                        {menus[bookingData.mealType as keyof typeof menus]?.map((menu) => {
+                          const variant = bookingData.menuVariant === "special" 
+                            ? "special" 
+                            : bookingData.menuVariant === "veg" 
+                              ? "veg" 
+                              : "nonveg";
+                          return (
+                            <div key={menu.id} className="relative">
+                              <RadioGroupItem
+                                value={menu.id}
+                                id={menu.id}
+                                className="peer sr-only"
+                              />
+                              <Label
+                                htmlFor={menu.id}
+                                className={cn(
+                                  "flex flex-col sm:flex-row sm:justify-between sm:items-start p-3 md:p-4 rounded-lg border cursor-pointer transition-all pr-12 md:pr-14",
+                                  bookingData.menuPackage === menu.id
+                                    ? "border-primary bg-primary/5"
+                                    : "border-border hover:border-primary/50"
+                                )}
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center justify-between sm:justify-start gap-2">
+                                    <h3 className="font-semibold text-foreground text-sm md:text-base">{menu.name}</h3>
+                                    <span className="text-primary font-semibold text-sm md:text-base sm:hidden">
+                                      {menu.price}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
+                                    {menu.items.slice(0, 2).join(" • ")}
+                                    {menu.items.length > 2 && " ..."}
+                                  </p>
+                                </div>
+                                <span className="text-primary font-semibold shrink-0 ml-4 hidden sm:block">
+                                  {menu.price}
+                                </span>
+                              </Label>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setPreviewMenu({ menu, variant });
+                                }}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-secondary/20 hover:bg-secondary/40 flex items-center justify-center transition-colors"
+                                title="Preview menu"
+                              >
+                                <Eye className="h-4 w-4 text-secondary" />
+                              </button>
+                            </div>
+                          );
+                        })}
                       </RadioGroup>
                     </div>
                   )}
@@ -1013,7 +1107,7 @@ const BookingPage = () => {
 
               {/* Step 4: Add-on Services */}
               {step === 4 && (
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
                     <SelectedHallSummary
@@ -1025,23 +1119,23 @@ const BookingPage = () => {
                     />
                   )}
 
-                  <CardHeader className="p-0 mb-6">
+                  <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-secondary text-xl">✨</span>
-                      <CardTitle className="font-serif text-2xl text-gradient-gold">Additional Seva</CardTitle>
+                      <span className="text-secondary text-lg md:text-xl">✨</span>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Additional Seva</CardTitle>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">
                       Select any additional services you'd like to include
                     </p>
                   </CardHeader>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-2 md:gap-3 sm:grid-cols-2">
                     {addOnServices.map((service) => (
                       <div
                         key={service.id}
                         onClick={() => toggleService(service.id)}
                         className={cn(
-                          "flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all",
+                          "flex items-center gap-2 md:gap-3 p-3 md:p-4 rounded-lg border cursor-pointer transition-all",
                           bookingData.services.includes(service.id)
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/50"
@@ -1049,23 +1143,23 @@ const BookingPage = () => {
                       >
                         <Checkbox
                           checked={bookingData.services.includes(service.id)}
-                          className="pointer-events-none"
+                          className="pointer-events-none h-4 w-4"
                         />
-                        <service.icon className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">{service.label}</span>
+                        <service.icon className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                        <span className="text-foreground text-sm md:text-base">{service.label}</span>
                       </div>
                     ))}
                   </div>
 
                   <div>
-                    <Label htmlFor="serviceNotes">Special Notes for Services</Label>
+                    <Label htmlFor="serviceNotes" className="text-sm">Special Notes for Services</Label>
                     <Textarea
                       id="serviceNotes"
                       value={bookingData.serviceNotes}
                       onChange={(e) => updateBookingData("serviceNotes", e.target.value)}
                       placeholder="Any specific requirements for the selected services..."
                       rows={3}
-                      className="mt-1"
+                      className="mt-1 text-sm"
                     />
                   </div>
                 </div>
@@ -1073,7 +1167,7 @@ const BookingPage = () => {
 
               {/* Step 5: Customer Details */}
               {step === 5 && (
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
                     <SelectedHallSummary
@@ -1085,27 +1179,27 @@ const BookingPage = () => {
                     />
                   )}
 
-                  <CardHeader className="p-0 mb-6">
+                  <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-secondary text-xl">📝</span>
-                      <CardTitle className="font-serif text-2xl text-gradient-gold">Your Details</CardTitle>
+                      <span className="text-secondary text-lg md:text-xl">📝</span>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Your Details</CardTitle>
                     </div>
                   </CardHeader>
 
                   <div>
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm">Full Name *</Label>
                     <Input
                       id="name"
                       value={bookingData.name}
                       onChange={(e) => updateBookingData("name", e.target.value)}
                       placeholder="Your full name"
                       required
-                      className="mt-1"
+                      className="mt-1 text-sm md:text-base"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -1113,31 +1207,31 @@ const BookingPage = () => {
                       onChange={(e) => updateBookingData("phone", e.target.value)}
                       placeholder="+91 98765 43210"
                       required
-                      className="mt-1"
+                      className="mt-1 text-sm md:text-base"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email Address (Optional)</Label>
+                    <Label htmlFor="email" className="text-sm">Email Address (Optional)</Label>
                     <Input
                       id="email"
                       type="email"
                       value={bookingData.email}
                       onChange={(e) => updateBookingData("email", e.target.value)}
                       placeholder="your@email.com"
-                      className="mt-1"
+                      className="mt-1 text-sm md:text-base"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="message">Additional Message</Label>
+                    <Label htmlFor="message" className="text-sm">Additional Message</Label>
                     <Textarea
                       id="message"
                       value={bookingData.message}
                       onChange={(e) => updateBookingData("message", e.target.value)}
                       placeholder="Any other information you'd like to share..."
                       rows={3}
-                      className="mt-1"
+                      className="mt-1 text-sm"
                     />
                   </div>
                 </div>
@@ -1146,26 +1240,39 @@ const BookingPage = () => {
             </CardContent>
 
             {/* Navigation Buttons - Sticky at bottom */}
-            <div className="sticky bottom-0 bg-card border-t border-secondary/20 px-6 py-4 rounded-b-lg">
-              <div className="flex justify-between">
+            <div className="sticky bottom-0 bg-card border-t border-secondary/20 px-4 md:px-6 py-3 md:py-4 rounded-b-lg">
+              <div className="flex justify-between gap-3">
                 <Button
                   variant="outline"
                   onClick={handleBack}
                   disabled={step === 1}
-                  className="border-secondary/30 hover:bg-secondary/10"
+                  className="border-secondary/30 hover:bg-secondary/10 text-sm md:text-base px-3 md:px-4"
+                  size="sm"
                 >
-                  <ChevronLeft className="mr-2 h-4 w-4" />
-                  Back
+                  <ChevronLeft className="mr-1 md:mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Back</span>
                 </Button>
 
                 {step < 5 ? (
-                  <Button variant="outline" onClick={handleNext} disabled={!canProceed()} className="border-secondary/30 hover:bg-secondary/10">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleNext} 
+                    disabled={!canProceed()} 
+                    className="border-secondary/30 hover:bg-secondary/10 text-sm md:text-base px-3 md:px-4"
+                    size="sm"
+                  >
                     Next
-                    <ChevronRight className="ml-2 h-4 w-4" />
+                    <ChevronRight className="ml-1 md:ml-2 h-4 w-4" />
                   </Button>
                 ) : (
-                  <Button variant="outline" onClick={handleSubmit} disabled={!canProceed() || isSubmitting} className="border-foreground/30 text-foreground hover:bg-foreground/5">
-                    {isSubmitting ? "Submitting..." : "Submit Sacred Booking"}
+                  <Button 
+                    variant="outline" 
+                    onClick={handleSubmit} 
+                    disabled={!canProceed() || isSubmitting} 
+                    className="border-foreground/30 text-foreground hover:bg-foreground/5 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4"
+                    size="sm"
+                  >
+                    {isSubmitting ? "Submitting..." : <><span className="hidden sm:inline">Submit </span>Sacred Booking</>}
                   </Button>
                 )}
               </div>
@@ -1183,6 +1290,14 @@ const BookingPage = () => {
         primaryButtonText="Contact Us"
         primaryButtonLink="/contact"
         showSecondaryButton={true}
+      />
+
+      {/* Menu Preview Modal */}
+      <MenuQuickViewModal
+        menu={previewMenu?.menu || null}
+        variant={previewMenu?.variant || "veg"}
+        open={!!previewMenu}
+        onOpenChange={(open) => !open && setPreviewMenu(null)}
       />
     </Layout>
   );

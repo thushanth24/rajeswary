@@ -1,66 +1,269 @@
+import { useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
-import { ServiceCard } from "@/components/ui/ServiceCard";
-import { services } from "@/data/services";
+import { EnhancedServiceCard } from "@/components/ui/EnhancedServiceCard";
+import { services, type ServiceCategory } from "@/data/services";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronLeft, ChevronRight, Sparkles, Crown, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const categoryConfig: Record<ServiceCategory | "all", { label: string; icon: React.ReactNode; description: string }> = {
+  all: { label: "All Services", icon: <Sparkles className="w-4 h-4" />, description: "Explore our complete range of wedding services" },
+  essential: { label: "Essentials", icon: <Sparkles className="w-4 h-4" />, description: "Core services for your perfect wedding" },
+  premium: { label: "Premium", icon: <Crown className="w-4 h-4" />, description: "Luxury additions for an extraordinary celebration" },
+  addon: { label: "Add-ons", icon: <Plus className="w-4 h-4" />, description: "Extra touches to enhance your special day" },
+};
 
 const ServicesPage = () => {
+  const [activeCategory, setActiveCategory] = useState<ServiceCategory | "all">("all");
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  
+  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+
+  const filteredServices = activeCategory === "all" 
+    ? services 
+    : services.filter(s => s.category === activeCategory);
+
+  const scrollCarousel = (direction: "left" | "right") => {
+    if (carouselRef.current) {
+      const scrollAmount = 400;
+      carouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Determine bento grid sizes
+  const getBentoSize = (index: number): "normal" | "large" | "wide" => {
+    if (index === 0) return "large";
+    if (index === 3) return "wide";
+    return "normal";
+  };
+
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
+      {/* Hero Section with Parallax */}
+      <motion.section 
+        ref={heroRef}
+        className="relative py-24 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden"
+        style={{ opacity: heroOpacity, scale: heroScale }}
+      >
         <FloatingElements type="petals" density="low" />
         <RangoliPattern position="center" size="lg" opacity={0.08} />
         
+        {/* Animated Particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-secondary/60 rounded-full"
+              initial={{ 
+                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+                y: -10,
+              }}
+              animate={{ 
+                y: typeof window !== 'undefined' ? window.innerHeight + 10 : 800,
+                opacity: [0, 1, 1, 0],
+              }}
+              transition={{ 
+                duration: 5 + Math.random() * 5,
+                repeat: Infinity,
+                delay: Math.random() * 5,
+                ease: "linear",
+              }}
+            />
+          ))}
+        </div>
+        
         <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
           {/* Decorative Top Element */}
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary" />
-            <span className="text-secondary text-2xl">🪔</span>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary" />
-          </div>
+          <motion.div 
+            className="flex items-center justify-center gap-3 mb-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-secondary" />
+            <motion.span 
+              className="text-secondary text-3xl"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            >
+              🪔
+            </motion.span>
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-secondary" />
+          </motion.div>
           
-          <span className="text-secondary font-medium tracking-wider uppercase text-sm animate-fade-in">
+          <motion.span 
+            className="inline-block text-secondary font-medium tracking-wider uppercase text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             ✦ Complete Thirumana Seva ✦
-          </span>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6 animate-fade-in-up">
+          </motion.span>
+          
+          <motion.h1 
+            className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             Our <span className="text-gradient-gold">Services</span>
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          </motion.h1>
+          
+          <motion.p 
+            className="text-muted-foreground max-w-2xl mx-auto text-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
             Beyond sacred mandapams, we offer complete wedding solutions rooted in tradition, 
             ensuring your celebration is blessed, seamless, and truly unforgettable.
-          </p>
+          </motion.p>
           
           {/* Decorative Divider */}
-          <div className="divider-ornate mt-8" />
+          <motion.div 
+            className="divider-ornate mt-8"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          />
+        </div>
+      </motion.section>
+
+      {/* Tab Navigation */}
+      <section className="bg-background border-b border-border/50 py-6">
+        <div className="container mx-auto px-4 lg:px-8">
+          <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as ServiceCategory | "all")}>
+            <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-4 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-full">
+              {(["all", "essential", "premium", "addon"] as const).map((cat) => (
+                <TabsTrigger 
+                  key={cat} 
+                  value={cat}
+                  className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md flex items-center gap-1.5 text-xs sm:text-sm font-medium transition-all duration-300"
+                >
+                  {categoryConfig[cat].icon}
+                  <span className="hidden sm:inline">{categoryConfig[cat].label}</span>
+                  <span className="sm:hidden">{cat === "all" ? "All" : categoryConfig[cat].label.split(" ")[0]}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          
+          <motion.p 
+            className="text-center text-muted-foreground text-sm mt-3"
+            key={activeCategory}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {categoryConfig[activeCategory].description}
+          </motion.p>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="relative py-20 bg-background overflow-hidden">
+      {/* Carousel Section */}
+      <section className="relative py-12 bg-gradient-to-b from-background to-card overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-serif text-2xl font-bold text-foreground flex items-center gap-2">
+              <span className="text-secondary">🪷</span>
+              Quick Browse
+            </h2>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={() => scrollCarousel("left")}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={() => scrollCarousel("right")}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          
+          <div 
+            ref={carouselRef}
+            className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {filteredServices.map((service, index) => (
+              <motion.div 
+                key={service.id}
+                className="flex-shrink-0 w-72 snap-center"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <EnhancedServiceCard service={service} />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Bento Grid Section */}
+      <section className="relative py-20 bg-card overflow-hidden">
         <DecorativeBorder position="top" />
         <div className="absolute inset-0 lotus-bg opacity-20" />
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-12">
-            <span className="text-secondary text-3xl">🪷</span>
-            <h2 className="font-serif text-2xl font-bold text-foreground mt-2">
+            <motion.span 
+              className="text-secondary text-3xl"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              🪷
+            </motion.span>
+            <h2 className="font-serif text-3xl font-bold text-foreground mt-2 mb-2">
               Sacred Wedding Services
             </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Hover over each card to discover the full range of features included
+            </p>
           </div>
           
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service, index) => (
-              <div 
-                key={service.id} 
-                className="animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+          {/* Bento Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+            {filteredServices.map((service, index) => (
+              <motion.div 
+                key={service.id}
+                className={`
+                  ${getBentoSize(index) === "large" ? "md:row-span-2" : ""}
+                  ${getBentoSize(index) === "wide" ? "md:col-span-2" : ""}
+                `}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
               >
-                <ServiceCard service={service} />
-              </div>
+                <EnhancedServiceCard 
+                  service={service} 
+                  size={getBentoSize(index)}
+                />
+              </motion.div>
             ))}
           </div>
         </div>
@@ -69,7 +272,7 @@ const ServicesPage = () => {
       </section>
 
       {/* Why Choose Us */}
-      <section className="relative py-20 bg-card overflow-hidden">
+      <section className="relative py-20 bg-background overflow-hidden">
         <div className="absolute inset-0 paisley-bg opacity-30" />
         <RangoliPattern position="corners" size="sm" opacity={0.1} />
         
@@ -93,21 +296,33 @@ const ServicesPage = () => {
           
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { number: "15+", label: "Years of Seva", desc: "Over 15 years creating blessed celebrations" },
-              { number: "500+", label: "Sacred Unions", desc: "Hundreds of couples trust our traditions" },
-              { number: "50+", label: "Expert Partners", desc: "Premium vendors for every ritual" },
+              { number: "15+", label: "Years of Seva", desc: "Over 15 years creating blessed celebrations", icon: "🕉️" },
+              { number: "500+", label: "Sacred Unions", desc: "Hundreds of couples trust our traditions", icon: "💑" },
+              { number: "50+", label: "Expert Partners", desc: "Premium vendors for every ritual", icon: "🤝" },
             ].map((stat, index) => (
-              <div 
+              <motion.div 
                 key={stat.label}
-                className="text-center p-8 card-traditional animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.15}s` }}
+                className="relative group"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15 }}
               >
-                <div className="w-20 h-20 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 gold-shimmer">
-                  <span className="text-3xl font-bold text-gradient-gold">{stat.number}</span>
+                {/* Animated border on hover */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary via-primary to-secondary rounded-2xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500" />
+                
+                <div className="relative text-center p-8 bg-card rounded-xl border border-border/50 backdrop-blur-sm">
+                  <motion.div 
+                    className="w-20 h-20 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                  >
+                    <span className="text-4xl">{stat.icon}</span>
+                  </motion.div>
+                  <div className="text-4xl font-bold text-gradient-gold mb-2">{stat.number}</div>
+                  <h3 className="font-serif font-semibold text-foreground text-xl mb-2">{stat.label}</h3>
+                  <p className="text-sm text-muted-foreground">{stat.desc}</p>
                 </div>
-                <h3 className="font-serif font-semibold text-foreground text-xl mb-2">{stat.label}</h3>
-                <p className="text-sm text-muted-foreground">{stat.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -117,7 +332,7 @@ const ServicesPage = () => {
         subtitle="Complete Wedding Solutions"
         title="Ready to Plan Your"
         highlight="Sacred Union"
-        description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration."
+        description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration package."
         primaryButtonText="Begin Sacred Booking"
         videos={[
           "https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4",

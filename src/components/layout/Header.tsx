@@ -28,7 +28,7 @@ export function Header() {
             <span className="text-2xl text-secondary animate-glow-pulse">🪔</span>
             <div>
               <span className="font-serif text-2xl font-bold text-primary tracking-wide">
-                Raajeshwariy Groups of Company
+                Celebration Halls
               </span>
               <span className="hidden sm:block text-xs text-secondary font-medium tracking-widest uppercase">
                 ✦ Traditional Wedding Venues ✦
@@ -60,7 +60,10 @@ export function Header() {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex lg:items-center lg:gap-4">
-           
+            <a href="tel:+919876543210" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Phone className="h-4 w-4" />
+              +91 98765 43210
+            </a>
             <Button asChild className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-traditional transition-all duration-300 hover:shadow-gold-glow">
               <Link to="/booking">
                 <span className="mr-2">🪷</span>
@@ -119,4 +122,3 @@ export function Header() {
     </header>
   );
 }
-

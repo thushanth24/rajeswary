@@ -12,7 +12,7 @@ const AdminLayout = ({ children, title = 'Admin Dashboard' }: AdminLayoutProps) 
   return (
     <>
       <Helmet>
-        <title>{title} | Raajeshwariy Groups of Company PVT LTD Admin</title>
+        <title>{title} | Rajeswary Hall Admin</title>
       </Helmet>
       <SidebarProvider>
         <div className="min-h-screen flex w-full">

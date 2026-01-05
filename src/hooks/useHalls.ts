@@ -18,7 +18,7 @@ const staticImages: Record<string, string> = {
 };
 
 export interface Hall {
-  id: string;
+  id: string; // UUID from database
   slug: string;
   name: string;
   image: string;
@@ -37,6 +37,7 @@ export interface Hall {
     washrooms: number;
   };
   eventTypes: string[];
+  priceRange: string;
 }
 
 interface DBHall {
@@ -50,6 +51,7 @@ interface DBHall {
   short_description: string | null;
   features: string[] | null;
   event_types: string[] | null;
+  price_range: string | null;
   has_ac: boolean | null;
   has_parking: boolean | null;
   has_dining: boolean | null;
@@ -63,7 +65,7 @@ interface DBHall {
 
 function mapDBHallToHall(dbHall: DBHall): Hall {
   return {
-    id: dbHall.slug, // Use slug as ID for URL compatibility
+    id: dbHall.id, // Use actual UUID from database
     slug: dbHall.slug,
     name: dbHall.name,
     image: dbHall.image_url || staticImages[dbHall.slug] || hallGrandBallroom,
@@ -85,6 +87,7 @@ function mapDBHallToHall(dbHall: DBHall): Hall {
       washrooms: dbHall.washrooms_count ?? 0,
     },
     eventTypes: dbHall.event_types || [],
+    priceRange: dbHall.price_range || '',
   };
 }
 

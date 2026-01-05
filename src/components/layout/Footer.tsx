@@ -102,7 +102,7 @@ export function Footer() {
             <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
               <span className="text-3xl">🪔</span>
               <Link to="/" className="font-serif text-2xl font-bold text-primary">
-                Raajeshwariy Groups of Company PVT LTD
+                Celebration Halls
               </Link>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -110,7 +110,23 @@ export function Footer() {
               authentic Jaffna Hindu tradition.
             </p>
             
-            
+            {/* Social links */}
+            <div className="mt-6 flex justify-center md:justify-start gap-3">
+              {[
+                { icon: Facebook, label: "Facebook" },
+                { icon: Instagram, label: "Instagram" },
+                { icon: Youtube, label: "Youtube" }
+              ].map(({ icon: Icon, label }) => (
+                <a 
+                  key={label}
+                  href="#" 
+                  className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                  aria-label={label}
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
 
             {/* Decorative element */}
             <div className="mt-5 flex items-center justify-center md:justify-start gap-2">
@@ -149,12 +165,10 @@ export function Footer() {
               <li className="flex items-start gap-3 justify-center md:justify-start">
                 <MapPin className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
                 <span className="text-muted-foreground text-left">
-                Address 132,<br />
-                Palali Road,<br />
-                  Kondavil, Jaffna,<br />
+                  123 Temple Road,<br />
+                  Nallur, Jaffna,<br />
                   Sri Lanka
                 </span>
-                
               </li>
               <li className="flex items-center gap-3 justify-center md:justify-start">
                 <Phone className="h-5 w-5 text-secondary shrink-0" />
@@ -180,11 +194,11 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 justify-center md:justify-start text-muted-foreground">
                 <span className="w-5" />
-                Mon - Sat: 9 AM - 7 PM
+                Mon - Sat: 10 AM - 8 PM
               </li>
               <li className="flex items-center gap-3 justify-center md:justify-start text-muted-foreground">
                 <span className="w-5" />
-                Sunday: 10 AM - 6 PM
+                Sunday: 11 AM - 6 PM
               </li>
             </ul>
           </CollapsibleSection>
@@ -204,7 +218,7 @@ export function Footer() {
         {/* Bottom section */}
         <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Raajeshwariy Groups of Company PVT LTD. All rights reserved.
+            &copy; {new Date().getFullYear()} Celebration Halls. All rights reserved.
           </p>
           
           <p className="text-xs text-muted-foreground font-serif italic">
@@ -224,4 +238,3 @@ export function Footer() {
     </footer>
   );
 }
-

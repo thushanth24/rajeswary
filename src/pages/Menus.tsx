@@ -1,14 +1,37 @@
+import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { menus } from "@/data/services";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, Leaf, Drumstick } from "lucide-react";
+import { Leaf, Drumstick, Sparkles } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
+import { MenuCard } from "@/components/menu/MenuCard";
+import { MenuSectionDivider } from "@/components/menu/MenuSectionDivider";
+import { MobileMenuAccordion } from "@/components/menu/MobileMenuAccordion";
+import { PricingCalculator } from "@/components/menu/PricingCalculator";
+import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
+
+interface MenuPackage {
+  id: string;
+  name: string;
+  items: string[];
+  price: string;
+  type?: string;
+}
 
 const MenusPage = () => {
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<MenuPackage | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<"veg" | "nonveg" | "special">("veg");
+
+  const handleQuickView = (menu: MenuPackage, variant: "veg" | "nonveg" | "special") => {
+    setSelectedMenu(menu);
+    setSelectedVariant(variant);
+    setQuickViewOpen(true);
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -17,7 +40,6 @@ const MenusPage = () => {
         <RangoliPattern position="center" size="lg" opacity={0.08} />
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
-          {/* Decorative Top Element */}
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary" />
             <span className="text-secondary text-2xl">🪔</span>
@@ -28,129 +50,371 @@ const MenusPage = () => {
             ✦ Traditional Jaffna Cuisine ✦
           </span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6 animate-fade-in-up">
-            Virundhu <span className="text-gradient-gold">Menu</span>
+            Our <span className="text-gradient-gold">Menu</span> Packages
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Delight your guests with our authentic Jaffna cuisine. From traditional 
-            banana leaf feast to contemporary selections, our expert cooks create 
-            divine culinary experiences.
+            Delight your guests with our authentic Jaffna cuisine. Choose from our 
+            Pubert (Lunch) and Dinner packages to create divine culinary experiences.
           </p>
           
-          {/* Decorative Divider */}
           <div className="divider-ornate mt-8" />
         </div>
       </section>
 
-      {/* Menu Tabs */}
+      {/* Pricing Calculator Section */}
+      <section className="relative py-12 bg-background overflow-hidden">
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <PricingCalculator className="max-w-4xl mx-auto" />
+        </div>
+      </section>
+
+      {/* Pubert (Lunch) Section */}
       <section className="relative py-20 bg-background overflow-hidden">
         <DecorativeBorder position="top" />
         <div className="absolute inset-0 paisley-bg opacity-20" />
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
-          <Tabs defaultValue="lunch" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-12 bg-card border border-border">
-              <TabsTrigger value="breakfast" className="font-serif data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                காலை உணவு
-              </TabsTrigger>
-              <TabsTrigger value="lunch" className="font-serif data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                மதிய விருந்து
-              </TabsTrigger>
-              <TabsTrigger value="dinner" className="font-serif data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                இரவு விருந்து
-              </TabsTrigger>
-            </TabsList>
+          <div className="text-center mb-12">
+            <span className="text-secondary text-3xl">☀️</span>
+            <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
+              Pubert <span className="text-gradient-gold">(Lunch)</span> Packages
+            </h2>
+            <p className="text-muted-foreground">Traditional afternoon feast selections</p>
+          </div>
 
-            <TabsContent value="breakfast">
-              <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
-                {menus.breakfast.map((menu, index) => (
-                  <Card 
-                    key={menu.id} 
-                    className="card-traditional animate-fade-in-up"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CardHeader className="pb-2">
-                      <CardTitle className="font-serif text-xl">
-                        <span className="text-gradient-gold">{menu.name}</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {menu.items.map((item) => (
-                          <li key={item} className="flex items-center gap-2 text-muted-foreground">
-                            <Check className="h-4 w-4 text-secondary shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
+          {/* Desktop Tabs */}
+          <div className="hidden md:block">
+            <Tabs defaultValue="pubert-veg" className="w-full">
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-card border border-border">
+                <TabsTrigger value="pubert-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
+                  <Leaf className="h-4 w-4" />
+                  Veg
+                </TabsTrigger>
+                <TabsTrigger value="pubert-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
+                  <Drumstick className="h-4 w-4" />
+                  Non-Veg
+                </TabsTrigger>
+                <TabsTrigger value="pubert-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Sparkles className="h-4 w-4" />
+                  Special
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="lunch">
-              <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
-                {menus.lunch.map((menu, index) => (
-                  <Card 
-                    key={menu.id} 
-                    className="card-traditional animate-fade-in-up"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CardHeader className="pb-2">
-                      <CardTitle className="font-serif text-xl">
-                        <span className="text-gradient-gold">{menu.name}</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {menu.items.map((item) => (
-                          <li key={item} className="flex items-center gap-2 text-muted-foreground">
-                            <Check className="h-4 w-4 text-secondary shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
+              <TabsContent value="pubert-veg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.pubertVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="veg" 
+                      onQuickView={() => handleQuickView(menu, "veg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
 
-            <TabsContent value="dinner">
-              <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
-                {menus.dinner.map((menu, index) => (
-                  <Card 
-                    key={menu.id} 
-                    className="card-traditional animate-fade-in-up"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <CardHeader className="pb-2">
-                      <CardTitle className="font-serif text-xl">
-                        <span className="text-gradient-gold">{menu.name}</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {menu.items.map((item) => (
-                          <li key={item} className="flex items-center gap-2 text-muted-foreground">
-                            <Check className="h-4 w-4 text-secondary shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="pubert-nonveg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.pubertNonVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="nonveg" 
+                      onQuickView={() => handleQuickView(menu, "nonveg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="pubert-special">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.pubertSpecial.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="special" 
+                      onQuickView={() => handleQuickView(menu, "special")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Mobile Accordion */}
+          <MobileMenuAccordion
+            title="Pubert (Lunch)"
+            sections={[
+              { id: "pubert-veg", label: "Vegetarian", icon: "veg", packages: menus.pubertVeg, variant: "veg" },
+              { id: "pubert-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.pubertNonVeg, variant: "nonveg" },
+              { id: "pubert-special", label: "Special", icon: "special", packages: menus.pubertSpecial, variant: "special" },
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* Decorative Divider */}
+      <MenuSectionDivider />
+
+      {/* Dinner Section */}
+      <section className="relative py-20 bg-card overflow-hidden">
+        <div className="absolute inset-0 paisley-bg opacity-20" />
+        
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-secondary text-3xl">🌙</span>
+            <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
+              Dinner <span className="text-gradient-gold">Packages</span>
+            </h2>
+            <p className="text-muted-foreground">Evening feast selections for your special occasions</p>
+          </div>
+
+          {/* Desktop Tabs */}
+          <div className="hidden md:block">
+            <Tabs defaultValue="dinner-veg" className="w-full">
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-background border border-border">
+                <TabsTrigger value="dinner-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
+                  <Leaf className="h-4 w-4" />
+                  Veg
+                </TabsTrigger>
+                <TabsTrigger value="dinner-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
+                  <Drumstick className="h-4 w-4" />
+                  Non-Veg
+                </TabsTrigger>
+                <TabsTrigger value="dinner-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Sparkles className="h-4 w-4" />
+                  Special
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="dinner-veg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.dinnerVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="veg" 
+                      onQuickView={() => handleQuickView(menu, "veg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="dinner-nonveg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.dinnerNonVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="nonveg" 
+                      onQuickView={() => handleQuickView(menu, "nonveg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="dinner-special">
+                <div className="max-w-xl mx-auto">
+                  {menus.dinnerSpecial.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="special" 
+                      onQuickView={() => handleQuickView(menu, "special")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Mobile Accordion */}
+          <MobileMenuAccordion
+            title="Dinner"
+            sections={[
+              { id: "dinner-veg", label: "Vegetarian", icon: "veg", packages: menus.dinnerVeg, variant: "veg" },
+              { id: "dinner-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.dinnerNonVeg, variant: "nonveg" },
+              { id: "dinner-special", label: "Special", icon: "special", packages: menus.dinnerSpecial, variant: "special" },
+            ]}
+          />
+        </div>
+        
+        <DecorativeBorder position="bottom" />
+      </section>
+
+      {/* Decorative Divider */}
+      <MenuSectionDivider />
+
+      {/* Wedding Section */}
+      <section className="relative py-20 bg-background overflow-hidden">
+        <div className="absolute inset-0 paisley-bg opacity-20" />
+        
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-secondary text-3xl">💒</span>
+            <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
+              Wedding <span className="text-gradient-gold">Packages</span>
+            </h2>
+            <p className="text-muted-foreground">Grand feast selections for your special wedding day</p>
+          </div>
+
+          {/* Desktop Tabs */}
+          <div className="hidden md:block">
+            <Tabs defaultValue="wedding-veg" className="w-full">
+              <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-card border border-border">
+                <TabsTrigger value="wedding-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
+                  <Leaf className="h-4 w-4" />
+                  Veg
+                </TabsTrigger>
+                <TabsTrigger value="wedding-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
+                  <Drumstick className="h-4 w-4" />
+                  Non-Veg
+                </TabsTrigger>
+                <TabsTrigger value="wedding-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Sparkles className="h-4 w-4" />
+                  Special
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="wedding-veg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.weddingVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="veg" 
+                      onQuickView={() => handleQuickView(menu, "veg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="wedding-nonveg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.weddingNonVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="nonveg" 
+                      onQuickView={() => handleQuickView(menu, "nonveg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="wedding-special">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.weddingSpecial.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="special" 
+                      onQuickView={() => handleQuickView(menu, "special")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Mobile Accordion */}
+          <MobileMenuAccordion
+            title="Wedding"
+            sections={[
+              { id: "wedding-veg", label: "Vegetarian", icon: "veg", packages: menus.weddingVeg, variant: "veg" },
+              { id: "wedding-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.weddingNonVeg, variant: "nonveg" },
+              { id: "wedding-special", label: "Special", icon: "special", packages: menus.weddingSpecial, variant: "special" },
+            ]}
+          />
+        </div>
+        
+        <DecorativeBorder position="bottom" />
+      </section>
+
+      {/* Decorative Divider */}
+      <MenuSectionDivider />
+
+      {/* Registration Section */}
+      <section className="relative py-20 bg-card overflow-hidden">
+        <div className="absolute inset-0 paisley-bg opacity-20" />
+        
+        <div className="container relative z-10 mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-secondary text-3xl">📝</span>
+            <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
+              Registration <span className="text-gradient-gold">Packages</span>
+            </h2>
+            <p className="text-muted-foreground">Perfect feast selections for wedding registrations</p>
+          </div>
+
+          {/* Desktop Tabs */}
+          <div className="hidden md:block">
+            <Tabs defaultValue="registration-veg" className="w-full">
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12 bg-background border border-border">
+                <TabsTrigger value="registration-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
+                  <Leaf className="h-4 w-4" />
+                  Veg
+                </TabsTrigger>
+                <TabsTrigger value="registration-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
+                  <Drumstick className="h-4 w-4" />
+                  Non-Veg
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="registration-veg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.registrationVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="veg" 
+                      onQuickView={() => handleQuickView(menu, "veg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="registration-nonveg">
+                <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                  {menus.registrationNonVeg.map((menu, index) => (
+                    <MenuCard 
+                      key={menu.id} 
+                      menu={menu} 
+                      index={index} 
+                      variant="nonveg" 
+                      onQuickView={() => handleQuickView(menu, "nonveg")}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Mobile Accordion */}
+          <MobileMenuAccordion
+            title="Registration"
+            sections={[
+              { id: "registration-veg", label: "Vegetarian", icon: "veg", packages: menus.registrationVeg, variant: "veg" },
+              { id: "registration-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.registrationNonVeg, variant: "nonveg" },
+            ]}
+          />
         </div>
         
         <DecorativeBorder position="bottom" />
       </section>
 
       {/* Dietary Options */}
-      <section className="relative py-20 bg-card overflow-hidden">
+      <section className="relative py-20 bg-background overflow-hidden">
         <RangoliPattern position="corners" size="sm" opacity={0.1} />
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
@@ -165,7 +429,7 @@ const MenusPage = () => {
           </div>
           
           <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
-            <div className="flex items-center gap-4 p-6 card-traditional animate-fade-in-up">
+            <div className="flex items-center gap-4 p-6 card-traditional animate-fade-in-up hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
               <div className="w-14 h-14 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-full flex items-center justify-center gold-shimmer">
                 <Leaf className="h-7 w-7 text-green-600" />
               </div>
@@ -176,7 +440,7 @@ const MenusPage = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4 p-6 card-traditional animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <div className="flex items-center gap-4 p-6 card-traditional animate-fade-in-up hover:shadow-xl hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: '0.1s' }}>
               <div className="w-14 h-14 bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-full flex items-center justify-center gold-shimmer">
                 <Drumstick className="h-7 w-7 text-orange-600" />
               </div>
@@ -194,7 +458,7 @@ const MenusPage = () => {
       <CTASection 
         subtitle="Customize Your Feast"
         title="Ready to Select Your"
-        highlight="Virundhu Menu"
+        highlight="Menu Package"
         description="All menus can be customized to honor your family traditions and preferences. Our master cooks will work with you to create the perfect feast for your auspicious occasion."
         primaryButtonText="Select Menu & Book"
         videos={[
@@ -202,6 +466,14 @@ const MenusPage = () => {
           "https://videos.pexels.com/video-files/3298438/3298438-hd_1920_1080_25fps.mp4",
           "https://videos.pexels.com/video-files/4253251/4253251-hd_1920_1080_25fps.mp4",
         ]}
+      />
+
+      {/* Quick View Modal */}
+      <MenuQuickViewModal
+        menu={selectedMenu}
+        variant={selectedVariant}
+        open={quickViewOpen}
+        onOpenChange={setQuickViewOpen}
       />
     </Layout>
   );

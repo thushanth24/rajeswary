@@ -270,6 +270,85 @@ export type Database = {
           },
         ]
       }
+      hall_event_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          event_date: string | null
+          event_type: string | null
+          hall_id: string
+          id: string
+          image_url: string
+          is_active: boolean | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_type?: string | null
+          hall_id: string
+          id?: string
+          image_url: string
+          is_active?: boolean | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_type?: string | null
+          hall_id?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hall_event_photos_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hall_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          display_order: number | null
+          hall_id: string
+          id: string
+          image_url: string
+          is_active: boolean | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number | null
+          hall_id: string
+          id?: string
+          image_url: string
+          is_active?: boolean | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number | null
+          hall_id?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hall_images_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hall_managers: {
         Row: {
           assigned_at: string
@@ -305,6 +384,53 @@ export type Database = {
           },
         ]
       }
+      hall_reviews: {
+        Row: {
+          created_at: string
+          customer_name: string
+          event_date: string | null
+          event_type: string | null
+          hall_id: string
+          id: string
+          is_approved: boolean | null
+          is_featured: boolean | null
+          rating: number
+          review_text: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          event_date?: string | null
+          event_type?: string | null
+          hall_id: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          rating: number
+          review_text: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          event_date?: string | null
+          event_type?: string | null
+          hall_id?: string
+          id?: string
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          rating?: number
+          review_text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hall_reviews_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       halls: {
         Row: {
           capacity_max: number
@@ -313,6 +439,7 @@ export type Database = {
           description: string | null
           event_types: string[] | null
           features: string[] | null
+          floor_plan_url: string | null
           has_ac: boolean | null
           has_bride_room: boolean | null
           has_dining: boolean | null
@@ -337,6 +464,7 @@ export type Database = {
           description?: string | null
           event_types?: string[] | null
           features?: string[] | null
+          floor_plan_url?: string | null
           has_ac?: boolean | null
           has_bride_room?: boolean | null
           has_dining?: boolean | null
@@ -361,6 +489,7 @@ export type Database = {
           description?: string | null
           event_types?: string[] | null
           features?: string[] | null
+          floor_plan_url?: string | null
           has_ac?: boolean | null
           has_bride_room?: boolean | null
           has_dining?: boolean | null

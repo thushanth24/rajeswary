@@ -1,4 +1,4 @@
-﻿import hallGrandBallroom from "@/assets/hall-grand-ballroom.webp";
+import hallGrandBallroom from "@/assets/hall-grand-ballroom.webp";
 import hallRoyalBanquet from "@/assets/hall-royal-banquet.webp";
 import hallCrystalPalace from "@/assets/hall-crystal-palace.webp";
 import hallEmeraldGarden from "@/assets/hall-emerald-garden.jpg";
@@ -24,6 +24,7 @@ export interface Hall {
     washrooms: number;
   };
   eventTypes: string[];
+  priceRange: string;
 }
 
 export const halls: Hall[] = [
@@ -47,6 +48,7 @@ export const halls: Hall[] = [
       washrooms: 8,
     },
     eventTypes: ["Wedding", "Reception", "Corporate Event", "Gala Dinner"],
+    priceRange: "₹2,50,000 - ₹5,00,000",
   },
   {
     id: "royal-banquet",
@@ -68,6 +70,7 @@ export const halls: Hall[] = [
       washrooms: 6,
     },
     eventTypes: ["Wedding", "Reception", "Engagement", "Birthday Party"],
+    priceRange: "₹1,75,000 - ₹3,50,000",
   },
   {
     id: "crystal-palace",
@@ -89,6 +92,7 @@ export const halls: Hall[] = [
       washrooms: 4,
     },
     eventTypes: ["Wedding", "Engagement", "Anniversary", "Cocktail Party"],
+    priceRange: "₹1,00,000 - ₹2,00,000",
   },
   {
     id: "emerald-garden",
@@ -110,6 +114,7 @@ export const halls: Hall[] = [
       washrooms: 6,
     },
     eventTypes: ["Wedding", "Reception", "Conference", "Exhibition"],
+    priceRange: "₹2,00,000 - ₹4,00,000",
   },
   {
     id: "sunset-terrace",
@@ -131,6 +136,7 @@ export const halls: Hall[] = [
       washrooms: 4,
     },
     eventTypes: ["Garden Wedding", "Reception", "Cocktail Party", "Pre-Wedding"],
+    priceRange: "₹1,50,000 - ₹3,00,000",
   },
 ];
 
@@ -141,4 +147,3 @@ export const getHallById = (id: string): Hall | undefined => {
 export const getHallBySlug = (slug: string): Hall | undefined => {
   return halls.find((hall) => hall.slug === slug);
 };
-
