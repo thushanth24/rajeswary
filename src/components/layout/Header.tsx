@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
-import logo from "@/assets/logo-small.webp";
+import logo from "@/assets/logo.png";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,7 +28,7 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src={logo} alt="Raajeshwariy Groups Logo" width={48} height={48} className="h-12 w-12 object-contain bg-card rounded-full p-0.5" loading="eager" decoding="async" />
+            <img src={logo} alt="Raajeshwariy Groups Logo" className="h-12 w-auto object-contain bg-card rounded-full p-0.5" />
             <div>
               <span className="font-serif text-xl md:text-2xl font-bold text-primary tracking-wide">
                 Raajeshwariy Groups

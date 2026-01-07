@@ -3,22 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://kkefwggimxljvelqtcjs.supabase.co" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://kkefwggimxljvelqtcjs.supabase.co" crossorigin />
-    <link rel="preconnect" href="https://cdn.gpteng.co" crossorigin />
-    <link rel="preload" as="image" href="/images/hero-traditional.webp" type="image/webp" fetchpriority="high" />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" /></noscript>
-    <!-- Critical CSS inline for FCP -->
-    <style>
-      body{margin:0;font-family:Poppins,sans-serif;background:#FFFBF0}
-      .min-h-screen{min-height:100vh}
-      .flex{display:flex}
-      .flex-col{flex-direction:column}
-      header{position:fixed;top:0;left:0;right:0;z-index:50;background:#FFFBF0;border-bottom:2px solid rgba(139,31,63,.2);height:80px}
-    </style>
     <link rel="icon" href="data:,">
     <title>Rajeswary Wedding Hall</title>
     <meta name="description" content="Premium wedding and event venue for unforgettable celebrations" />
@@ -37,14 +27,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Fix bfcache - prevent unload listeners that block back/forward cache
-      window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-          // Page was restored from bfcache
-          window.location.reload();
-        }
-      });
-    </script>
   </body>
 </html>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Youtube, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
-import logo from "@/assets/logo-small.webp";
+import logo from "@/assets/logo.png";
 
 interface CollapsibleSectionProps {
   title: string;
@@ -104,7 +104,7 @@ export function Footer() {
           {/* Brand - Always visible */}
           <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
-              <img src={logo} alt="Raajeshwariy Groups Logo" width={56} height={56} className="h-14 w-14 object-contain" />
+              <img src={logo} alt="Raajeshwariy Groups Logo" className="h-14 w-auto object-contain" />
               <Link to="/" className="font-serif text-2xl font-bold text-primary">
               Raajeshwariy Groups of Company
               </Link>

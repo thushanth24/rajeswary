@@ -1,4 +1,3 @@
-import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,32 +8,32 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/admin/ProtectedRoute";
 
-// Lazy load public pages
-const Index = lazy(() => import("./pages/Index"));
-const Halls = lazy(() => import("./pages/Halls"));
-const HallDetail = lazy(() => import("./pages/HallDetail"));
-const Services = lazy(() => import("./pages/Services"));
-const Menus = lazy(() => import("./pages/Menus"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
-const Booking = lazy(() => import("./pages/Booking"));
-const Bungalows = lazy(() => import("./pages/Bungalows"));
-const Auth = lazy(() => import("./pages/Auth"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+// Public Pages
+import Index from "./pages/Index";
+import Halls from "./pages/Halls";
+import HallDetail from "./pages/HallDetail";
+import Services from "./pages/Services";
+import Menus from "./pages/Menus";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Booking from "./pages/Booking";
+import Bungalows from "./pages/Bungalows";
+import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
 
-// Lazy load admin pages
-const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
-const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
-const HallsManagement = lazy(() => import("./pages/admin/HallsManagement"));
-const BookingsManagement = lazy(() => import("./pages/admin/BookingsManagement"));
-const InventoryManagement = lazy(() => import("./pages/admin/InventoryManagement"));
-const ManagerAssignments = lazy(() => import("./pages/admin/ManagerAssignments"));
-const UnacknowledgedBookings = lazy(() => import("./pages/admin/UnacknowledgedBookings"));
-const NewManualBooking = lazy(() => import("./pages/admin/NewManualBooking"));
-const AuditLogs = lazy(() => import("./pages/admin/AuditLogs"));
-const Reports = lazy(() => import("./pages/admin/Reports"));
-const AdminCalendar = lazy(() => import("./pages/admin/Calendar"));
-const ContactMessages = lazy(() => import("./pages/admin/ContactMessages"));
+// Admin Pages
+import Dashboard from "./pages/admin/Dashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import HallsManagement from "./pages/admin/HallsManagement";
+import BookingsManagement from "./pages/admin/BookingsManagement";
+import InventoryManagement from "./pages/admin/InventoryManagement";
+import ManagerAssignments from "./pages/admin/ManagerAssignments";
+import UnacknowledgedBookings from "./pages/admin/UnacknowledgedBookings";
+import NewManualBooking from "./pages/admin/NewManualBooking";
+import AuditLogs from "./pages/admin/AuditLogs";
+import Reports from "./pages/admin/Reports";
+import AdminCalendar from "./pages/admin/Calendar";
+import ContactMessages from "./pages/admin/ContactMessages";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +46,6 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
@@ -162,7 +160,6 @@ const App = () => (
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
               </Routes>
-            </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
