@@ -2,19 +2,23 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 // Import static images as fallback
-import hallGrandBallroom from "@/assets/hall-grand-ballroom.webp";
-import hallRoyalBanquet from "@/assets/hall-royal-banquet.webp";
-import hallCrystalPalace from "@/assets/hall-crystal-palace.webp";
 import hallEmeraldGarden from "@/assets/hall-emerald-garden.jpg";
-import hallSunsetTerrace from "@/assets/hall-sunset-terrace.jpg";
+// Raajeshwariy Kondavil images
+import raajeshwariyKondavilCover from "@/assets/Raajeshwariy Weeding hall Kondavil cover.webp";
+// Raajeshwariy Tellipalai images
+import raajeshwariyTellipalaiCover from "@/assets/Raajeshwariy Wedding Hall Tellipalai cover.webp";
+// Chelva Palace images
+import chelvaPalaceCover from "@/assets/Chelva Palace cover.webp";
+// Chelva Mahal images
+import chelvaMahalCover from "@/assets/chelva mahal cover .jpeg";
 
 // Static image mapping by slug
 const staticImages: Record<string, string> = {
-  'grand-ballroom': hallGrandBallroom,
-  'royal-banquet': hallRoyalBanquet,
-  'crystal-palace': hallCrystalPalace,
-  'emerald-garden': hallEmeraldGarden,
-  'sunset-terrace': hallSunsetTerrace,
+  'grand-ballroom': chelvaMahalCover, // Chelva Mahal
+  'royal-banquet': chelvaPalaceCover, // Chelva Palace
+  'crystal-palace': raajeshwariyKondavilCover,
+  'emerald-garden': hallEmeraldGarden, // Keep existing Karpaka cover
+  'sunset-terrace': raajeshwariyTellipalaiCover,
 };
 
 export interface Hall {
@@ -68,7 +72,7 @@ function mapDBHallToHall(dbHall: DBHall): Hall {
     id: dbHall.id, // Use actual UUID from database
     slug: dbHall.slug,
     name: dbHall.name,
-    image: dbHall.image_url || staticImages[dbHall.slug] || hallGrandBallroom,
+    image: dbHall.image_url || staticImages[dbHall.slug] || chelvaMahalCover,
     capacity: {
       min: dbHall.capacity_min,
       max: dbHall.capacity_max,

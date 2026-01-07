@@ -219,120 +219,85 @@ export const HallImageGallery = ({ images, hallName, mainImage }: HallImageGalle
       </div>
 
       {/* Lightbox */}
-      <AnimatePresence>
-        {selectedIndex !== null && (
-          <Dialog open={selectedIndex !== null} onOpenChange={() => closeLightbox()}>
-            <DialogContent className="max-w-6xl p-0 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
-              <motion.div 
-                className="relative"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
+      <Dialog open={selectedIndex !== null} onOpenChange={() => closeLightbox()}>
+        <DialogContent className="max-w-6xl p-0 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
+          {selectedIndex !== null && (
+            <div className="relative">
+              {/* Close Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 z-20 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full shadow-lg"
               >
-                {/* Close Button */}
+                <X className="h-5 w-5" />
+              </Button>
+              
+              {/* Main Image */}
+              <div className="relative aspect-video bg-muted overflow-hidden">
+                <img
+                  key={selectedIndex}
+                  src={allImages[selectedIndex].image_url}
+                  alt={allImages[selectedIndex].caption || `${hallName} - Photo ${selectedIndex + 1}`}
+                  className="w-full h-full object-contain"
+                />
+                
+                {/* Navigation Arrows */}
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={closeLightbox}
-                  className="absolute top-4 right-4 z-20 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full shadow-lg"
+                  onClick={goToPrevious}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full shadow-lg h-12 w-12"
                 >
-                  <X className="h-5 w-5" />
+                  <ChevronLeft className="h-6 w-6" />
                 </Button>
                 
-                {/* Main Image with Animation */}
-                <div className="relative aspect-video bg-muted overflow-hidden">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={selectedIndex}
-                      src={allImages[selectedIndex].image_url}
-                      alt={allImages[selectedIndex].caption || `${hallName} - Photo ${selectedIndex + 1}`}
-                      className="w-full h-full object-contain"
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -50 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </AnimatePresence>
-                  
-                  {/* Navigation Arrows */}
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={goToPrevious}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full shadow-lg h-12 w-12"
-                    >
-                      <ChevronLeft className="h-6 w-6" />
-                    </Button>
-                  </motion.div>
-                  
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={goToNext}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full shadow-lg h-12 w-12"
-                    >
-                      <ChevronRight className="h-6 w-6" />
-                    </Button>
-                  </motion.div>
-                  
-                  {/* Image Counter */}
-                  <motion.div 
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-foreground shadow-lg"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    {selectedIndex + 1} / {allImages.length}
-                  </motion.div>
-                </div>
-                
-                {/* Caption */}
-                {allImages[selectedIndex].caption && (
-                  <motion.div 
-                    className="bg-card border-t border-border p-4"
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <p className="text-foreground text-center font-medium">{allImages[selectedIndex].caption}</p>
-                  </motion.div>
-                )}
-                
-                {/* Thumbnail Strip */}
-                <motion.div 
-                  className="bg-muted/50 p-4 flex gap-2 overflow-x-auto scrollbar-thin"
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={goToNext}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background text-foreground rounded-full shadow-lg h-12 w-12"
                 >
-                  {allImages.map((image, index) => (
-                    <motion.button
-                      key={image.id}
-                      onClick={() => setSelectedIndex(index)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-                        index === selectedIndex 
-                          ? "border-secondary shadow-lg shadow-secondary/20" 
-                          : "border-transparent opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      <img
-                        src={image.image_url}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    </motion.button>
-                  ))}
-                </motion.div>
-              </motion.div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </AnimatePresence>
+                  <ChevronRight className="h-6 w-6" />
+                </Button>
+                
+                {/* Image Counter */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-foreground shadow-lg">
+                  {selectedIndex + 1} / {allImages.length}
+                </div>
+              </div>
+              
+              {/* Caption */}
+              {allImages[selectedIndex].caption && (
+                <div className="bg-card border-t border-border p-4">
+                  <p className="text-foreground text-center font-medium">{allImages[selectedIndex].caption}</p>
+                </div>
+              )}
+              
+              {/* Thumbnail Strip */}
+              <div className="bg-muted/50 p-4 flex gap-2 overflow-x-auto scrollbar-thin">
+                {allImages.map((image, index) => (
+                  <button
+                    key={image.id}
+                    onClick={() => setSelectedIndex(index)}
+                    className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                      index === selectedIndex 
+                        ? "border-secondary shadow-lg shadow-secondary/20" 
+                        : "border-transparent opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={image.image_url}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

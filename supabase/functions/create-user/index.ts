@@ -1,5 +1,4 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.89.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Allowed origins for CORS - restrict to trusted domains
 const allowedOrigins = [
@@ -46,7 +45,7 @@ function validateRole(role: string): role is "admin" | "hall_manager" {
   return role === "admin" || role === "hall_manager";
 }
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin");
   const corsHeaders = getCorsHeaders(origin);
   

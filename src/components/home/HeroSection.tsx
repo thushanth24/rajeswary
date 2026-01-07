@@ -1,12 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Calendar } from "lucide-react";
-import { FloatingElements } from "@/components/animations/FloatingElements";
-import { RangoliPattern } from "@/components/animations/RangoliPattern";
-import { DiyaLamp } from "@/components/animations/DiyaLamp";
+import { DeferredFloatingElements, DeferredRangoliPattern, DeferredDiyaLamp } from "@/components/animations/LazyAnimations";
 import { useLanguage } from "@/contexts/LanguageContext";
-import heroImage from "@/assets/hero-traditional.webp";
-import heroVideo from "@/assets/hero-wedding-video.mp4";
 
 export function HeroSection() {
   const { t } = useLanguage();
@@ -15,7 +11,7 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src={heroImage}
+          src="/images/hero-traditional.webp"
           alt="Traditional Hindu Wedding Mandapam"
           className="h-full w-full object-cover"
           fetchPriority="high"
@@ -25,24 +21,24 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/70 to-foreground/40" />
       </div>
 
-      {/* Animated rangoli pattern overlay */}
-      <RangoliPattern />
+      {/* Animated rangoli pattern overlay - deferred */}
+      <DeferredRangoliPattern />
 
-      {/* Floating flower petals */}
-      <FloatingElements />
+      {/* Floating flower petals - deferred */}
+      <DeferredFloatingElements />
 
-      {/* Animated corner diyas */}
+      {/* Animated corner diyas - deferred */}
       <div className="absolute top-28 left-8 z-20 hidden lg:block animate-float">
-        <DiyaLamp size="lg" />
+        <DeferredDiyaLamp size="lg" />
       </div>
       <div className="absolute top-28 right-8 z-20 hidden lg:block animate-float" style={{ animationDelay: "1s" }}>
-        <DiyaLamp size="lg" />
+        <DeferredDiyaLamp size="lg" />
       </div>
       <div className="absolute bottom-32 left-8 z-20 hidden lg:block animate-float" style={{ animationDelay: "2s" }}>
-        <DiyaLamp size="md" />
+        <DeferredDiyaLamp size="md" />
       </div>
       <div className="absolute bottom-32 right-8 z-20 hidden lg:block animate-float" style={{ animationDelay: "1.5s" }}>
-        <DiyaLamp size="md" />
+        <DeferredDiyaLamp size="md" />
       </div>
 
       {/* Decorative floating elements */}

@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { 
-  ChevronLeft,
-  ChevronRight
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { services } from "@/data/services";
 
@@ -81,7 +78,7 @@ export function ServicesPreview() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       
       {/* Floating decorative elements */}
-      <motion.div 
+      <m.div 
         className="absolute top-20 left-1/4 text-6xl hidden lg:block"
         animate={{ 
           y: [0, -20, 0],
@@ -90,8 +87,8 @@ export function ServicesPreview() {
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         🪔
-      </motion.div>
-      <motion.div 
+      </m.div>
+      <m.div 
         className="absolute bottom-20 right-1/4 text-6xl hidden lg:block"
         animate={{ 
           y: [0, 20, 0],
@@ -100,11 +97,11 @@ export function ServicesPreview() {
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
         🪷
-      </motion.div>
+      </m.div>
       
       <div className="container relative z-10 mx-auto px-4 lg:px-8">
         {/* Section Header */}
-        <motion.div 
+        <m.div 
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +121,7 @@ export function ServicesPreview() {
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
             {t("services.description")}
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Featured Carousel */}
         <div className="mb-16">
@@ -132,7 +129,7 @@ export function ServicesPreview() {
             {/* Main Carousel */}
             <div className="relative h-[500px] md:h-[450px] rounded-2xl overflow-hidden shadow-2xl">
               <AnimatePresence mode="wait">
-                <motion.div
+                <m.div
                   key={activeIndex}
                   initial={{ opacity: 0, scale: 1.1 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -153,7 +150,7 @@ export function ServicesPreview() {
                   <div className="absolute inset-0 flex items-center">
                     <div className="container mx-auto px-8 md:px-16">
                       <div className="max-w-xl">
-                        <motion.div
+                        <m.div
                           initial={{ opacity: 0, x: -30 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.2, duration: 0.5 }}
@@ -165,27 +162,27 @@ export function ServicesPreview() {
                           <span className="text-white/80 uppercase tracking-wider text-sm font-medium">
                             Featured Service
                           </span>
-                        </motion.div>
+                        </m.div>
                         
-                        <motion.h3
+                        <m.h3
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.3, duration: 0.5 }}
                           className="font-serif text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg"
                         >
                           {serviceItems[activeIndex].title}
-                        </motion.h3>
+                        </m.h3>
                         
-                        <motion.p
+                        <m.p
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.4, duration: 0.5 }}
                           className="text-white/90 text-lg mb-6 leading-relaxed"
                         >
                           {serviceItems[activeIndex].description}
-                        </motion.p>
+                        </m.p>
                         
-                        <motion.div
+                        <m.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.5, duration: 0.5 }}
@@ -198,11 +195,11 @@ export function ServicesPreview() {
                               Learn More
                             </Link>
                           </Button>
-                        </motion.div>
+                        </m.div>
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               </AnimatePresence>
               
               {/* Navigation Arrows */}
@@ -238,7 +235,7 @@ export function ServicesPreview() {
         </div>
 
         {/* Service Grid with Staggered Layout */}
-        <motion.div 
+        <m.div 
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           initial="hidden"
           whileInView="visible"
@@ -252,7 +249,7 @@ export function ServicesPreview() {
           }}
         >
           {serviceItems.map((service, index) => (
-            <motion.div
+            <m.div
               key={service.title}
               variants={{
                 hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -305,12 +302,12 @@ export function ServicesPreview() {
                   </span>
                 </div>
               )}
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
 
         {/* CTA Button */}
-        <motion.div 
+        <m.div 
           className="text-center mt-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -328,7 +325,7 @@ export function ServicesPreview() {
               <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

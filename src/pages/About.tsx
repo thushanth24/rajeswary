@@ -30,10 +30,10 @@ const AboutPage = () => {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   const valuesData = [
-    { icon: Award, title: "Divine Excellence", desc: "Award-winning mandapams with traditional elegance" },
-    { icon: Users, title: "Devoted Team", desc: "Experienced professionals honoring your traditions" },
-    { icon: Star, title: "Premium Seva", desc: "Complete wedding solutions under one sacred roof" },
-    { icon: Heart, title: "Personal Touch", desc: "Customized experiences for every blessed couple" },
+    { icon: Award, title: t("about.values.excellence.title"), desc: t("about.values.excellence.desc") },
+    { icon: Users, title: t("about.values.team.title"), desc: t("about.values.team.desc") },
+    { icon: Star, title: t("about.values.service.title"), desc: t("about.values.service.desc") },
+    { icon: Heart, title: t("about.values.personal.title"), desc: t("about.values.personal.desc") },
   ];
 
   return (
@@ -93,9 +93,9 @@ const AboutPage = () => {
               animate={{ y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              About{" "}
+              {t("about.heroTitle")}{" "}
               <span className="text-gradient-gold inline-block">
-                {"Celebration Halls".split("").map((letter, index) => (
+                {t("about.heroHighlight").split("").map((letter, index) => (
                   <motion.span
                     key={index}
                     initial={{ opacity: 0, y: 50 }}
@@ -202,23 +202,12 @@ const AboutPage = () => {
                 <Heart className="h-10 w-10 text-primary" />
               </div>
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Our <span className="text-gradient-gold">Story</span>
+                {t("about.story.title")} <span className="text-gradient-gold">{t("about.story.highlight")}</span>
               </h2>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
-                <p>
-                  Celebration Halls began with a sacred vision: to create divine spaces 
-                  where love stories unfold according to cherished Tamil Hindu traditions.
-                </p>
-                <p>
-                  What started as a single mandapam has grown into a collection of five 
-                  stunning venues, each designed with devotion and blessed ambiance.
-                </p>
-                <p>
-                  Over the years, we've had the privilege of hosting thousands of 
-                  thirumangalyam ceremonies, receptions, and sacred celebrations. Each 
-                  union has deepened our understanding, making us guardians of tradition 
-                  while embracing the joy of every couple's unique journey.
-                </p>
+                <p>{t("about.story.p1")}</p>
+                <p>{t("about.story.p2")}</p>
+                <p>{t("about.story.p3")}</p>
               </div>
             </motion.div>
           </div>
@@ -241,7 +230,7 @@ const AboutPage = () => {
             >
               <span className="text-secondary text-xl">✦</span>
               <span className="text-secondary font-medium tracking-wider uppercase text-sm">
-                Our Journey
+                {t("about.journey.title")}
               </span>
               <span className="text-secondary text-xl">✦</span>
             </motion.div>
@@ -251,7 +240,7 @@ const AboutPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              A Legacy of <span className="text-gradient-gold">Sacred Celebrations</span>
+              {t("about.journey.subtitle")} <span className="text-gradient-gold">{t("about.journey.highlight")}</span>
             </motion.h2>
             <motion.p 
               className="text-muted-foreground max-w-2xl mx-auto"
@@ -260,7 +249,7 @@ const AboutPage = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              From humble beginnings to becoming the region's premier wedding destination
+              {t("about.journey.description")}
             </motion.p>
           </div>
           
@@ -283,7 +272,7 @@ const AboutPage = () => {
             >
               <span className="text-secondary text-xl">✦</span>
               <span className="text-secondary font-medium tracking-wider uppercase text-sm">
-                Our Sacred Values
+                {t("about.values.subtitle")}
               </span>
               <span className="text-secondary text-xl">✦</span>
             </motion.div>
@@ -293,7 +282,7 @@ const AboutPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Why Choose <span className="text-gradient-gold">Us</span>
+              {t("about.values.title")} <span className="text-gradient-gold">{t("about.values.highlight")}</span>
             </motion.h2>
             <motion.p 
               className="text-muted-foreground max-w-2xl mx-auto"
@@ -302,8 +291,7 @@ const AboutPage = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              What sets us apart is our devotion to making your sacred day 
-              truly divine and memorable.
+              {t("about.values.description")}
             </motion.p>
           </div>
           
@@ -377,10 +365,10 @@ const AboutPage = () => {
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <div className="grid gap-8 md:grid-cols-4 text-center">
             {[
-              { value: "15+", label: "Years of Seva" },
-              { value: "5", label: "Sacred Mandapams" },
-              { value: "500+", label: "Blessed Unions" },
-              { value: "100%", label: "Happy Couples" },
+              { value: "15+", label: t("about.stats.years") },
+              { value: "5", label: t("about.stats.mandapams") },
+              { value: "500+", label: t("about.stats.unions") },
+              { value: "100%", label: t("about.stats.satisfaction") },
             ].map((stat) => (
               <AnimatedCounter key={stat.label} value={stat.value} label={stat.label} />
             ))}
@@ -408,7 +396,7 @@ const AboutPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Meet Our <span className="text-gradient-gold">Team</span>
+              {t("about.team.title").split(" ").slice(0, -1).join(" ")} <span className="text-gradient-gold">{t("about.team.title").split(" ").slice(-1)}</span>
             </motion.h2>
             <motion.p 
               className="text-muted-foreground max-w-2xl mx-auto"
@@ -417,7 +405,7 @@ const AboutPage = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              Dedicated professionals who make every celebration extraordinary
+              {t("about.team.description")}
             </motion.p>
           </div>
           
@@ -445,19 +433,19 @@ const AboutPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-              >
-                Our Sacred <span className="text-gradient-gold">Promise</span>
-              </motion.h2>
+            >
+              {t("about.promise.title")} <span className="text-gradient-gold">{t("about.promise.highlight")}</span>
+            </motion.h2>
             </div>
             
             <div className="space-y-4">
               {[
-                "Impeccable seva from first inquiry to muhurtham day",
-                "Flexible packages honoring your family traditions",
-                "Transparent pricing with no hidden costs",
-                "Premium vendors ensuring quality for every ritual",
-                "Dedicated event coordinator for your celebration",
-                "Backup systems for uninterrupted sacred ceremonies",
+                t("about.promise.item1"),
+                t("about.promise.item2"),
+                t("about.promise.item3"),
+                t("about.promise.item4"),
+                t("about.promise.item5"),
+                t("about.promise.item6"),
               ].map((item, index) => (
                 <motion.div 
                   key={item} 
@@ -502,7 +490,7 @@ const AboutPage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            Let's Create Your <span className="text-gradient-gold">Perfect Day</span>
+            {t("about.cta.title")} <span className="text-gradient-gold">{t("about.cta.highlight")}</span>
           </motion.h2>
           <motion.p 
             className="text-muted-foreground mb-10 max-w-xl mx-auto text-lg"
@@ -511,8 +499,7 @@ const AboutPage = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            We'd be honored to be part of your sacred celebration. Book a visit 
-            to see our mandapams or start planning your auspicious event today.
+            {t("about.cta.description")}
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -521,14 +508,14 @@ const AboutPage = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <Button size="lg" asChild className="gold-shimmer group text-lg px-8">
+            <Button size="lg" asChild className="bg-secondary hover:bg-secondary/90 text-secondary-foreground group text-lg px-8">
               <Link to="/booking">
                 <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-                Book Now
+                {t("about.cta.bookNow")}
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="border-primary/50 hover:bg-primary/10 text-lg px-8">
-              <Link to="/contact">Contact Us</Link>
+              <Link to="/contact">{t("about.cta.contactUs")}</Link>
             </Button>
           </motion.div>
           

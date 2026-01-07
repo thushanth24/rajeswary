@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Calendar, Phone, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LazyVideo } from "@/components/ui/LazyVideo";
 import mandapamVideo from "@/assets/wedding-mandapam-video.mp4";
 
 const defaultVideos = [mandapamVideo];
@@ -23,11 +24,11 @@ export function CTASection({
   title,
   highlight,
   description,
-  primaryButtonText,
   primaryButtonLink = "/booking",
   primaryButtonIcon: PrimaryIcon = Calendar,
   showSecondaryButton = true,
   videos = defaultVideos,
+  primaryButtonText,
 }: CTASectionProps) {
   const { t } = useLanguage();
   const videoClips = videos;
@@ -39,17 +40,16 @@ export function CTASection({
   const displayButtonText = primaryButtonText || t("cta.book");
   return (
     <section className="py-20 relative overflow-hidden">
-      {/* Video Background */}
+      {/* Video Background - Lazy loaded */}
       <div className="absolute inset-0">
-        <video
+        <LazyVideo
+          src={videoClips[0]}
+          className="w-full h-full"
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover"
-        >
-          <source src={videoClips[0]} type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0 bg-background/70" />
       </div>
       
