@@ -33,12 +33,19 @@ interface Hall {
   name: string;
 }
 
+interface HallSection {
+  id: string;
+  name: string;
+}
+
 const NewManualBooking = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [halls, setHalls] = useState<Hall[]>([]);
+  const [sections, setSections] = useState<HallSection[]>([]);
   const [selectedHall, setSelectedHall] = useState('');
+  const [selectedSection, setSelectedSection] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -57,34 +64,70 @@ const NewManualBooking = () => {
   });
 
   useEffect(() => {
-    const fetchManagerHall = async () => {
+    const fetchManagerHalls = async () => {
       if (!user) return;
 
       try {
-        // Get hall assigned to this manager
-        const { data: assignment, error } = await supabase
+        // Get all halls assigned to this manager
+        const { data: assignments, error } = await supabase
           .from('hall_managers')
           .select('hall_id, halls(id, name)')
           .eq('user_id', user.id)
-          .eq('is_active', true)
-          .maybeSingle();
+          .eq('is_active', true);
 
         if (error) throw error;
 
-        if (assignment?.halls) {
-          const hall = assignment.halls as any;
-          setHalls([{ id: hall.id, name: hall.name }]);
-          setSelectedHall(hall.id);
+        if (assignments && assignments.length > 0) {
+          const managerHalls = assignments
+            .filter(a => a.halls)
+            .map(a => {
+              const hall = a.halls as any;
+              return { id: hall.id, name: hall.name };
+            });
+          setHalls(managerHalls);
+          if (managerHalls.length === 1) {
+            setSelectedHall(managerHalls[0].id);
+          }
         }
       } catch (error) {
-        console.error('Error fetching manager hall:', error);
+        console.error('Error fetching manager halls:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchManagerHall();
+    fetchManagerHalls();
   }, [user]);
+
+  // Fetch sections when hall changes
+  useEffect(() => {
+    const fetchSections = async () => {
+      if (!selectedHall) {
+        setSections([]);
+        setSelectedSection('');
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('hall_sections')
+        .select('id, name')
+        .eq('hall_id', selectedHall)
+        .eq('is_active', true)
+        .order('display_order');
+
+      if (!error && data) {
+        setSections(data);
+        // Auto-select first section if only one exists
+        if (data.length === 1) {
+          setSelectedSection(data[0].id);
+        } else {
+          setSelectedSection('');
+        }
+      }
+    };
+
+    fetchSections();
+  }, [selectedHall]);
 
   const onSubmit = async (values: BookingFormValues) => {
     if (!selectedHall) {
@@ -96,12 +139,23 @@ const NewManualBooking = () => {
       return;
     }
 
+    // Require section selection for multi-section halls
+    if (sections.length > 1 && !selectedSection) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Please select a section for this hall',
+      });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { error } = await supabase
         .from('bookings')
         .insert({
           hall_id: selectedHall,
+          section_id: sections.length > 0 ? selectedSection || null : null,
           customer_name: values.customer_name,
           customer_phone: values.customer_phone,
           customer_email: values.customer_email || null,
@@ -326,14 +380,52 @@ const NewManualBooking = () => {
                 />
               </div>
 
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <p className="text-sm">
-                  <strong>Hall:</strong> {halls[0]?.name}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  This booking will be automatically confirmed and marked as manual entry.
-                </p>
-              </div>
+              {halls.length > 1 ? (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Select Hall *</label>
+                  <Select value={selectedHall} onValueChange={setSelectedHall}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a hall" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {halls.map((hall) => (
+                        <SelectItem key={hall.id} value={hall.id}>
+                          {hall.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <p className="text-sm">
+                    <strong>Hall:</strong> {halls[0]?.name}
+                  </p>
+                </div>
+              )}
+
+              {/* Section selection for multi-section halls */}
+              {sections.length > 1 && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Select Section *</label>
+                  <Select value={selectedSection} onValueChange={setSelectedSection}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a section" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sections.map((section) => (
+                        <SelectItem key={section.id} value={section.id}>
+                          {section.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <p className="text-sm text-muted-foreground">
+                This booking will be automatically confirmed and marked as manual entry.
+              </p>
 
               <div className="flex gap-4">
                 <Button

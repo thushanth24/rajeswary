@@ -10,8 +10,9 @@ import { CTASection } from "@/components/home/CTASection";
 import { MenuCard } from "@/components/menu/MenuCard";
 import { MenuSectionDivider } from "@/components/menu/MenuSectionDivider";
 import { MobileMenuAccordion } from "@/components/menu/MobileMenuAccordion";
-import { PricingCalculator } from "@/components/menu/PricingCalculator";
 import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
+import { useLanguage } from "@/contexts/LanguageContext";
+import menuVideo from "@/assets/wedding-food-display-video.mp4";
 
 interface MenuPackage {
   id: string;
@@ -22,6 +23,7 @@ interface MenuPackage {
 }
 
 const MenusPage = () => {
+  const { t } = useLanguage();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuPackage | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<"veg" | "nonveg" | "special">("veg");
@@ -47,26 +49,20 @@ const MenusPage = () => {
           </div>
           
           <span className="text-secondary font-medium tracking-wider uppercase text-sm animate-fade-in">
-            ✦ Traditional Jaffna Cuisine ✦
+            ✦ {t("menus.subtitle")} ✦
           </span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6 animate-fade-in-up">
-            Our <span className="text-gradient-gold">Menu</span> Packages
+            {t("menus.title")}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Delight your guests with our authentic Jaffna cuisine. Choose from our 
-            Pubert (Lunch) and Dinner packages to create divine culinary experiences.
+            {t("menus.description")}
           </p>
           
           <div className="divider-ornate mt-8" />
         </div>
       </section>
 
-      {/* Pricing Calculator Section */}
-      <section className="relative py-12 bg-background overflow-hidden">
-        <div className="container relative z-10 mx-auto px-4 lg:px-8">
-          <PricingCalculator className="max-w-4xl mx-auto" />
-        </div>
-      </section>
+  
 
       {/* Pubert (Lunch) Section */}
       <section className="relative py-20 bg-background overflow-hidden">
@@ -88,15 +84,15 @@ const MenusPage = () => {
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-card border border-border">
                 <TabsTrigger value="pubert-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
                   <Leaf className="h-4 w-4" />
-                  Veg
+                  {t("menus.veg")}
                 </TabsTrigger>
                 <TabsTrigger value="pubert-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
                   <Drumstick className="h-4 w-4" />
-                  Non-Veg
+                  {t("menus.nonveg")}
                 </TabsTrigger>
                 <TabsTrigger value="pubert-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Sparkles className="h-4 w-4" />
-                  Special
+                  {t("menus.special")}
                 </TabsTrigger>
               </TabsList>
 
@@ -461,11 +457,7 @@ const MenusPage = () => {
         highlight="Menu Package"
         description="All menus can be customized to honor your family traditions and preferences. Our master cooks will work with you to create the perfect feast for your auspicious occasion."
         primaryButtonText="Select Menu & Book"
-        videos={[
-          "https://videos.pexels.com/video-files/4253260/4253260-hd_1920_1080_25fps.mp4",
-          "https://videos.pexels.com/video-files/3298438/3298438-hd_1920_1080_25fps.mp4",
-          "https://videos.pexels.com/video-files/4253251/4253251-hd_1920_1080_25fps.mp4",
-        ]}
+        videos={[menuVideo]}
       />
 
       {/* Quick View Modal */}

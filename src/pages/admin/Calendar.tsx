@@ -26,6 +26,14 @@ interface Booking {
   event_start_time: string | null;
   event_end_time: string | null;
   special_requests: string | null;
+  section_id: string | null;
+}
+
+interface HallSection {
+  id: string;
+  hall_id: string;
+  name: string;
+  display_order: number;
 }
 
 interface Hall {
@@ -51,8 +59,10 @@ const AdminCalendar = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [halls, setHalls] = useState<Hall[]>([]);
   const [closedDates, setClosedDates] = useState<ClosedDate[]>([]);
+  const [hallSections, setHallSections] = useState<HallSection[]>([]);
   const [selectedHallFilter, setSelectedHallFilter] = useState<string>("all");
   const [managerHallId, setManagerHallId] = useState<string | null>(null);
+  const [managerHallIds, setManagerHallIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Close date dialog state
@@ -64,41 +74,53 @@ const AdminCalendar = () => {
   const [showBookingDetails, setShowBookingDetails] = useState(false);
   const [selectedBookings, setSelectedBookings] = useState<Booking[]>([]);
 
-  // Fetch manager's hall assignment
+  // Fetch manager's hall assignments
   useEffect(() => {
-    const fetchManagerHall = async () => {
+    const fetchManagerHalls = async () => {
       if (!user?.id || isAdminOrAbove) return;
 
       const { data, error } = await supabase
         .from("hall_managers")
         .select("hall_id")
         .eq("user_id", user.id)
-        .eq("is_active", true)
-        .maybeSingle();
+        .eq("is_active", true);
 
-      if (!error && data) {
-        setManagerHallId(data.hall_id);
+      if (!error && data && data.length > 0) {
+        const hallIds = data.map((d) => d.hall_id);
+        setManagerHallIds(hallIds);
+        setManagerHallId(hallIds[0]); // Keep for backward compat
       }
     };
 
-    fetchManagerHall();
+    fetchManagerHalls();
   }, [user?.id, isAdminOrAbove]);
 
-  // Fetch halls
+  // Fetch halls and sections
   useEffect(() => {
-    const fetchHalls = async () => {
-      const { data, error } = await supabase
+    const fetchHallsAndSections = async () => {
+      const { data: hallsData, error: hallsError } = await supabase
         .from("halls")
         .select("id, name, slug")
         .eq("is_active", true)
         .order("name");
 
-      if (!error && data) {
-        setHalls(data);
+      if (!hallsError && hallsData) {
+        setHalls(hallsData);
+      }
+
+      // Fetch all hall sections
+      const { data: sectionsData, error: sectionsError } = await supabase
+        .from("hall_sections")
+        .select("id, hall_id, name, display_order")
+        .eq("is_active", true)
+        .order("display_order");
+
+      if (!sectionsError && sectionsData) {
+        setHallSections(sectionsData);
       }
     };
 
-    fetchHalls();
+    fetchHallsAndSections();
   }, []);
 
   // Fetch bookings and closed dates for the visible month range
@@ -111,14 +133,14 @@ const AdminCalendar = () => {
       // Build booking query
       let bookingQuery = supabase
         .from("bookings")
-        .select("id, customer_name, event_type, event_date, status, hall_id, customer_phone, expected_guests, event_start_time, event_end_time, special_requests")
+        .select("id, customer_name, event_type, event_date, status, hall_id, customer_phone, expected_guests, event_start_time, event_end_time, special_requests, section_id")
         .gte("event_date", format(start, "yyyy-MM-dd"))
         .lte("event_date", format(end, "yyyy-MM-dd"))
         .neq("status", "cancelled");
 
-      // For managers, filter by their hall
-      if (!isAdminOrAbove && managerHallId) {
-        bookingQuery = bookingQuery.eq("hall_id", managerHallId);
+      // For managers, filter by their halls
+      if (!isAdminOrAbove && managerHallIds.length > 0) {
+        bookingQuery = bookingQuery.in("hall_id", managerHallIds);
       }
 
       const { data: bookingsData, error: bookingsError } = await bookingQuery;
@@ -134,8 +156,8 @@ const AdminCalendar = () => {
         .gte("closed_date", format(start, "yyyy-MM-dd"))
         .lte("closed_date", format(end, "yyyy-MM-dd"));
 
-      if (!isAdminOrAbove && managerHallId) {
-        closedQuery = closedQuery.eq("hall_id", managerHallId);
+      if (!isAdminOrAbove && managerHallIds.length > 0) {
+        closedQuery = closedQuery.in("hall_id", managerHallIds);
       }
 
       const { data: closedData, error: closedError } = await closedQuery;
@@ -148,7 +170,7 @@ const AdminCalendar = () => {
     };
 
     fetchData();
-  }, [currentMonth, managerHallId, isAdminOrAbove]);
+  }, [currentMonth, managerHallIds, isAdminOrAbove]);
 
   // Generate calendar days
   const calendarDays = useMemo(() => {
@@ -284,6 +306,45 @@ const AdminCalendar = () => {
   // Get hall name by id
   const getHallName = (hallId: string) => {
     return halls.find((h) => h.id === hallId)?.name || "Unknown Hall";
+  };
+
+  // Get section name by id
+  const getSectionName = (sectionId: string | null) => {
+    if (!sectionId) return null;
+    return hallSections.find((s) => s.id === sectionId)?.name || null;
+  };
+
+  // Get sections for a hall
+  const getHallSections = (hallId: string) => {
+    return hallSections.filter((s) => s.hall_id === hallId);
+  };
+
+  // Handle section assignment
+  const handleAssignSection = async (bookingId: string, sectionId: string) => {
+    const { error } = await supabase
+      .from("bookings")
+      .update({ section_id: sectionId })
+      .eq("id", bookingId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign section.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Section Assigned",
+        description: "Booking section updated successfully.",
+      });
+      // Update local state
+      setBookings((prev) =>
+        prev.map((b) => (b.id === bookingId ? { ...b, section_id: sectionId } : b))
+      );
+      setSelectedBookings((prev) =>
+        prev.map((b) => (b.id === bookingId ? { ...b, section_id: sectionId } : b))
+      );
+    }
   };
 
   // Get status badge variant
@@ -546,52 +607,84 @@ const AdminCalendar = () => {
           {selectedBookings.length > 0 ? (
             <div className="space-y-4">
               <h4 className="font-medium">Bookings</h4>
-              {selectedBookings.map((booking) => (
-                <Card key={booking.id}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h5 className="font-semibold">{booking.customer_name}</h5>
-                        <p className="text-sm text-muted-foreground">
-                          {isAdminOrAbove && getHallName(booking.hall_id)}
-                        </p>
-                      </div>
-                      {getStatusBadge(booking.status)}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Event:</span>
-                        <span className="ml-2">{booking.event_type}</span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Phone:</span>
-                        <span className="ml-2">{booking.customer_phone}</span>
-                      </div>
-                      {booking.expected_guests && (
+              {selectedBookings.map((booking) => {
+                const sections = getHallSections(booking.hall_id);
+                const hasMultipleSections = sections.length > 1;
+                const currentSection = getSectionName(booking.section_id);
+
+                return (
+                  <Card key={booking.id}>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
                         <div>
-                          <span className="text-muted-foreground">Guests:</span>
-                          <span className="ml-2">{booking.expected_guests}</span>
+                          <h5 className="font-semibold">{booking.customer_name}</h5>
+                          <p className="text-sm text-muted-foreground">
+                            {isAdminOrAbove && getHallName(booking.hall_id)}
+                            {currentSection && ` • ${currentSection}`}
+                          </p>
+                        </div>
+                        {getStatusBadge(booking.status)}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Event:</span>
+                          <span className="ml-2">{booking.event_type}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Phone:</span>
+                          <span className="ml-2">{booking.customer_phone}</span>
+                        </div>
+                        {booking.expected_guests && (
+                          <div>
+                            <span className="text-muted-foreground">Guests:</span>
+                            <span className="ml-2">{booking.expected_guests}</span>
+                          </div>
+                        )}
+                        {booking.event_start_time && (
+                          <div>
+                            <span className="text-muted-foreground">Time:</span>
+                            <span className="ml-2">
+                              {booking.event_start_time}
+                              {booking.event_end_time && ` - ${booking.event_end_time}`}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Section Assignment for multi-section halls */}
+                      {hasMultipleSections && (
+                        <div className="mt-3 p-3 bg-muted/50 rounded-lg border">
+                          <Label className="text-xs text-muted-foreground mb-2 block">
+                            Assign Section
+                          </Label>
+                          <Select
+                            value={booking.section_id || ""}
+                            onValueChange={(value) => handleAssignSection(booking.id, value)}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue placeholder="Select section..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {sections.map((section) => (
+                                <SelectItem key={section.id} value={section.id}>
+                                  {section.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       )}
-                      {booking.event_start_time && (
-                        <div>
-                          <span className="text-muted-foreground">Time:</span>
-                          <span className="ml-2">
-                            {booking.event_start_time}
-                            {booking.event_end_time && ` - ${booking.event_end_time}`}
-                          </span>
+
+                      {booking.special_requests && (
+                        <div className="mt-3 p-2 bg-muted rounded text-sm">
+                          <p className="text-muted-foreground text-xs mb-1">Special Requests:</p>
+                          <p className="whitespace-pre-wrap">{booking.special_requests}</p>
                         </div>
                       )}
-                    </div>
-                    {booking.special_requests && (
-                      <div className="mt-3 p-2 bg-muted rounded text-sm">
-                        <p className="text-muted-foreground text-xs mb-1">Special Requests:</p>
-                        <p className="whitespace-pre-wrap">{booking.special_requests}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             selectedDate && getClosedDatesForDate(selectedDate).length === 0 && (

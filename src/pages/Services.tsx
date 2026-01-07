@@ -10,6 +10,7 @@ import { CTASection } from "@/components/home/CTASection";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, ChevronRight, Sparkles, Crown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import servicesVideo from "@/assets/wedding-services-video.mp4";
 
 const categoryConfig: Record<ServiceCategory | "all", { label: string; icon: React.ReactNode; description: string }> = {
   all: { label: "All Services", icon: <Sparkles className="w-4 h-4" />, description: "Explore our complete range of wedding services" },
@@ -45,10 +46,8 @@ const ServicesPage = () => {
     }
   };
 
-  // Determine bento grid sizes
-  const getBentoSize = (index: number): "normal" | "large" | "wide" => {
-    if (index === 0) return "large";
-    if (index === 3) return "wide";
+  // All cards are normal size for consistent grid layout
+  const getBentoSize = (): "normal" | "large" | "wide" => {
     return "normal";
   };
 
@@ -250,10 +249,6 @@ const ServicesPage = () => {
             {filteredServices.map((service, index) => (
               <motion.div 
                 key={service.id}
-                className={`
-                  ${getBentoSize(index) === "large" ? "md:row-span-2" : ""}
-                  ${getBentoSize(index) === "wide" ? "md:col-span-2" : ""}
-                `}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -261,7 +256,7 @@ const ServicesPage = () => {
               >
                 <EnhancedServiceCard 
                   service={service} 
-                  size={getBentoSize(index)}
+                  size="normal"
                 />
               </motion.div>
             ))}
@@ -334,11 +329,7 @@ const ServicesPage = () => {
         highlight="Sacred Union"
         description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration package."
         primaryButtonText="Begin Sacred Booking"
-        videos={[
-          "https://videos.pexels.com/video-files/3195394/3195394-hd_1920_1080_25fps.mp4",
-          "https://videos.pexels.com/video-files/3327291/3327291-hd_1920_1080_25fps.mp4",
-          "https://videos.pexels.com/video-files/5765281/5765281-hd_1920_1080_25fps.mp4",
-        ]}
+        videos={[servicesVideo]}
       />
     </Layout>
   );

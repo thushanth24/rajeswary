@@ -2,6 +2,9 @@ import serviceCatering from "@/assets/catering-buffet.jpg";
 import servicePhotography from "@/assets/service-photography.jpg";
 import serviceVehicle from "@/assets/service-vehicle.jpg";
 import serviceDecoration from "@/assets/service-decoration.jpg";
+import serviceDjMusic from "@/assets/service-dj-music.jpg";
+import serviceMakeup from "@/assets/service-makeup.jpg";
+import serviceJewellery from "@/assets/service-jewellery.jpg";
 
 export type ServiceCategory = "essential" | "premium" | "addon";
 export type ServiceBadge = "popular" | "premium" | "new" | null;
@@ -16,7 +19,6 @@ export interface Service {
   category: ServiceCategory;
   badge: ServiceBadge;
   icon: string;
-  priceRange?: string;
 }
 
 export const services: Service[] = [
@@ -37,7 +39,6 @@ export const services: Service[] = [
     category: "essential",
     badge: "popular",
     icon: "🍽️",
-    priceRange: "₹350 - ₹2,200/person",
   },
   {
     id: "photography",
@@ -56,7 +57,6 @@ export const services: Service[] = [
     category: "essential",
     badge: "popular",
     icon: "📸",
-    priceRange: "₹50,000 - ₹3,00,000",
   },
   {
     id: "vehicles",
@@ -75,7 +75,6 @@ export const services: Service[] = [
     category: "premium",
     badge: "premium",
     icon: "🚗",
-    priceRange: "₹15,000 - ₹75,000",
   },
   {
     id: "decoration",
@@ -94,7 +93,6 @@ export const services: Service[] = [
     category: "essential",
     badge: null,
     icon: "🌸",
-    priceRange: "₹1,00,000 - ₹5,00,000",
   },
   {
     id: "sound-lighting",
@@ -113,7 +111,6 @@ export const services: Service[] = [
     category: "addon",
     badge: "new",
     icon: "🎵",
-    priceRange: "₹25,000 - ₹1,50,000",
   },
   {
     id: "coordination",
@@ -132,7 +129,60 @@ export const services: Service[] = [
     category: "premium",
     badge: "premium",
     icon: "📋",
-    priceRange: "₹30,000 - ₹1,00,000",
+  },
+  {
+    id: "dj-music",
+    name: "DJ & Music",
+    description: "Set the perfect mood with our professional DJ services and live music arrangements. From traditional melodies to modern beats, we keep your guests entertained throughout.",
+    image: serviceDjMusic,
+    features: [
+      "Professional DJ setup",
+      "Live band options",
+      "Traditional music",
+      "Sangeet performances",
+      "High-quality sound system",
+      "Custom playlist creation",
+    ],
+    bookingNote: "Music packages customizable",
+    category: "addon",
+    badge: "popular",
+    icon: "🎧",
+  },
+  {
+    id: "makeup",
+    name: "Bridal Makeup",
+    description: "Look stunning on your special day with our expert makeup artists. From traditional bridal looks to contemporary styles, we enhance your natural beauty.",
+    image: serviceMakeup,
+    features: [
+      "Bridal makeup",
+      "Groom grooming",
+      "Family makeup packages",
+      "Pre-wedding shoot makeup",
+      "Mehendi designs",
+      "Hair styling",
+    ],
+    bookingNote: "Trial sessions available",
+    category: "essential",
+    badge: "new",
+    icon: "💄",
+  },
+  {
+    id: "jewellery",
+    name: "Jewellery Rental",
+    description: "Adorn yourself with exquisite traditional and contemporary jewellery pieces. Our curated collection ensures you sparkle on your wedding day.",
+    image: serviceJewellery,
+    features: [
+      "Bridal jewellery sets",
+      "Temple jewellery",
+      "Antique collections",
+      "Contemporary designs",
+      "Matching accessories",
+      "Custom arrangements",
+    ],
+    bookingNote: "Security deposit required",
+    category: "addon",
+    badge: "new",
+    icon: "💎",
   },
 ];
 

@@ -100,14 +100,9 @@ const HallDetailPage = () => {
             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-4">
               {hall.name}
             </h1>
-            <div className="flex items-center gap-6 text-card/90">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-secondary" />
-                <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
-              </div>
-              <span className="text-secondary font-semibold text-lg gold-shimmer inline-block">
-                {hall.priceRange}
-              </span>
+            <div className="flex items-center gap-2 text-card/90">
+              <Users className="h-5 w-5 text-secondary" />
+              <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
             </div>
           </div>
         </div>
@@ -324,10 +319,6 @@ const HallDetailPage = () => {
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground text-sm">Capacity</span>
                     <span className="font-medium text-foreground">{hall.capacity.min} - {hall.capacity.max}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-border/50">
-                    <span className="text-muted-foreground text-sm">Price Range</span>
-                    <span className="font-medium text-secondary">{hall.priceRange}</span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
                     <span className="text-muted-foreground text-sm">Air Conditioned</span>

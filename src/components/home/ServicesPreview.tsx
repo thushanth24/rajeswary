@@ -1,77 +1,47 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
-  UtensilsCrossed, 
-  Camera, 
-  Car, 
-  Palette, 
-  Music, 
-  Users,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { services } from "@/data/services";
 
-// Import service images
-import cateringImg from "@/assets/catering-buffet.jpg";
-import photographyImg from "@/assets/service-photography.jpg";
-import vehicleImg from "@/assets/service-vehicle.jpg";
-import decorationImg from "@/assets/service-decoration.jpg";
-
-const serviceItems = [
-  {
-    icon: UtensilsCrossed,
-    title: "Traditional Catering",
-    description: "Authentic South Indian cuisine with banana leaf service. From aromatic sambar to crispy vadai, we serve flavors that honor your heritage.",
-    image: cateringImg,
-    gradient: "from-amber-500/80 via-orange-600/70 to-red-700/80",
-    accent: "bg-amber-400",
-  },
-  {
-    icon: Camera,
-    title: "Photography & Videography",
-    description: "Capture every sacred ritual and joyous moment. Cinematic storytelling that preserves your memories for generations.",
-    image: photographyImg,
-    gradient: "from-rose-500/80 via-pink-600/70 to-purple-700/80",
-    accent: "bg-rose-400",
-  },
-  {
-    icon: Car,
-    title: "Bridal Vehicles",
-    description: "Decorated vintage and luxury cars for the ceremonial procession. Arrive in style befitting your special day.",
-    image: vehicleImg,
-    gradient: "from-emerald-500/80 via-teal-600/70 to-cyan-700/80",
-    accent: "bg-emerald-400",
-  },
-  {
-    icon: Palette,
-    title: "Mandapam Decoration",
-    description: "Traditional kolam, fresh flowers & brass decorations. Transform spaces into stunning ceremonial settings.",
-    image: decorationImg,
-    gradient: "from-violet-500/80 via-purple-600/70 to-indigo-700/80",
-    accent: "bg-violet-400",
-  },
-  {
-    icon: Music,
-    title: "Nadaswaram & Music",
-    description: "Traditional temple music with live nadaswaram and modern entertainment options for all generations.",
-    image: cateringImg,
-    gradient: "from-blue-500/80 via-indigo-600/70 to-purple-700/80",
-    accent: "bg-blue-400",
-  },
-  {
-    icon: Users,
-    title: "Pandit Services",
-    description: "Experienced priests well-versed in Jaffna Hindu traditions for authentic and meaningful ceremonies.",
-    image: photographyImg,
-    gradient: "from-orange-500/80 via-amber-600/70 to-yellow-700/80",
-    accent: "bg-orange-400",
-  },
+// Map services data to include gradients and accents for visual styling
+const gradients = [
+  "from-amber-500/80 via-orange-600/70 to-red-700/80",
+  "from-rose-500/80 via-pink-600/70 to-purple-700/80",
+  "from-emerald-500/80 via-teal-600/70 to-cyan-700/80",
+  "from-violet-500/80 via-purple-600/70 to-indigo-700/80",
+  "from-blue-500/80 via-indigo-600/70 to-purple-700/80",
+  "from-orange-500/80 via-amber-600/70 to-yellow-700/80",
 ];
 
+const accents = [
+  "bg-amber-400",
+  "bg-rose-400",
+  "bg-emerald-400",
+  "bg-violet-400",
+  "bg-blue-400",
+  "bg-orange-400",
+];
+
+// Use first 6 services from the services data
+const serviceItems = services.slice(0, 6).map((service, index) => ({
+  id: service.id,
+  icon: service.icon,
+  title: service.name,
+  description: service.description,
+  image: service.image,
+  gradient: gradients[index % gradients.length],
+  accent: accents[index % accents.length],
+}));
+
 export function ServicesPreview() {
+  const { t } = useLanguage();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -144,16 +114,15 @@ export function ServicesPreview() {
           <div className="flex items-center justify-center gap-4 mb-4">
             <span className="text-secondary animate-sparkle text-2xl">✦</span>
             <span className="text-secondary font-medium tracking-widest uppercase text-sm">
-              Complete Solutions
+              {t("services.subtitle")}
             </span>
             <span className="text-secondary animate-sparkle text-2xl" style={{ animationDelay: "0.75s" }}>✦</span>
           </div>
           <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mt-2 mb-4">
-            Everything for Your <span className="text-gradient-gold">Sacred Union</span>
+            {t("services.title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            From muhurtham consultation to the final aarti, we provide comprehensive 
-            services rooted in Jaffna Hindu traditions.
+            {t("services.description")}
           </p>
         </motion.div>
 
@@ -191,10 +160,7 @@ export function ServicesPreview() {
                           className="flex items-center gap-3 mb-4"
                         >
                           <div className={`w-12 h-12 rounded-full ${serviceItems[activeIndex].accent} flex items-center justify-center shadow-lg`}>
-                            {(() => {
-                              const IconComponent = serviceItems[activeIndex].icon;
-                              return <IconComponent className="w-6 h-6 text-white" />;
-                            })()}
+                            <span className="text-2xl">{serviceItems[activeIndex].icon}</span>
                           </div>
                           <span className="text-white/80 uppercase tracking-wider text-sm font-medium">
                             Featured Service
@@ -320,7 +286,7 @@ export function ServicesPreview() {
               <div className="absolute inset-0 p-6 flex flex-col justify-end">
                 <div className="flex items-center gap-3 mb-2">
                   <div className={`w-10 h-10 rounded-full ${service.accent} flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300`}>
-                    <service.icon className="w-5 h-5 text-white" />
+                    <span className="text-xl">{service.icon}</span>
                   </div>
                   <h3 className="font-serif font-bold text-lg text-white drop-shadow-lg">
                     {service.title}
@@ -358,7 +324,7 @@ export function ServicesPreview() {
           >
             <Link to="/services">
               <span className="mr-2 group-hover:animate-swing inline-block">🪷</span>
-              Explore All Services
+              {t("services.viewAll")}
               <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

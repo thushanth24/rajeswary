@@ -124,18 +124,21 @@ const ManagerAssignments = () => {
     }
 
     try {
-      // Check if hall already has a manager
-      const existingAssignment = assignments.find(a => a.hall_id === selectedHall && a.is_active);
+      // Check if this exact assignment already exists
+      const existingAssignment = assignments.find(
+        a => a.hall_id === selectedHall && a.user_id === selectedManager && a.is_active
+      );
       
       if (existingAssignment) {
-        // Deactivate existing assignment
-        await supabase
-          .from('hall_managers')
-          .update({ is_active: false })
-          .eq('id', existingAssignment.id);
+        toast({
+          variant: 'destructive',
+          title: 'Already Assigned',
+          description: 'This manager is already assigned to this hall',
+        });
+        return;
       }
 
-      // Create new assignment
+      // Create new assignment (manager can have multiple halls)
       const { error } = await supabase
         .from('hall_managers')
         .insert({
@@ -188,10 +191,10 @@ const ManagerAssignments = () => {
     }
   };
 
-  // Get halls without active managers
-  const unassignedHalls = halls.filter(
-    h => !assignments.some(a => a.hall_id === h.id && a.is_active)
-  );
+  // Get manager's assigned halls count for display
+  const getManagerHallCount = (managerId: string) => {
+    return assignments.filter(a => a.user_id === managerId && a.is_active).length;
+  };
 
   if (loading) {
     return (
@@ -226,7 +229,6 @@ const ManagerAssignments = () => {
                     {halls.map((hall) => (
                       <SelectItem key={hall.id} value={hall.id}>
                         {hall.name}
-                        {!unassignedHalls.find(h => h.id === hall.id) && ' (has manager)'}
                       </SelectItem>
                     ))}
                   </SelectContent>

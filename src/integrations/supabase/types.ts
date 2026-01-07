@@ -137,6 +137,7 @@ export type Database = {
           internal_notes: string | null
           is_manual_booking: boolean
           reference_number: string | null
+          section_id: string | null
           special_requests: string | null
           status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
@@ -164,6 +165,7 @@ export type Database = {
           internal_notes?: string | null
           is_manual_booking?: boolean
           reference_number?: string | null
+          section_id?: string | null
           special_requests?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
@@ -191,6 +193,7 @@ export type Database = {
           internal_notes?: string | null
           is_manual_booking?: boolean
           reference_number?: string | null
+          section_id?: string | null
           special_requests?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
@@ -201,6 +204,13 @@ export type Database = {
             columns: ["hall_id"]
             isOneToOne: false
             referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "hall_sections"
             referencedColumns: ["id"]
           },
         ]
@@ -378,7 +388,7 @@ export type Database = {
           {
             foreignKeyName: "hall_managers_hall_id_fkey"
             columns: ["hall_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "halls"
             referencedColumns: ["id"]
           },
@@ -424,6 +434,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "hall_reviews_hall_id_fkey"
+            columns: ["hall_id"]
+            isOneToOne: false
+            referencedRelation: "halls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hall_sections: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          hall_id: string
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          hall_id: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          hall_id?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hall_sections_hall_id_fkey"
             columns: ["hall_id"]
             isOneToOne: false
             referencedRelation: "halls"
@@ -623,6 +668,7 @@ export type Database = {
     Functions: {
       generate_booking_reference: { Args: never; Returns: string }
       get_manager_hall_id: { Args: { _user_id: string }; Returns: string }
+      get_manager_hall_ids: { Args: { _user_id: string }; Returns: string[] }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

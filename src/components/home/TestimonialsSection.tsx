@@ -2,6 +2,7 @@ import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { DiwaRow } from "@/components/animations/DiyaLamp";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const testimonials = [
   {
@@ -25,6 +26,7 @@ const testimonials = [
 ];
 
 export function TestimonialsSection() {
+  const { t } = useLanguage();
   return (
     <section className="py-20 bg-background relative overflow-hidden">
       {/* Decorative borders */}
@@ -41,10 +43,10 @@ export function TestimonialsSection() {
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary" />
           </div>
           <span className="text-secondary font-medium tracking-widest uppercase text-sm">
-            Blessed Couples
+            {t("testimonials.subtitle")}
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4 animate-fade-in-up">
-            Sacred <span className="text-primary">Testimonials</span>
+            {t("testimonials.title").split(" ")[0]} <span className="text-primary">{t("testimonials.title").split(" ").slice(1).join(" ")}</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             Hear from couples who celebrated their sacred union with us in the 

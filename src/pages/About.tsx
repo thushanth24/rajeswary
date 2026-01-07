@@ -11,8 +11,11 @@ import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { AnimatedCounter } from "@/components/about/AnimatedCounter";
 import { TeamCarousel } from "@/components/about/TeamCarousel";
 import { Timeline } from "@/components/about/Timeline";
+import { useLanguage } from "@/contexts/LanguageContext";
+import aboutVideo from "@/assets/about-venue-video.mp4";
 
 const AboutPage = () => {
+  const { t } = useLanguage();
   const heroRef = useRef<HTMLDivElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);
   const storyInView = useInView(storyRef, { once: true, margin: "-100px" });
@@ -51,7 +54,7 @@ const AboutPage = () => {
             poster="https://images.unsplash.com/photo-1519741497674-611481863552?w=1920"
           >
             <source 
-              src="https://videos.pexels.com/video-files/3327291/3327291-hd_1920_1080_25fps.mp4" 
+              src={aboutVideo} 
               type="video/mp4" 
             />
           </video>
@@ -113,8 +116,7 @@ const AboutPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.5 }}
           >
-            For over 15 years, we've been creating blessed celebrations, 
-            honoring Tamil traditions one sacred union at a time.
+            {t("about.description")}
           </motion.p>
           
           <motion.div

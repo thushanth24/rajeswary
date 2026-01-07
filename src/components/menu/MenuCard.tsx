@@ -8,7 +8,6 @@ interface MenuCardProps {
     id: string;
     name: string;
     items: string[];
-    price: string;
     type?: string;
   };
   index: number;
@@ -153,9 +152,7 @@ export function MenuCard({ menu, index, variant, tier: tierProp, onQuickView }: 
         </div>
         <CardTitle className="font-serif text-xl">
           <span className="text-gradient-gold">{menu.name}</span>
-          <span className="block text-secondary font-sans text-lg mt-1 group-hover:scale-105 transition-transform">
-            {menu.price}
-          </span>
+        
         </CardTitle>
       </CardHeader>
       

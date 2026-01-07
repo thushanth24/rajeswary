@@ -15,8 +15,10 @@ import { CopyableText } from "@/components/contact/CopyableText";
 import { FloatingLabelInput } from "@/components/contact/FloatingLabelInput";
 import { FloatingLabelTextarea } from "@/components/contact/FloatingLabelTextarea";
 import { SocialLinks } from "@/components/contact/SocialLinks";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ContactPage = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -241,7 +243,7 @@ const ContactPage = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            ✦ தொடர்பு கொள்ளுங்கள் ✦
+            ✦ {t("contact.subtitle")} ✦
           </motion.span>
           
           <motion.h1 
@@ -250,7 +252,7 @@ const ContactPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Contact <span className="text-gradient-gold">Us</span>
+            {t("contact.title")}
           </motion.h1>
           
           <motion.p 
@@ -259,8 +261,7 @@ const ContactPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            Have questions about our mandapams or seva? We're here to help you 
-            plan your perfect sacred celebration.
+            {t("contact.description")}
           </motion.p>
           
           <motion.div 

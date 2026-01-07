@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBlockedDates } from "@/hooks/useBlockedDates";
 import { SelectedHallSummary } from "@/components/booking/SelectedHallSummary";
 import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   CalendarIcon,
   Check,
@@ -41,6 +42,8 @@ import {
   AlertTriangle,
   Building2,
   Eye,
+  Headphones,
+  Gem,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -101,12 +104,16 @@ const addOnServices = [
   { id: "photography", label: "Photography & Videography", icon: Camera },
   { id: "vehicles", label: "Wedding Vehicles", icon: Car },
   { id: "decoration", label: "Decoration & Themes", icon: Palette },
-  { id: "sound-lighting", label: "Sound & Lighting / DJ", icon: Music },
+  { id: "sound-lighting", label: "Sound & Lighting", icon: Music },
   { id: "coordination", label: "Event Coordination", icon: UserCheck },
+  { id: "dj-music", label: "DJ & Music", icon: Headphones },
+  { id: "makeup", label: "Bridal Makeup", icon: Sparkles },
+  { id: "jewellery", label: "Jewellery Rental", icon: Gem },
   { id: "other", label: "Other Services", icon: Sparkles },
 ];
 
 const BookingPage = () => {
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const preselectedHall = searchParams.get("hall");
   
@@ -622,13 +629,13 @@ const BookingPage = () => {
           </div>
           
           <span className="text-secondary font-medium tracking-wider uppercase text-xs md:text-sm animate-fade-in">
-            ✦ Sacred Booking ✦
+            ✦ {t("booking.subtitle")} ✦
           </span>
           <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mt-3 md:mt-4 mb-4 md:mb-6 animate-fade-in-up">
-            Book Your <span className="text-gradient-gold">Muhurtham</span>
+            {t("booking.title")}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-lg animate-fade-in-up px-2" style={{ animationDelay: '0.2s' }}>
-            Complete the following steps to submit your booking request.
+            {t("booking.success.message")}
           </p>
           
           {/* Decorative Divider */}
@@ -642,11 +649,11 @@ const BookingPage = () => {
         <div className="container mx-auto px-2 md:px-4 lg:px-8">
           <div className="flex justify-between max-w-3xl mx-auto">
             {[
-              { num: 1, label: "Mandapam", icon: "🏛️" },
-              { num: 2, label: "Event", icon: "📅" },
-              { num: 3, label: "Virundhu", icon: "🍽️" },
-              { num: 4, label: "Seva", icon: "✨" },
-              { num: 5, label: "Details", icon: "📝" },
+              { num: 1, label: t("booking.step.hall"), icon: "🏛️" },
+              { num: 2, label: t("booking.step.event"), icon: "📅" },
+              { num: 3, label: t("booking.step.menu"), icon: "🍽️" },
+              { num: 4, label: t("booking.step.services"), icon: "✨" },
+              { num: 5, label: t("booking.step.details"), icon: "📝" },
             ].map((s, index) => (
               <div key={s.num} className="flex flex-col items-center flex-1">
                 <div

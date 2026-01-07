@@ -18,6 +18,7 @@ import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   CalendarIcon,
   Users,
@@ -376,6 +377,7 @@ const BungalowDetailModal = ({ bungalow, onBookNow }: { bungalow: Bungalow; onBo
 };
 
 const BungalowsPage = () => {
+  const { t } = useLanguage();
   const [selectedBungalow, setSelectedBungalow] = useState<Bungalow | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -469,15 +471,13 @@ const BungalowsPage = () => {
           </div>
           
           <span className="text-secondary font-medium tracking-wider uppercase text-sm animate-fade-in">
-            ✦ Guest Accommodation ✦
+            ✦ {t("bungalows.subtitle")} ✦
           </span>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-4 mb-6 animate-fade-in-up">
-            Bungalow & <span className="text-gradient-gold">Guest House</span>
+            {t("bungalows.title")}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-            Our organization provides comfortable bungalow and guest house accommodation for 
-            staff, guests, and visitors. The facility is available for short-term and long-term 
-            stay with all modern amenities.
+            {t("bungalows.description")}
           </p>
           
           <div className="divider-ornate mt-8" />
@@ -489,7 +489,7 @@ const BungalowsPage = () => {
         <DecorativeBorder position="top" />
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <span className="text-sm text-muted-foreground mr-2">Filter by Type:</span>
+            <span className="text-sm text-muted-foreground mr-2">{t("common.filter")}:</span>
             {["all", "Suite", "Deluxe", "AC", "Non-AC"].map((type) => (
               <Button
                 key={type}
@@ -500,7 +500,7 @@ const BungalowsPage = () => {
                   filterType === type && "gold-shimmer"
                 )}
               >
-                {type === "all" ? "All Rooms" : type}
+                {type === "all" ? t("common.all") : type}
               </Button>
             ))}
           </div>

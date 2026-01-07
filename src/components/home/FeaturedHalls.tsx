@@ -5,9 +5,11 @@ import { HallCard } from "@/components/ui/HallCard";
 import { useHalls } from "@/hooks/useHalls";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function FeaturedHalls() {
   const { halls, loading } = useHalls();
+  const { t } = useLanguage();
 
   return (
     <section className="py-20 bg-background lotus-bg relative overflow-hidden">
@@ -38,15 +40,13 @@ export function FeaturedHalls() {
           </div>
           
           <span className="text-secondary font-medium tracking-widest uppercase text-sm animate-fade-in">
-            Our Sacred Venues
+            {t("halls.featured.subtitle")}
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-            Exquisite Wedding <span className="text-primary">Mandapams</span>
+            {t("halls.featured.title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-            Each of our five venues is designed with authentic Tamil Hindu traditions, 
-            featuring temple-inspired architecture, traditional brass lamps, and sacred spaces 
-            for your wedding rituals.
+            {t("halls.featured.subtitle")}
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export function FeaturedHalls() {
             className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 hover:scale-105 group"
           >
             <Link to="/halls">
-              View All Mandapams
+              {t("halls.viewAll")}
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

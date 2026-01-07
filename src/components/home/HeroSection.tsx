@@ -4,9 +4,12 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DiyaLamp } from "@/components/animations/DiyaLamp";
+import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/hero-traditional.webp";
+import heroVideo from "@/assets/hero-wedding-video.mp4";
 
 export function HeroSection() {
+  const { t } = useLanguage();
   return (
     <section className="relative min-h-[95vh] flex items-center overflow-hidden">
       {/* Background Image */}
@@ -16,6 +19,8 @@ export function HeroSection() {
           alt="Traditional Hindu Wedding Mandapam"
           className="h-full w-full object-cover"
           fetchPriority="high"
+          decoding="sync"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/70 to-foreground/40" />
       </div>
@@ -76,20 +81,18 @@ export function HeroSection() {
           </div>
           
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-            Sacred Unions,
+            {t("hero.title").split(",")[0]},
             <br />
             <span 
               className="inline-block bg-gradient-to-r from-secondary via-accent to-secondary bg-clip-text text-transparent animate-shimmer"
               style={{ backgroundSize: "200% 100%" }}
             >
-              Blessed Beginnings
+              {t("hero.title").split(",")[1]?.trim() || "Blessed Beginnings"}
             </span>
           </h1>
           
           <p className="text-lg text-card/90 mb-8 max-w-xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
-            Experience the grandeur of authentic Tamil Hindu weddings in our 
-            beautifully crafted mandapams. Five sacred venues adorned with 
-            traditional kolam, jasmine garlands, and the warm glow of kuthu vilakku.
+            {t("hero.subtitle")}
           </p>
 
           {/* Decorative divider with animation */}
@@ -107,7 +110,7 @@ export function HeroSection() {
             >
               <Link to="/booking">
                 <Calendar className="mr-2 h-5 w-5 group-hover:animate-swing" />
-                Book Your Muhurtham
+                {t("hero.cta.book")}
               </Link>
             </Button>
             <Button 
@@ -117,7 +120,7 @@ export function HeroSection() {
               className="text-base bg-card/10 border-card/40 text-card hover:bg-card/20 hover:text-card transition-all duration-300 hover:scale-105"
             >
               <Link to="/halls">
-                Explore Mandapams
+                {t("hero.cta.explore")}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -126,12 +129,12 @@ export function HeroSection() {
           {/* Stats with staggered animation */}
           <div className="mt-12 flex justify-center gap-8 md:gap-12">
             {[
-              { value: "5", label: "Sacred Halls" },
-              { value: "800+", label: "Max Guests" },
-              { value: "15+", label: "Years Legacy" },
+              { value: "5", label: t("hero.stats.halls") },
+              { value: "800+", label: t("hero.stats.guests") },
+              { value: "15+", label: t("hero.stats.legacy") },
             ].map((stat, index) => (
               <div 
-                key={stat.label} 
+                key={index} 
                 className="animate-fade-in-up group cursor-default"
                 style={{ animationDelay: `${1 + index * 0.2}s` }}
               >

@@ -114,11 +114,6 @@ export function EnhancedServiceCard({ service, size = "normal" }: EnhancedServic
                 {service.description}
               </p>
               
-              {service.priceRange && (
-                <p className="text-secondary font-semibold text-sm">
-                  {service.priceRange}
-                </p>
-              )}
               
               {/* Hover Indicator */}
               <div className="flex items-center gap-2 mt-3 text-white/50 text-xs">
@@ -153,11 +148,6 @@ export function EnhancedServiceCard({ service, size = "normal" }: EnhancedServic
                   <h3 className="font-serif text-lg font-bold text-foreground">
                     {service.name}
                   </h3>
-                  {service.priceRange && (
-                    <p className="text-secondary text-sm font-medium">
-                      {service.priceRange}
-                    </p>
-                  )}
                 </div>
               </div>
               

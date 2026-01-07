@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -70,6 +71,7 @@
     --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
     --font-serif: 'Cormorant Garamond', ui-serif, Georgia, serif;
     --font-mono: ui-monospace, monospace;
+    --font-tamil: 'Noto Sans Tamil', 'Poppins', ui-sans-serif, system-ui, sans-serif;
 
     /* Shadows with warm tint */
     --shadow-2xs: 0 1px 3px 0px hsl(30 30% 20% / 0.08);
@@ -148,6 +150,23 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
+  }
+
+  /* Tamil language specific styles */
+  html[lang="ta"] body {
+    font-family: var(--font-tamil);
+  }
+
+  html[lang="ta"] h1,
+  html[lang="ta"] h2,
+  html[lang="ta"] h3,
+  html[lang="ta"] h4,
+  html[lang="ta"] h5,
+  html[lang="ta"] h6 {
+    font-family: var(--font-tamil);
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.2;
   }
 }
 
@@ -367,4 +386,26 @@
 .animate-gradient-x {
   background-size: 200% 200%;
   animation: gradient-x 3s ease infinite;
+}
+
+/* Performance: CSS containment to limit reflow scope */
+section,
+main,
+header,
+footer {
+  contain: layout style;
+}
+
+/* GPU acceleration for animated elements */
+.animate-fade-in-up,
+.animate-fade-in,
+.animate-scale-in,
+.gold-shimmer {
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+
+/* Optimize images for layout stability */
+img {
+  content-visibility: auto;
 }
