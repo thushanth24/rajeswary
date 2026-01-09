@@ -168,7 +168,7 @@ export const services: Service[] = [
   },
   {
     id: "jewellery",
-    name: "Jewellery Rental",
+    name: "Jewellery & Accessories",
     description: "Adorn yourself with exquisite traditional and contemporary jewellery pieces. Our curated collection ensures you sparkle on your wedding day.",
     image: serviceJewellery,
     features: [

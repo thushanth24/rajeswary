@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { menus } from "@/data/services";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Leaf, Drumstick, Sparkles } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
@@ -71,7 +70,6 @@ const MenusPage = () => {
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-secondary text-3xl">☀️</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
               {t("menus.pubert.title")} <span className="text-gradient-gold">{t("menus.pubert.highlight")}</span> {t("menus.pubert.packages")}
             </h2>
@@ -82,16 +80,13 @@ const MenusPage = () => {
           <div className="hidden md:block">
             <Tabs defaultValue="pubert-veg" className="w-full">
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-card border border-border">
-                <TabsTrigger value="pubert-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
-                  <Leaf className="h-4 w-4" />
+                <TabsTrigger value="pubert-veg" className="font-serif border border-transparent text-green-700 data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:border-green-600">
                   {t("menus.veg")}
                 </TabsTrigger>
-                <TabsTrigger value="pubert-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
-                  <Drumstick className="h-4 w-4" />
+                <TabsTrigger value="pubert-nonveg" className="font-serif border border-transparent text-orange-700 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:border-orange-600">
                   {t("menus.nonveg")}
                 </TabsTrigger>
-                <TabsTrigger value="pubert-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Sparkles className="h-4 w-4" />
+                <TabsTrigger value="pubert-special" className="font-serif border border-transparent text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">
                   {t("menus.special")}
                 </TabsTrigger>
               </TabsList>
@@ -161,7 +156,6 @@ const MenusPage = () => {
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-secondary text-3xl">🌙</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
               {t("menus.dinner.title")} <span className="text-gradient-gold">{t("menus.dinner.highlight")}</span>
             </h2>
@@ -172,16 +166,13 @@ const MenusPage = () => {
           <div className="hidden md:block">
             <Tabs defaultValue="dinner-veg" className="w-full">
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-background border border-border">
-                <TabsTrigger value="dinner-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
-                  <Leaf className="h-4 w-4" />
+                <TabsTrigger value="dinner-veg" className="font-serif border border-transparent text-green-700 data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:border-green-600">
                   {t("menus.veg")}
                 </TabsTrigger>
-                <TabsTrigger value="dinner-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
-                  <Drumstick className="h-4 w-4" />
+                <TabsTrigger value="dinner-nonveg" className="font-serif border border-transparent text-orange-700 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:border-orange-600">
                   {t("menus.nonveg")}
                 </TabsTrigger>
-                <TabsTrigger value="dinner-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Sparkles className="h-4 w-4" />
+                <TabsTrigger value="dinner-special" className="font-serif border border-transparent text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">
                   {t("menus.special")}
                 </TabsTrigger>
               </TabsList>
@@ -253,7 +244,6 @@ const MenusPage = () => {
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-secondary text-3xl">💒</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
               {t("menus.wedding.title")} <span className="text-gradient-gold">{t("menus.wedding.highlight")}</span>
             </h2>
@@ -264,16 +254,13 @@ const MenusPage = () => {
           <div className="hidden md:block">
             <Tabs defaultValue="wedding-veg" className="w-full">
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-card border border-border">
-                <TabsTrigger value="wedding-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
-                  <Leaf className="h-4 w-4" />
+                <TabsTrigger value="wedding-veg" className="font-serif border border-transparent text-green-700 data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:border-green-600">
                   {t("menus.veg")}
                 </TabsTrigger>
-                <TabsTrigger value="wedding-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
-                  <Drumstick className="h-4 w-4" />
+                <TabsTrigger value="wedding-nonveg" className="font-serif border border-transparent text-orange-700 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:border-orange-600">
                   {t("menus.nonveg")}
                 </TabsTrigger>
-                <TabsTrigger value="wedding-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Sparkles className="h-4 w-4" />
+                <TabsTrigger value="wedding-special" className="font-serif border border-transparent text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">
                   {t("menus.special")}
                 </TabsTrigger>
               </TabsList>
@@ -345,7 +332,6 @@ const MenusPage = () => {
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <span className="text-secondary text-3xl">📝</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
               {t("menus.registration.title")} <span className="text-gradient-gold">{t("menus.registration.highlight")}</span>
             </h2>
@@ -356,12 +342,10 @@ const MenusPage = () => {
           <div className="hidden md:block">
             <Tabs defaultValue="registration-veg" className="w-full">
               <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12 bg-background border border-border">
-                <TabsTrigger value="registration-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
-                  <Leaf className="h-4 w-4" />
+                <TabsTrigger value="registration-veg" className="font-serif border border-transparent text-green-700 data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:border-green-600">
                   {t("menus.veg")}
                 </TabsTrigger>
-                <TabsTrigger value="registration-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
-                  <Drumstick className="h-4 w-4" />
+                <TabsTrigger value="registration-nonveg" className="font-serif border border-transparent text-orange-700 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:border-orange-600">
                   {t("menus.nonveg")}
                 </TabsTrigger>
               </TabsList>
@@ -409,48 +393,6 @@ const MenusPage = () => {
         <DecorativeBorder position="bottom" />
       </section>
 
-      {/* Dietary Options */}
-      <section className="relative py-20 bg-background overflow-hidden">
-        <RangoliPattern position="corners" size="sm" opacity={0.1} />
-        
-        <div className="container relative z-10 mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="text-secondary text-3xl">🪷</span>
-            <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-4">
-              {t("menus.dietary.title")} <span className="text-gradient-gold">{t("menus.dietary.highlight")}</span>
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("menus.dietary.desc")}
-            </p>
-          </div>
-          
-          <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
-            <div className="flex items-center gap-4 p-6 card-traditional animate-fade-in-up hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-full flex items-center justify-center gold-shimmer">
-                <Leaf className="h-7 w-7 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-serif font-semibold text-foreground text-lg">{t("menus.dietary.veg.title")}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("menus.dietary.veg.desc")}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 p-6 card-traditional animate-fade-in-up hover:shadow-xl hover:-translate-y-1 transition-all duration-300" style={{ animationDelay: '0.1s' }}>
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-full flex items-center justify-center gold-shimmer">
-                <Drumstick className="h-7 w-7 text-orange-600" />
-              </div>
-              <div>
-                <h3 className="font-serif font-semibold text-foreground text-lg">{t("menus.dietary.nonveg.title")}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("menus.dietary.nonveg.desc")}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <CTASection 
         subtitle={t("menus.cta.subtitle")}
         title={t("menus.cta.title")}
@@ -472,3 +414,4 @@ const MenusPage = () => {
 };
 
 export default MenusPage;
+

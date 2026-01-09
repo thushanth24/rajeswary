@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Leaf, Drumstick, Crown, Award, Star, Eye } from "lucide-react";
+import { Check, Crown, Award, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -19,39 +19,47 @@ interface MenuCardProps {
 const tierConfig = {
   silver: {
     badge: "Silver",
-    bgClass: "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800",
-    borderClass: "border-slate-300 dark:border-slate-600",
-    iconBg: "bg-slate-200 dark:bg-slate-600",
+    bgClass: "bg-gradient-to-br from-slate-50/90 via-card to-slate-100/80",
+    borderClass: "border-slate-200/70",
+    iconBg: "bg-muted/40",
     icon: Award,
-    iconColor: "text-slate-500 dark:text-slate-300",
+    iconColor: "text-muted-foreground",
     ribbon: false,
+    accent: "from-slate-300/30 via-transparent to-transparent",
+    glow: "shadow-slate-200/60",
   },
   gold: {
     badge: "Gold",
-    bgClass: "bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100 dark:from-amber-900/30 dark:to-yellow-900/20",
-    borderClass: "border-secondary/50 ring-2 ring-secondary/20",
-    iconBg: "bg-gradient-to-br from-secondary/30 to-accent/20",
+    bgClass: "bg-gradient-to-br from-amber-50/90 via-card to-yellow-100/80",
+    borderClass: "border-secondary/30 ring-1 ring-secondary/20",
+    iconBg: "bg-secondary/15",
     icon: Crown,
     iconColor: "text-secondary",
     ribbon: true,
+    accent: "from-secondary/35 via-accent/10 to-transparent",
+    glow: "shadow-secondary/40",
   },
   platinum: {
     badge: "Platinum",
-    bgClass: "bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-100 dark:from-violet-900/20 dark:to-purple-900/20",
-    borderClass: "border-violet-300 dark:border-violet-600",
-    iconBg: "bg-gradient-to-br from-violet-200 to-purple-200 dark:from-violet-700 dark:to-purple-700",
-    icon: Star,
-    iconColor: "text-violet-600 dark:text-violet-300",
-    ribbon: false,
-  },
-  special: {
-    badge: "Premium",
-    bgClass: "bg-gradient-to-br from-primary/5 via-card to-secondary/10",
-    borderClass: "border-primary/30",
-    iconBg: "bg-gradient-to-br from-primary/20 to-secondary/20",
+    bgClass: "bg-gradient-to-br from-indigo-50/90 via-card to-violet-100/80",
+    borderClass: "border-violet-200/70",
+    iconBg: "bg-primary/10",
     icon: Star,
     iconColor: "text-primary",
     ribbon: false,
+    accent: "from-violet-300/30 via-accent/10 to-transparent",
+    glow: "shadow-violet-200/60",
+  },
+  special: {
+    badge: "Premium",
+    bgClass: "bg-gradient-to-br from-rose-50/90 via-card to-amber-50/80",
+    borderClass: "border-primary/30",
+    iconBg: "bg-primary/10",
+    icon: Star,
+    iconColor: "text-primary",
+    ribbon: false,
+    accent: "from-primary/25 via-secondary/10 to-transparent",
+    glow: "shadow-amber-200/60",
   },
 };
 
@@ -59,25 +67,16 @@ const variantConfig = {
   veg: {
     label: "Vegetarian",
     labelColor: "text-green-600 dark:text-green-400",
-    iconBg: "bg-green-500/20",
-    icon: Leaf,
-    iconColor: "text-green-600",
     checkColor: "text-green-600",
   },
   nonveg: {
     label: "Non-Vegetarian",
     labelColor: "text-orange-600 dark:text-orange-400",
-    iconBg: "bg-orange-500/20",
-    icon: Drumstick,
-    iconColor: "text-orange-600",
     checkColor: "text-orange-600",
   },
   special: {
     label: "Premium",
     labelColor: "text-primary",
-    iconBg: "bg-primary/20",
-    icon: Star,
-    iconColor: "text-primary",
     checkColor: "text-secondary",
   },
 };
@@ -96,20 +95,23 @@ export function MenuCard({ menu, index, variant, tier: tierProp, onQuickView }: 
   const variantStyle = variantConfig[variant === "special" && menu.type ? (menu.type === "veg" ? "veg" : "nonveg") : variant];
   
   const TierIcon = tierStyle.icon;
-  const VariantIcon = variantStyle.icon;
 
   return (
     <Card 
       className={cn(
         "relative overflow-hidden animate-fade-in-up transition-all duration-300",
-        "hover:shadow-xl hover:-translate-y-2 hover:border-secondary/50",
+        "rounded-3xl border shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:border-primary/40",
         "group cursor-default",
         tierStyle.bgClass,
-        tierStyle.borderClass,
-        tier === "gold" && "glow-pulse"
+        tierStyle.borderClass
       )}
       style={{ animationDelay: `${index * 0.1}s` }}
     >
+      {/* Modern glass layer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/10 opacity-70" />
+      {/* Accent sweep */}
+      <div className={cn("absolute -top-24 -right-24 h-48 w-48 rounded-full blur-3xl", tierStyle.glow)} />
+      <div className={cn("absolute top-0 left-0 h-1 w-full bg-gradient-to-r", tierStyle.accent)} />
       {/* Most Popular Ribbon for Gold */}
       {tierStyle.ribbon && (
         <div className="absolute -right-12 top-6 rotate-45 bg-gradient-to-r from-secondary via-accent to-secondary px-12 py-1.5 text-xs font-bold text-secondary-foreground shadow-lg z-10">
@@ -129,34 +131,18 @@ export function MenuCard({ menu, index, variant, tier: tierProp, onQuickView }: 
         </div>
       </div>
 
-      {/* Quick View Button */}
-      {onQuickView && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-background/80 hover:bg-background"
-          onClick={onQuickView}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-      )}
-
-      <CardHeader className="pb-2 pt-12">
+      <CardHeader className="pb-2 pt-12 relative z-10">
         <div className="flex items-center gap-2 mb-2">
-          <div className={cn("w-6 h-6 rounded-full flex items-center justify-center", variantStyle.iconBg)}>
-            <VariantIcon className={cn("h-3 w-3", variantStyle.iconColor)} />
-          </div>
           <span className={cn("text-xs font-medium uppercase tracking-wider", variantStyle.labelColor)}>
             {variantStyle.label}
           </span>
         </div>
-        <CardTitle className="font-serif text-xl">
-          <span className="text-gradient-gold">{menu.name}</span>
-        
+        <CardTitle className="font-serif text-xl text-foreground tracking-tight">
+          {menu.name}
         </CardTitle>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="relative z-10">
         <ul className="space-y-2">
           {menu.items.slice(0, 5).map((item) => (
             <li 

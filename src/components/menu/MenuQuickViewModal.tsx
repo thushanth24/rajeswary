@@ -110,29 +110,24 @@ export function MenuQuickViewModal({ menu, variant, open, onOpenChange }: MenuQu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden p-0 rounded-3xl border border-border/60 bg-card/90 backdrop-blur-xl shadow-2xl">
         {/* Hero Header */}
         <div className={cn("relative p-8 bg-gradient-to-br", tierStyle.gradient)}>
-          <button 
-            onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-          
-          <div className="flex items-center gap-2 mb-4">
-            <Badge variant="secondary" className="gap-1.5">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-black/5" />
+          <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-white/30 blur-3xl" />
+          <div className="relative z-10 flex flex-wrap items-center gap-2 mb-4">
+            <Badge variant="secondary" className="gap-1.5 bg-background/70 border border-border/60">
               <TierIcon className={cn("h-3 w-3", tierStyle.iconColor)} />
               {tierStyle.badge}
             </Badge>
-            <Badge variant="outline" className={cn("gap-1.5", isVeg ? "border-green-500 text-green-600" : "border-orange-500 text-orange-600")}>
+            <Badge variant="outline" className={cn("gap-1.5 bg-background/60", isVeg ? "border-green-500 text-green-700" : "border-orange-500 text-orange-700")}>
               {isVeg ? <Leaf className="h-3 w-3" /> : <Drumstick className="h-3 w-3" />}
               {isVeg ? "Vegetarian" : "Non-Vegetarian"}
             </Badge>
           </div>
           
           <DialogHeader>
-            <DialogTitle className="font-serif text-3xl text-foreground">
+            <DialogTitle className="font-serif text-3xl text-foreground relative z-10">
               {menu.name}
             </DialogTitle>
           </DialogHeader>
@@ -140,19 +135,19 @@ export function MenuQuickViewModal({ menu, variant, open, onOpenChange }: MenuQu
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="mt-4 inline-block"
+            className="mt-4 inline-block relative z-10"
           >
             <span className="text-4xl font-bold text-gradient-gold">{menu.price}</span>
           </motion.div>
           
-          <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground relative z-10">
             <Users className="h-4 w-4" />
             <span>Ideal for 50-500 guests</span>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 bg-card/60 overflow-x-hidden">
           <h4 className="font-serif text-lg font-semibold mb-4 text-foreground">What's Included</h4>
           
           <div className="space-y-6">
@@ -162,6 +157,7 @@ export function MenuQuickViewModal({ menu, variant, open, onOpenChange }: MenuQu
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: categoryIndex * 0.1 }}
+                className="rounded-2xl border border-border/60 bg-background/60 p-4 shadow-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xl">{categoryIcons[category]}</span>
@@ -187,12 +183,12 @@ export function MenuQuickViewModal({ menu, variant, open, onOpenChange }: MenuQu
 
           {/* CTA */}
           <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row gap-3">
-            <Button asChild className="flex-1 gap-2">
+            <Button asChild className="flex-1 gap-2 bg-gradient-to-r from-secondary via-accent to-secondary text-secondary-foreground border border-secondary/40 shadow-md shadow-secondary/30 hover:brightness-105">
               <Link to="/booking">
                 Book with this Package
               </Link>
             </Button>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" className="border-primary/30 hover:bg-primary/5" onClick={() => onOpenChange(false)}>
               Continue Browsing
             </Button>
           </div>

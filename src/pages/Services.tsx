@@ -8,7 +8,7 @@ import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, ChevronRight, Sparkles, Crown, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import servicesVideo from "@/assets/wedding-services-video.mp4";
@@ -19,11 +19,11 @@ const ServicesPage = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   
-  const categoryConfig: Record<ServiceCategory | "all", { label: string; icon: React.ReactNode; description: string }> = {
-    all: { label: t("services.tab.all"), icon: <Sparkles className="w-4 h-4" />, description: t("services.tab.all.desc") },
-    essential: { label: t("services.tab.essential"), icon: <Sparkles className="w-4 h-4" />, description: t("services.tab.essential.desc") },
-    premium: { label: t("services.tab.premium"), icon: <Crown className="w-4 h-4" />, description: t("services.tab.premium.desc") },
-    addon: { label: t("services.tab.addon"), icon: <Plus className="w-4 h-4" />, description: t("services.tab.addon.desc") },
+  const categoryConfig: Record<ServiceCategory | "all", { label: string; description: string }> = {
+    all: { label: t("services.tab.all"), description: t("services.tab.all.desc") },
+    essential: { label: t("services.tab.essential"), description: t("services.tab.essential.desc") },
+    premium: { label: t("services.tab.premium"), description: t("services.tab.premium.desc") },
+    addon: { label: t("services.tab.addon"), description: t("services.tab.addon.desc") },
   };
   
   const { scrollYProgress } = useScroll({
@@ -153,9 +153,8 @@ const ServicesPage = () => {
                 <TabsTrigger 
                   key={cat} 
                   value={cat}
-                  className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md flex items-center justify-center gap-1 text-[0.65rem] sm:text-xs md:text-sm font-medium transition-all duration-300 px-1 sm:px-2 py-1.5"
+                  className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md flex items-center justify-center text-[0.65rem] sm:text-xs md:text-sm font-medium transition-all duration-300 px-1 sm:px-2 py-1.5"
                 >
-                  <span className="shrink-0">{categoryConfig[cat].icon}</span>
                   <span className="hidden md:inline truncate">{categoryConfig[cat].label}</span>
                   <span className="md:hidden truncate">{cat === "all" ? "All" : cat.slice(0, 3).charAt(0).toUpperCase() + cat.slice(1, 4)}</span>
                 </TabsTrigger>
@@ -291,9 +290,9 @@ const ServicesPage = () => {
           
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { number: "15+", label: t("services.stats.years"), desc: t("services.stats.years.desc"), icon: "🕉️" },
-              { number: "500+", label: t("services.stats.unions"), desc: t("services.stats.unions.desc"), icon: "💑" },
-              { number: "50+", label: t("services.stats.partners"), desc: t("services.stats.partners.desc"), icon: "🤝" },
+              { number: "15+", label: t("services.stats.years"), desc: t("services.stats.years.desc") },
+              { number: "500+", label: t("services.stats.unions"), desc: t("services.stats.unions.desc") },
+              { number: "50+", label: t("services.stats.partners"), desc: t("services.stats.partners.desc") },
             ].map((stat, index) => (
               <motion.div 
                 key={stat.label}
@@ -306,13 +305,11 @@ const ServicesPage = () => {
                 {/* Animated border on hover */}
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-secondary via-primary to-secondary rounded-2xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500" />
                 
-                <div className="relative text-center p-8 bg-card rounded-xl border border-border/50 backdrop-blur-sm">
-                  <motion.div 
-                    className="w-20 h-20 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center mx-auto mb-4"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <span className="text-4xl">{stat.icon}</span>
-                  </motion.div>
+                <div className="relative text-center p-8 bg-card rounded-xl border border-border/50 backdrop-blur-sm overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-20 bg-gradient-to-r from-secondary via-accent to-secondary" />
+                  <div className="inline-flex items-center justify-center h-12 w-12 rounded-full border border-secondary/30 bg-secondary/10 text-secondary text-sm font-semibold mb-4">
+                    0{index + 1}
+                  </div>
                   <div className="text-4xl font-bold text-gradient-gold mb-2">{stat.number}</div>
                   <h3 className="font-serif font-semibold text-foreground text-xl mb-2">{stat.label}</h3>
                   <p className="text-sm text-muted-foreground">{stat.desc}</p>
@@ -336,3 +333,4 @@ const ServicesPage = () => {
 };
 
 export default ServicesPage;
+

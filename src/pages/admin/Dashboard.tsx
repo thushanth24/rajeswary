@@ -71,17 +71,20 @@ const Dashboard = () => {
         .from('inventory')
         .select('quantity');
 
-      // For hall managers, get their hall name
+      // For hall managers, get their hall names
       if (isHallManager && user) {
         const { data: hallManagerData } = await supabase
           .from('hall_managers')
           .select('halls(name)')
           .eq('user_id', user.id)
-          .eq('is_active', true)
-          .maybeSingle();
+          .eq('is_active', true);
         
-        if (hallManagerData?.halls) {
-          setManagerHallName((hallManagerData.halls as any).name);
+        if (hallManagerData && hallManagerData.length > 0) {
+          const hallNames = hallManagerData
+            .filter(h => h.halls)
+            .map(h => (h.halls as any).name)
+            .join(', ');
+          setManagerHallName(hallNames);
         }
       }
 
@@ -215,7 +218,7 @@ const Dashboard = () => {
   const getRoleTitle = () => {
     if (isSuperAdmin) return 'Super Admin Dashboard';
     if (isAdmin) return 'Admin Dashboard';
-    return managerHallName ? `${managerHallName} - Manager Dashboard` : 'Manager Dashboard';
+    return 'Manager Dashboard';
   };
 
   if (loading) {

@@ -8,7 +8,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/hero-traditional.webp";
 
 export function HeroSection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const headingSize =
+    language === "ta"
+      ? "text-5xl md:text-6xl lg:text-7xl"
+      : "text-4xl md:text-5xl lg:text-6xl";
   
   return (
     <section className="relative min-h-[95vh] flex items-center overflow-hidden">
@@ -80,7 +84,7 @@ export function HeroSection() {
             <span className="text-secondary text-2xl animate-pulse-glow" style={{ animationDelay: "0.5s" }}>✦</span>
           </div>
           
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-6 leading-tight animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+          <h1 className={`font-serif ${headingSize} font-bold text-card mb-6 leading-tight animate-fade-in-up`} style={{ animationDelay: "0.4s" }}>
             {t("hero.title").split(",")[0]},
             <br />
             <span 

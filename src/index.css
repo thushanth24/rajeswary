@@ -249,6 +249,43 @@
     font-size: 0.75rem;
   }
 
+  /* Keep header sizing consistent when switching to Tamil */
+  html[lang="ta"] header nav a {
+    font-size: 0.95rem;
+    line-height: 1.35rem;
+  }
+
+  html[lang="ta"] header .text-xs {
+    font-size: 0.8rem;
+    line-height: 1.1rem;
+  }
+
+  html[lang="ta"] header .text-sm {
+    font-size: 0.95rem;
+    line-height: 1.35rem;
+  }
+
+  html[lang="ta"] header button,
+  html[lang="ta"] header [class*="Button"] {
+    font-size: 0.95rem;
+  }
+
+  html[lang="ta"] header .site-logo {
+    height: 3.25rem;
+  }
+
+  html[lang="ta"] header .site-title {
+    font-size: 1.4rem;
+    line-height: 1.6rem;
+  }
+
+  @media (min-width: 768px) {
+    html[lang="ta"] header .site-title {
+      font-size: 1.6rem;
+      line-height: 1.8rem;
+    }
+  }
+
   /* Button text adjustments for Tamil */
   html[lang="ta"] button,
   html[lang="ta"] .btn,
@@ -424,6 +461,58 @@
   html[lang="ta"] section h1 {
     word-break: keep-all;
     overflow-wrap: break-word;
+  }
+
+  /* Halls hero text sizing for Tamil */
+  html[lang="ta"] .halls-hero-eyebrow {
+    font-size: 0.85rem;
+    line-height: 1.2rem;
+  }
+
+  html[lang="ta"] .halls-hero-title {
+    font-size: 2.9rem;
+    line-height: 1.25;
+  }
+
+  html[lang="ta"] .halls-hero-subtitle {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  @media (min-width: 640px) {
+    html[lang="ta"] .halls-hero-eyebrow {
+      font-size: 0.9rem;
+    }
+
+    html[lang="ta"] .halls-hero-title {
+      font-size: 7.5rem;
+    }
+
+    html[lang="ta"] .halls-hero-subtitle {
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    html[lang="ta"] .halls-hero-title {
+      font-size: 7.5rem;
+    }
+
+    html[lang="ta"] .halls-hero-subtitle {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    html[lang="ta"] .halls-hero-title {
+      font-size: 7.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    html[lang="ta"] .halls-hero-title {
+      font-size: 7.5rem;
+    }
   }
 
   /* Step indicators for booking page */

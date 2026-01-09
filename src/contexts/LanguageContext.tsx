@@ -357,7 +357,7 @@ const en: Record<string, string> = {
   "booking.service.coordination": "Event Coordination",
   "booking.service.djMusic": "DJ & Music",
   "booking.service.makeup": "Bridal Makeup",
-  "booking.service.jewellery": "Jewellery Rental",
+  "booking.service.jewellery": "Jewellery",
   "booking.service.other": "Other Services",
   "booking.cta.subtitle": "Need Assistance?",
   "booking.cta.title": "Have Questions About Your",
@@ -412,9 +412,9 @@ const ta: Record<string, string> = {
   "hero.stats.legacy": "வருட மரபு",
 
   // Featured Halls
-  "halls.featured.title": "எங்கள் திருமண மண்டபங்கள்",
+  "halls.featured.title": "உங்கள் கனவு திருமணத்திற்கான எங்கள் மண்டபங்கள்",
   "halls.featured.label": "புனித அரங்குகள்",
-  "halls.featured.description": "அழகாக வடிவமைக்கப்பட்ட எங்கள் திருமண அரங்கங்களை கண்டறியுங்கள்.",
+  "halls.featured.description": "வாழ்நாள் நினைவாக மாறும் உங்கள் திருமணத்தை சிறப்பாக்கும் எங்கள் அரங்கங்களை காணுங்கள்.",
   "halls.viewAll": "அனைத்தையும் காண்க",
   "halls.viewDetails": "விவரங்கள்",
   "halls.book": "முன்பதிவு",
@@ -430,7 +430,7 @@ const ta: Record<string, string> = {
   "halls.page.title": "எங்கள் திருமண மண்டபங்கள்",
   "halls.page.subtitle": "கலாச்சாரம் மற்றும் நேர்த்தியுடன் வடிவமைக்கப்பட்ட பாரம்பரிய திருமண அரங்கங்கள்",
   "halls.page.description": "நெருக்கமான கூட்டங்கள் முதல் பெரிய கொண்டாட்டங்கள் வரை சரியான மண்டபத்தைக் கண்டறியுங்கள்.",
-  "halls.page.chooseSpace": "உங்கள் புனித இடத்தைத் தேர்வு செய்க",
+  "halls.page.chooseSpace": "உங்கள் வாழ்நாள் நினைவாக மாறும் இடத்தைத் தேர்வு செய்யுங்கள்",
   "halls.cta.subtitle": "உங்கள் சரியான அரங்கைக் கண்டறியுங்கள்",
   "halls.cta.title": "உங்கள் சரியான",
   "halls.cta.highlight": "மண்டபம்",
@@ -476,7 +476,7 @@ const ta: Record<string, string> = {
 
   // Services Preview
   "services.title": "உயர்தர திருமண சேவைகள்",
-  "services.subtitle": "முழுமையான தீர்வுகள்",
+  "services.subtitle": "முழுமையான சேவைகள்",
   "services.description": "பாரம்பரிய சடங்குகள் முதல் நவீன கொண்டாட்டங்கள் வரை விரிவான சேவைகளை வழங்குகிறோம்.",
   "services.viewAll": "அனைத்து சேவைகள்",
 
@@ -736,7 +736,7 @@ const ta: Record<string, string> = {
   "booking.service.coordination": "நிகழ்வு ஒருங்கிணைப்பு",
   "booking.service.djMusic": "DJ & இசை",
   "booking.service.makeup": "மணமகள் அலங்காரம்",
-  "booking.service.jewellery": "நகை வாடகை",
+  "booking.service.jewellery": "நகை",
   "booking.service.other": "பிற சேவைகள்",
   "booking.cta.subtitle": "உதவி தேவையா?",
   "booking.cta.title": "உங்கள் முன்பதிவு பற்றி",

@@ -14,7 +14,6 @@ import { FAQSection } from "@/components/contact/FAQSection";
 import { CopyableText } from "@/components/contact/CopyableText";
 import { FloatingLabelInput } from "@/components/contact/FloatingLabelInput";
 import { FloatingLabelTextarea } from "@/components/contact/FloatingLabelTextarea";
-import { SocialLinks } from "@/components/contact/SocialLinks";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const ContactPage = () => {
@@ -328,17 +327,6 @@ const ContactPage = () => {
                 ))}
               </div>
               
-              {/* Social Links */}
-              <motion.div 
-                className="mt-8"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5 }}
-              >
-                <h3 className="font-serif font-semibold text-foreground mb-4">{t("contact.followUs")}</h3>
-                <SocialLinks />
-              </motion.div>
             </div>
 
             {/* Contact Form */}
@@ -485,7 +473,7 @@ const ContactPage = () => {
                         
                         <Button 
                           type="submit" 
-                          className="w-full gold-shimmer group text-lg py-6" 
+                          className="w-full group text-lg py-6 bg-gradient-to-r from-secondary via-accent to-secondary text-secondary-foreground shadow-md shadow-secondary/30 border border-secondary/40 hover:brightness-105 focus-visible:ring-2 focus-visible:ring-secondary/60" 
                           disabled={isSubmitting}
                         >
                           {isSubmitting ? (

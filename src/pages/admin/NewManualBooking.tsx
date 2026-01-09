@@ -16,7 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, Eye, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { menus } from '@/data/services';
 import { MenuQuickViewModal } from '@/components/menu/MenuQuickViewModal';
@@ -182,12 +182,13 @@ const NewManualBooking = () => {
   useEffect(() => {
     // Only reset section if time slot actually changed (not on initial render or availability refresh)
     if (prevTimeSlotRef.current !== undefined && prevTimeSlotRef.current !== timeSlot) {
-      if (hasMultipleSections) {
+      if (sections.length > 1) {
         setSelectedSection('');
       }
     }
     prevTimeSlotRef.current = timeSlot;
-  }, [timeSlot, hasMultipleSections]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeSlot]);
 
   useEffect(() => {
     const fetchManagerHalls = async () => {
@@ -205,11 +206,18 @@ const NewManualBooking = () => {
 
         if (assignments && assignments.length > 0) {
           const managerHalls = assignments
-            .filter(a => a.halls)
+            .filter(a => a.halls && typeof a.halls === 'object')
             .map(a => {
-              const hall = a.halls as any;
-              return { id: hall.id, name: hall.name };
-            });
+              const hall = a.halls as { id: string; name: string };
+              // Ensure we extract string values
+              return { 
+                id: String(hall.id || ''), 
+                name: String(hall.name || 'Unnamed Hall') 
+              };
+            })
+            .filter(h => h.id); // Remove any with empty IDs
+          
+          console.log('DEBUG: Manager halls extracted:', managerHalls);
           setHalls(managerHalls);
           if (managerHalls.length === 1) {
             setSelectedHall(managerHalls[0].id);
@@ -242,10 +250,17 @@ const NewManualBooking = () => {
         .order('display_order');
 
       if (!error && data) {
-        setSections(data);
+        // Ensure section data has proper string values
+        const safeSections = data.map(s => ({
+          id: String(s.id || ''),
+          name: String(s.name || 'Unnamed Section')
+        })).filter(s => s.id);
+        
+        console.log('DEBUG: Sections fetched:', safeSections);
+        setSections(safeSections);
         // Auto-select first section if only one exists
-        if (data.length === 1) {
-          setSelectedSection(data[0].id);
+        if (safeSections.length === 1) {
+          setSelectedSection(safeSections[0].id);
         } else {
           setSelectedSection('');
         }
@@ -370,6 +385,19 @@ const NewManualBooking = () => {
     'Pre-Wedding',
     'Other',
   ];
+
+  // Debug: log state to find object rendering issue
+  console.log('DEBUG NewManualBooking render:', {
+    hallsCount: halls.length,
+    hallsData: halls.map(h => ({ id: h.id, name: h.name, nameType: typeof h.name })),
+    sectionsCount: sections.length,
+    sectionsData: sections.map(s => ({ id: s.id, name: s.name, nameType: typeof s.name })),
+    selectedServices,
+    menuSection,
+    menuVariant,
+    mealType,
+    menuPackage,
+  });
 
   if (loading) {
     return (
@@ -542,29 +570,30 @@ const NewManualBooking = () => {
                             {timeSlots.map((slot) => {
                               const availability = slotAvailability[slot.id as keyof typeof slotAvailability];
                               const isAvailable = availability?.available > 0;
-                              const sectionInfo = hasMultipleSections 
-                                ? ` (${availability?.available}/${availability?.total} available)` 
+                              const availabilityText = hasMultipleSections 
+                                ? `${availability?.available ?? 0}/${availability?.total ?? 0}` 
                                 : '';
+                              
+                              // Build label as a single string to avoid React child issues
+                              let label = slot.label;
+                              if (eventDate) {
+                                if (isAvailable) {
+                                  label += availabilityText ? ` (${availabilityText})` : ' ✓';
+                                } else {
+                                  label += ' - Booked';
+                                }
+                              }
                               
                               return (
                                 <SelectItem 
                                   key={slot.id} 
                                   value={slot.id}
-                                  disabled={eventDate ? !isAvailable : false}
+                                  disabled={!!eventDate && !isAvailable}
                                   className={cn(
                                     eventDate && !isAvailable && "text-muted-foreground line-through"
                                   )}
                                 >
-                                  <span className="flex items-center gap-2">
-                                    {slot.label}
-                                    {eventDate && (
-                                      isAvailable ? (
-                                        <span className="text-green-600 text-xs">{sectionInfo || '✓'}</span>
-                                      ) : (
-                                        <span className="text-destructive text-xs">Booked</span>
-                                      )
-                                    )}
-                                  </span>
+                                  {label}
                                 </SelectItem>
                               );
                             })}
@@ -781,25 +810,31 @@ const NewManualBooking = () => {
                 <h3 className="font-medium text-lg">Additional Services</h3>
                 <p className="text-sm text-muted-foreground">Select any additional services the customer requires</p>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {addOnServices.map((service) => (
-                    <div
-                      key={service.id}
-                      onClick={() => toggleService(service.id)}
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
-                        selectedServices.includes(service.id)
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <Checkbox
-                        checked={selectedServices.includes(service.id)}
-                        className="pointer-events-none h-4 w-4"
-                      />
-                      <service.icon className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-foreground text-sm">{service.label}</span>
-                    </div>
-                  ))}
+                  {addOnServices.map((service) => {
+                    const isSelected = selectedServices.includes(service.id);
+                    const IconComponent = service.icon;
+                    return (
+                      <label
+                        key={service.id}
+                        htmlFor={`service-${service.id}`}
+                        className={cn(
+                          "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                          isSelected
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <Checkbox
+                          id={`service-${service.id}`}
+                          checked={isSelected}
+                          onCheckedChange={() => toggleService(service.id)}
+                          className="h-4 w-4"
+                        />
+                        <IconComponent className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-foreground text-sm">{service.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -845,6 +880,11 @@ const NewManualBooking = () => {
                     <SelectContent>
                       {sections.map((section) => {
                         const isAvailable = !timeSlot || isSectionAvailable(timeSlot, section.id);
+                        // Build label as a single string to avoid React child issues
+                        let label = section.name;
+                        if (timeSlot) {
+                          label += isAvailable ? ' ✓' : ' - Booked';
+                        }
                         return (
                           <SelectItem 
                             key={section.id} 
@@ -852,16 +892,7 @@ const NewManualBooking = () => {
                             disabled={!isAvailable}
                             className={cn(!isAvailable && "text-muted-foreground line-through")}
                           >
-                            <span className="flex items-center gap-2">
-                              {section.name}
-                              {timeSlot && (
-                                isAvailable ? (
-                                  <CheckCircle className="h-3 w-3 text-green-600" />
-                                ) : (
-                                  <span className="text-xs text-destructive">Booked</span>
-                                )
-                              )}
-                            </span>
+                            {label}
                           </SelectItem>
                         );
                       })}

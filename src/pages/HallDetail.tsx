@@ -132,7 +132,7 @@ const HallDetailPage = () => {
               <HallAvailabilityIndicator hallSlug={hall.slug} />
               
               <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
-                <Button asChild className="w-full gold-shimmer group text-sm sm:text-base">
+                <Button asChild className="w-full group text-sm sm:text-base bg-gradient-to-r from-secondary via-accent to-secondary text-secondary-foreground shadow-md shadow-secondary/30 border border-secondary/40 hover:brightness-105 focus-visible:ring-2 focus-visible:ring-secondary/60">
                   <Link to={`/booking?hall=${hall.slug}`}>
                     <Calendar className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-pulse" />
                     {t("hallDetail.bookNow")}
@@ -307,7 +307,7 @@ const HallDetailPage = () => {
                 <HallAvailabilityIndicator hallSlug={hall.slug} />
                 
                 <div className="mt-4 space-y-3">
-                  <Button asChild className="w-full gold-shimmer group">
+                  <Button asChild className="w-full group bg-gradient-to-r from-secondary via-accent to-secondary text-secondary-foreground shadow-md shadow-secondary/30 border border-secondary/40 hover:brightness-105 focus-visible:ring-2 focus-visible:ring-secondary/60">
                     <Link to={`/booking?hall=${hall.slug}`}>
                       <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                       {t("hallDetail.bookNow")}

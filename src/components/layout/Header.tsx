@@ -28,9 +28,13 @@ export function Header() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src={logo} alt="Raajeshwariy Groups Logo" className="h-12 w-auto object-contain bg-card rounded-full p-0.5" />
+            <img
+              src={logo}
+              alt="Raajeshwariy Groups Logo"
+              className="site-logo h-12 w-auto object-contain bg-card rounded-full p-0.5"
+            />
             <div>
-              <span className="font-serif text-xl md:text-2xl font-bold text-primary tracking-wide">
+              <span className="site-title font-serif text-xl md:text-2xl font-bold text-primary tracking-wide">
                 Raajeshwariy Groups
               </span>
               <span className="hidden sm:block text-xs text-secondary font-medium tracking-widest uppercase">

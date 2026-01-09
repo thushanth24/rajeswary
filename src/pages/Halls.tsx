@@ -16,7 +16,7 @@ const HallsPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
+      <section className="halls-hero relative py-12 sm:py-16 md:py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
         <FloatingElements type="petals" density="low" />
         <RangoliPattern position="center" size="lg" opacity={0.08} />
         
@@ -28,13 +28,13 @@ const HallsPage = () => {
             <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-secondary" />
           </div>
           
-          <span className="text-secondary font-medium tracking-wider uppercase text-xs sm:text-sm animate-fade-in">
+          <span className="halls-hero-eyebrow text-secondary font-medium tracking-wider uppercase text-xs sm:text-sm animate-fade-in">
             ✦ {t("halls.page.title")} ✦
           </span>
-          <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mt-3 sm:mt-4 mb-4 sm:mb-6 animate-fade-in-up px-2">
+          <h1 className="halls-hero-title font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mt-3 sm:mt-4 mb-4 sm:mb-6 animate-fade-in-up px-2">
             {t("nav.halls")} <span className="text-gradient-gold">Mandapams</span>
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base md:text-lg animate-fade-in-up px-2" style={{ animationDelay: '0.2s' }}>
+          <p className="halls-hero-subtitle text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base md:text-lg animate-fade-in-up px-2" style={{ animationDelay: "0.2s" }}>
             {t("halls.page.subtitle")}
           </p>
           
