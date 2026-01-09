@@ -22,6 +22,7 @@ import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
 import { supabase } from "@/integrations/supabase/client";
 import { useBlockedDates } from "@/hooks/useBlockedDates";
+import { useSectionAwareAvailability } from "@/hooks/useSectionAwareAvailability";
 import { SelectedHallSummary } from "@/components/booking/SelectedHallSummary";
 import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -148,29 +149,27 @@ const BookingPage = () => {
     message: "",
   });
 
-  // Fetch blocked dates for the selected hall
+  // Fetch blocked dates for the selected hall (for calendar display)
   const { isDateBlocked, getBlockedReason } = useBlockedDates(selectedHallUUID);
+  
+  // Get section-aware availability for the selected date
+  const selectedDateStr = bookingData.eventDate ? format(bookingData.eventDate, "yyyy-MM-dd") : null;
+  const {
+    slotAvailability,
+    hasMultipleSections,
+    isClosed: isSelectedDateClosed,
+    isSlotAvailable,
+    sectionCount,
+  } = useSectionAwareAvailability(selectedHallUUID, selectedDateStr);
 
-  // Fetch hall UUID when hall is selected
+  // Set hall UUID directly when hall is selected (hallId is already the UUID)
   useEffect(() => {
-    const fetchHallUUID = async () => {
-      if (!bookingData.hallId) {
-        setSelectedHallUUID(null);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("halls")
-        .select("id")
-        .eq("slug", bookingData.hallId)
-        .maybeSingle();
-
-      if (!error && data) {
-        setSelectedHallUUID(data.id);
-      }
-    };
-
-    fetchHallUUID();
+    if (!bookingData.hallId) {
+      setSelectedHallUUID(null);
+      return;
+    }
+    // bookingData.hallId is already the UUID from the halls list
+    setSelectedHallUUID(bookingData.hallId);
   }, [bookingData.hallId]);
 
   useEffect(() => {
@@ -181,9 +180,13 @@ const BookingPage = () => {
 
   const updateBookingData = (field: keyof BookingData, value: string | string[] | Date | undefined) => {
     setBookingData((prev) => {
-      // Clear date if hall changes (different halls may have different blocked dates)
+      // Clear date and time slot if hall changes (different halls may have different availability)
       if (field === "hallId" && typeof value === "string" && value !== prev.hallId) {
-        return { ...prev, hallId: value, eventDate: undefined };
+        return { ...prev, hallId: value, eventDate: undefined, timeSlot: "" };
+      }
+      // Clear time slot if date changes (different dates have different availability)
+      if (field === "eventDate") {
+        return { ...prev, eventDate: value as Date | undefined, timeSlot: "" };
       }
       return { ...prev, [field]: value } as BookingData;
     });
@@ -350,57 +353,46 @@ const BookingPage = () => {
         return;
       }
 
-      // Get the hall UUID from Supabase based on the hall slug/id
-      const { data: hallData, error: hallError } = await supabase
-        .from('halls')
-        .select('id')
-        .eq('slug', bookingData.hallId)
-        .maybeSingle();
+      // bookingData.hallId is already the UUID
+      const hallUUID = bookingData.hallId;
 
-      if (hallError || !hallData) {
-        toast({
-          title: "Error",
-          description: "Could not find the selected hall. Please try again.",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Real-time date revalidation - fresh check from database before submitting
-      if (bookingData.eventDate && hallData.id) {
+      // Real-time date + time slot revalidation - fresh check from database before submitting
+      if (bookingData.eventDate && hallUUID) {
         setIsRevalidating(true);
         const eventDateStr = format(bookingData.eventDate, "yyyy-MM-dd");
         
-        // Check for confirmed bookings
+        // Get time slot times
+        const timeSlotMap: Record<string, { start: string; end: string }> = {
+          morning: { start: "08:00", end: "16:00" },
+          evening: { start: "17:00", end: "00:00" },
+          fullday: { start: "08:00", end: "00:00" },
+        };
+        const selectedSlotTimes = timeSlotMap[bookingData.timeSlot];
+        
+        // Check for confirmed bookings with conflicting time slots
         const { data: existingBookings } = await supabase
           .from('bookings')
-          .select('id')
-          .eq('hall_id', hallData.id)
+          .select('id, section_id, event_start_time, event_end_time')
+          .eq('hall_id', hallUUID)
           .eq('event_date', eventDateStr)
-          .eq('status', 'confirmed')
-          .limit(1);
+          .in('status', ['new', 'acknowledged', 'confirmed']);
 
         // Check for closed dates
         const { data: closedDates } = await supabase
           .from('hall_closed_dates')
           .select('id')
-          .eq('hall_id', hallData.id)
+          .eq('hall_id', hallUUID)
           .eq('closed_date', eventDateStr)
           .limit(1);
 
-        setIsRevalidating(false);
+        // Get section count for this hall
+        const { data: sectionsData } = await supabase
+          .from('hall_sections')
+          .select('id')
+          .eq('hall_id', hallUUID)
+          .eq('is_active', true);
 
-        if (existingBookings && existingBookings.length > 0) {
-          toast({
-            title: "Date No Longer Available",
-            description: "Someone else has booked this date while you were filling the form. Please select another date.",
-            variant: "destructive",
-          });
-          setStep(2); // Go back to date selection
-          setIsSubmitting(false);
-          return;
-        }
+        setIsRevalidating(false);
 
         if (closedDates && closedDates.length > 0) {
           toast({
@@ -411,6 +403,68 @@ const BookingPage = () => {
           setStep(2); // Go back to date selection
           setIsSubmitting(false);
           return;
+        }
+
+        // Check time slot conflicts based on sections
+        if (existingBookings && existingBookings.length > 0 && selectedSlotTimes) {
+          const totalSections = sectionsData?.length || 1;
+          const hasMultipleSections = totalSections > 1;
+          
+          // Helper to check if slots conflict
+          const slotsConflict = (existingStart: string | null, existingEnd: string | null): boolean => {
+            const existingSlot = 
+              existingStart === "08:00" && existingEnd === "16:00" ? "morning" :
+              existingStart === "17:00" && existingEnd === "00:00" ? "evening" :
+              existingStart === "08:00" && existingEnd === "00:00" ? "fullday" : "unknown";
+            
+            // Full day conflicts with everything
+            if (existingSlot === "fullday" || bookingData.timeSlot === "fullday") return true;
+            // Same slots conflict
+            if (existingSlot === bookingData.timeSlot) return true;
+            return false;
+          };
+
+          const conflictingBookings = existingBookings.filter(b => 
+            slotsConflict(b.event_start_time, b.event_end_time)
+          );
+
+          if (hasMultipleSections) {
+            // Count booked sections for this time slot
+            const bookedSections = new Set<string>();
+            let hasUnassigned = false;
+            
+            conflictingBookings.forEach(b => {
+              if (b.section_id) {
+                bookedSections.add(b.section_id);
+              } else {
+                hasUnassigned = true;
+              }
+            });
+
+            // If there's an unassigned booking or all sections are booked
+            if (hasUnassigned || bookedSections.size >= totalSections) {
+              toast({
+                title: "Time Slot No Longer Available",
+                description: "All sections for this time slot have been booked. Please select a different time or date.",
+                variant: "destructive",
+              });
+              setStep(2);
+              setIsSubmitting(false);
+              return;
+            }
+          } else {
+            // Single section hall - any conflicting booking blocks
+            if (conflictingBookings.length > 0) {
+              toast({
+                title: "Time Slot No Longer Available",
+                description: "This time slot has been booked while you were filling the form. Please select a different time or date.",
+                variant: "destructive",
+              });
+              setStep(2);
+              setIsSubmitting(false);
+              return;
+            }
+          }
         }
       }
 
@@ -441,7 +495,7 @@ const BookingPage = () => {
       const { error: insertError } = await supabase
         .from('bookings')
         .insert({
-          hall_id: hallData.id,
+          hall_id: hallUUID,
           event_date: format(bookingData.eventDate, "yyyy-MM-dd"),
           event_start_time: times.start,
           event_end_time: times.end,
@@ -856,19 +910,53 @@ const BookingPage = () => {
 
                   <div>
                     <Label>{t("booking.timeSlot")}</Label>
+                    {hasMultipleSections && bookingData.eventDate && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        This venue has {sectionCount} sections. Available sections vary by time slot.
+                      </p>
+                    )}
                     <Select
                       value={bookingData.timeSlot}
                       onValueChange={(value) => updateBookingData("timeSlot", value)}
+                      disabled={!bookingData.eventDate || isSelectedDateClosed}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder={t("booking.timeSlot")} />
+                        <SelectValue placeholder={
+                          !bookingData.eventDate 
+                            ? "Select date first" 
+                            : isSelectedDateClosed 
+                              ? "Date is closed" 
+                              : t("booking.timeSlot")
+                        } />
                       </SelectTrigger>
                       <SelectContent>
-                        {timeSlots.map((slot) => (
-                          <SelectItem key={slot.id} value={slot.id}>
-                            {slot.label}
-                          </SelectItem>
-                        ))}
+                        {timeSlots.map((slot) => {
+                          const availability = slotAvailability[slot.id as keyof typeof slotAvailability];
+                          const isAvailable = availability?.available > 0;
+                          const sectionInfo = hasMultipleSections
+                            ? ` (${availability?.available || 0}/${availability?.total || 0} sections)` 
+                            : '';
+                          
+                          return (
+                            <SelectItem 
+                              key={slot.id} 
+                              value={slot.id}
+                              disabled={!isAvailable}
+                              className={cn(
+                                !isAvailable && "text-muted-foreground line-through opacity-60"
+                              )}
+                            >
+                              <span className="flex items-center gap-2">
+                                {slot.label}
+                                {isAvailable ? (
+                                  <span className="text-green-600 text-xs">{sectionInfo || '✓ Available'}</span>
+                                ) : (
+                                  <span className="text-destructive text-xs">Fully Booked</span>
+                                )}
+                              </span>
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </div>

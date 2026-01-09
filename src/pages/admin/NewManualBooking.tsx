@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/hooks/useAuth';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -11,9 +11,45 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Plus } from 'lucide-react';
+import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { menus } from '@/data/services';
+import { MenuQuickViewModal } from '@/components/menu/MenuQuickViewModal';
+import { useSectionAwareAvailability } from '@/hooks/useSectionAwareAvailability';
+const timeSlots = [
+  { id: 'morning', label: 'Morning (08:00 - 16:00)', start: '08:00', end: '16:00' },
+  { id: 'evening', label: 'Evening (17:00 - 00:00)', start: '17:00', end: '00:00' },
+  { id: 'fullday', label: 'Full Day (08:00 - 00:00)', start: '08:00', end: '00:00' },
+];
+
+const addOnServices = [
+  { id: 'photography', label: 'Photography', icon: Camera },
+  { id: 'vehicles', label: 'Vehicles', icon: Car },
+  { id: 'decoration', label: 'Decoration', icon: Palette },
+  { id: 'sound-lighting', label: 'Sound & Lighting', icon: Music },
+  { id: 'coordination', label: 'Coordination', icon: UserCheck },
+  { id: 'dj-music', label: 'DJ & Music', icon: Headphones },
+  { id: 'makeup', label: 'Makeup', icon: Sparkles },
+  { id: 'jewellery', label: 'Jewellery', icon: Gem },
+];
+
+const menuSections = [
+  { id: 'pubert', label: 'Pubert (Lunch)', icon: '☀️' },
+  { id: 'dinner', label: 'Dinner', icon: '🌙' },
+  { id: 'wedding', label: 'Wedding', icon: '💒' },
+  { id: 'registration', label: 'Registration', icon: '📝' },
+];
+
+const menuVariants = [
+  { id: 'veg', label: 'Veg', fullLabel: 'Vegetarian', icon: '🥬', activeClass: 'border-green-500 bg-green-500/10 text-green-700', hoverClass: 'hover:border-green-500/50' },
+  { id: 'nonveg', label: 'Non-Veg', fullLabel: 'Non-Vegetarian', icon: '🍗', activeClass: 'border-orange-500 bg-orange-500/10 text-orange-700', hoverClass: 'hover:border-orange-500/50' },
+  { id: 'special', label: 'Special', fullLabel: 'Special', icon: '✨', activeClass: 'border-primary bg-primary/10 text-primary', hoverClass: 'hover:border-primary/50' },
+];
 
 const bookingSchema = z.object({
   customer_name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -22,6 +58,7 @@ const bookingSchema = z.object({
   customer_address: z.string().optional(),
   event_type: z.string().min(1, 'Please select an event type'),
   event_date: z.string().min(1, 'Please select a date'),
+  time_slot: z.string().min(1, 'Please select a time slot'),
   expected_guests: z.number().optional(),
   special_requests: z.string().optional(),
 });
@@ -46,8 +83,17 @@ const NewManualBooking = () => {
   const [sections, setSections] = useState<HallSection[]>([]);
   const [selectedHall, setSelectedHall] = useState('');
   const [selectedSection, setSelectedSection] = useState('');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  
+  // Menu selection state
+  const [menuSection, setMenuSection] = useState('');
+  const [menuVariant, setMenuVariant] = useState('');
+  const [mealType, setMealType] = useState('');
+  const [menuPackage, setMenuPackage] = useState('');
+  const [menuNotes, setMenuNotes] = useState('');
+  const [previewMenu, setPreviewMenu] = useState<{ menu: any; variant: 'veg' | 'nonveg' | 'special' } | null>(null);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -58,10 +104,90 @@ const NewManualBooking = () => {
       customer_address: '',
       event_type: '',
       event_date: '',
+      time_slot: '',
       expected_guests: undefined,
       special_requests: '',
     },
   });
+
+  // Watch form values for real-time availability checking
+  const eventDate = useWatch({ control: form.control, name: 'event_date' });
+  const timeSlot = useWatch({ control: form.control, name: 'time_slot' });
+
+  // Use the section-aware availability hook
+  const {
+    slotAvailability,
+    hasMultipleSections,
+    loading: availabilityLoading,
+    isClosed,
+    isSlotAvailable,
+    isSectionAvailable,
+    bookings,
+  } = useSectionAwareAvailability(selectedHall || null, eventDate || null);
+
+  // Get available sections for the selected time slot - compute directly from bookings to avoid callback dependency issues
+  const availableSectionsForSlot = useMemo(() => {
+    if (!timeSlot || !hasMultipleSections) return sections;
+    if (isClosed) return [];
+    
+    return sections.filter(s => {
+      // Check if this section has a conflicting booking
+      const hasConflict = bookings.some(
+        (b) =>
+          b.section_id === s.id &&
+          ((b.event_start_time === null && b.event_end_time === null) || // Legacy fullday
+           (timeSlot === 'fullday') ||
+           (b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '00:00') || // existing fullday
+           (timeSlot === 'morning' && b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '16:00') ||
+           (timeSlot === 'evening' && b.event_start_time?.substring(0, 5) === '17:00' && b.event_end_time?.substring(0, 5) === '00:00'))
+      );
+      if (hasConflict) return false;
+
+      // Check for unassigned bookings that would block all sections
+      const hasUnassigned = bookings.some(
+        (b) =>
+          !b.section_id &&
+          ((b.event_start_time === null && b.event_end_time === null) ||
+           (timeSlot === 'fullday') ||
+           (b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '00:00') ||
+           (timeSlot === 'morning' && b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '16:00') ||
+           (timeSlot === 'evening' && b.event_start_time?.substring(0, 5) === '17:00' && b.event_end_time?.substring(0, 5) === '00:00'))
+      );
+      return !hasUnassigned;
+    });
+  }, [sections, timeSlot, hasMultipleSections, isClosed, bookings]);
+
+  // Check if there's a conflict with the current selection
+  const hasConflict = useMemo(() => {
+    if (!eventDate || !timeSlot) return false;
+    if (isClosed) return true;
+    if (!isSlotAvailable(timeSlot)) return true;
+    if (hasMultipleSections && selectedSection) {
+      const sectionAvailable = availableSectionsForSlot.some(s => s.id === selectedSection);
+      if (!sectionAvailable) return true;
+    }
+    return false;
+  }, [eventDate, timeSlot, isClosed, isSlotAvailable, hasMultipleSections, selectedSection, availableSectionsForSlot]);
+
+  const toggleService = (serviceId: string) => {
+    setSelectedServices(prev => 
+      prev.includes(serviceId) 
+        ? prev.filter(s => s !== serviceId)
+        : [...prev, serviceId]
+    );
+  };
+
+  // Track previous time slot to reset section only on actual change
+  const prevTimeSlotRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    // Only reset section if time slot actually changed (not on initial render or availability refresh)
+    if (prevTimeSlotRef.current !== undefined && prevTimeSlotRef.current !== timeSlot) {
+      if (hasMultipleSections) {
+        setSelectedSection('');
+      }
+    }
+    prevTimeSlotRef.current = timeSlot;
+  }, [timeSlot, hasMultipleSections]);
 
   useEffect(() => {
     const fetchManagerHalls = async () => {
@@ -149,8 +275,50 @@ const NewManualBooking = () => {
       return;
     }
 
+    // Check for booking conflicts before submitting
+    if (hasConflict) {
+      toast({
+        variant: 'destructive',
+        title: 'Booking Conflict',
+        description: isClosed 
+          ? 'This date is closed for bookings.' 
+          : 'This time slot or section is already booked. Please select a different option.',
+      });
+      return;
+    }
+
     setSubmitting(true);
     try {
+      // Get time slot details
+      const selectedTimeSlot = timeSlots.find(ts => ts.id === values.time_slot);
+      
+      // Build special requests with menu and services
+      let specialRequests = values.special_requests || '';
+      
+      // Add menu selection info
+      if (menuPackage) {
+        const selectedMenu = menus[mealType as keyof typeof menus]?.find((m: any) => m.id === menuPackage);
+        if (selectedMenu) {
+          const menuText = `Menu Selection: ${selectedMenu.name} (${selectedMenu.price})`;
+          specialRequests = specialRequests ? `${specialRequests}\n\n${menuText}` : menuText;
+        }
+      }
+      if (menuNotes) {
+        const menuNotesText = `Menu Notes: ${menuNotes}`;
+        specialRequests = specialRequests ? `${specialRequests}\n${menuNotesText}` : menuNotesText;
+      }
+      
+      // Add services
+      if (selectedServices.length > 0) {
+        const serviceLabels = selectedServices.map(id => 
+          addOnServices.find(s => s.id === id)?.label
+        ).filter(Boolean);
+        const servicesText = `Additional Services: ${serviceLabels.join(', ')}`;
+        specialRequests = specialRequests 
+          ? `${specialRequests}\n\n${servicesText}` 
+          : servicesText;
+      }
+
       const { error } = await supabase
         .from('bookings')
         .insert({
@@ -162,8 +330,10 @@ const NewManualBooking = () => {
           customer_address: values.customer_address || null,
           event_type: values.event_type,
           event_date: values.event_date,
+          event_start_time: selectedTimeSlot?.start || null,
+          event_end_time: selectedTimeSlot?.end || null,
           expected_guests: values.expected_guests || null,
-          special_requests: values.special_requests || null,
+          special_requests: specialRequests || null,
           is_manual_booking: true,
           status: 'confirmed',
           acknowledged_at: new Date().toISOString(),
@@ -343,24 +513,86 @@ const NewManualBooking = () => {
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="expected_guests"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Expected Guests</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Number of guests"
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Availability Warning */}
+                {eventDate && isClosed && (
+                  <div className="col-span-2 flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span className="text-sm">This date is closed for bookings.</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="time_slot"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Time Slot *</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                          disabled={!eventDate || isClosed}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={eventDate ? "Select time slot" : "Select date first"} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {timeSlots.map((slot) => {
+                              const availability = slotAvailability[slot.id as keyof typeof slotAvailability];
+                              const isAvailable = availability?.available > 0;
+                              const sectionInfo = hasMultipleSections 
+                                ? ` (${availability?.available}/${availability?.total} available)` 
+                                : '';
+                              
+                              return (
+                                <SelectItem 
+                                  key={slot.id} 
+                                  value={slot.id}
+                                  disabled={eventDate ? !isAvailable : false}
+                                  className={cn(
+                                    eventDate && !isAvailable && "text-muted-foreground line-through"
+                                  )}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    {slot.label}
+                                    {eventDate && (
+                                      isAvailable ? (
+                                        <span className="text-green-600 text-xs">{sectionInfo || '✓'}</span>
+                                      ) : (
+                                        <span className="text-destructive text-xs">Booked</span>
+                                      )
+                                    )}
+                                  </span>
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="expected_guests"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Expected Guests</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Number of guests"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="special_requests"
@@ -378,6 +610,197 @@ const NewManualBooking = () => {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              {/* Menu Selection */}
+              <div className="space-y-4">
+                <h3 className="font-medium text-lg flex items-center gap-2">
+                  <span>🍽️</span> Menu Selection
+                </h3>
+                <p className="text-sm text-muted-foreground">Select a catering package for this booking (optional)</p>
+                
+                {/* Meal Type */}
+                <div>
+                  <Label className="mb-2 block text-sm">Meal Type</Label>
+                  <RadioGroup
+                    value={menuSection}
+                    onValueChange={(value) => {
+                      setMenuSection(value);
+                      setMenuVariant('');
+                      setMealType('');
+                      setMenuPackage('');
+                    }}
+                    className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+                  >
+                    {menuSections.map((section) => (
+                      <div key={section.id}>
+                        <RadioGroupItem value={section.id} id={`section-${section.id}`} className="peer sr-only" />
+                        <Label
+                          htmlFor={`section-${section.id}`}
+                          className={cn(
+                            "flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer transition-all text-center min-h-[70px]",
+                            menuSection === section.id
+                              ? "border-primary bg-primary/5 text-primary"
+                              : "border-border hover:border-primary/50"
+                          )}
+                        >
+                          <span className="text-xl mb-1">{section.icon}</span>
+                          <span className="text-xs font-medium leading-tight">{section.label}</span>
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                {/* Variant Selection */}
+                {menuSection && (
+                  <div>
+                    <Label className="mb-2 block text-sm">Variant</Label>
+                    {(() => {
+                      const hasSpecial = ['pubert', 'dinner', 'wedding'].includes(menuSection);
+                      const variants = hasSpecial ? menuVariants : menuVariants.filter(v => v.id !== 'special');
+                      return (
+                        <RadioGroup
+                          value={menuVariant}
+                          onValueChange={(value) => {
+                            setMenuVariant(value);
+                            let mealTypeKey = '';
+                            if (value === 'veg') {
+                              mealTypeKey = `${menuSection}Veg`;
+                            } else if (value === 'nonveg') {
+                              mealTypeKey = `${menuSection}NonVeg`;
+                            } else if (value === 'special') {
+                              mealTypeKey = `${menuSection}Special`;
+                            }
+                            setMealType(mealTypeKey);
+                            setMenuPackage('');
+                          }}
+                          className={cn("grid gap-2", hasSpecial ? "grid-cols-3" : "grid-cols-2", "max-w-md")}
+                        >
+                          {variants.map((variant) => (
+                            <div key={variant.id}>
+                              <RadioGroupItem value={variant.id} id={`variant-${variant.id}`} className="peer sr-only" />
+                              <Label
+                                htmlFor={`variant-${variant.id}`}
+                                className={cn(
+                                  "flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all",
+                                  menuVariant === variant.id
+                                    ? variant.activeClass
+                                    : `border-border ${variant.hoverClass}`
+                                )}
+                              >
+                                <span className="text-lg">{variant.icon}</span>
+                                <span className="font-medium text-sm">{variant.fullLabel}</span>
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Package Selection */}
+                {mealType && menus[mealType as keyof typeof menus] && (
+                  <div>
+                    <Label className="mb-2 block text-sm">Select Package</Label>
+                    <RadioGroup
+                      value={menuPackage}
+                      onValueChange={setMenuPackage}
+                      className="grid gap-3"
+                    >
+                      {menus[mealType as keyof typeof menus]?.map((menu: any) => {
+                        const variant = menuVariant === 'special' 
+                          ? 'special' 
+                          : menuVariant === 'veg' 
+                            ? 'veg' 
+                            : 'nonveg';
+                        return (
+                          <div key={menu.id} className="relative">
+                            <RadioGroupItem value={menu.id} id={menu.id} className="peer sr-only" />
+                            <Label
+                              htmlFor={menu.id}
+                              className={cn(
+                                "flex flex-col sm:flex-row sm:justify-between sm:items-start p-3 rounded-lg border cursor-pointer transition-all pr-12",
+                                menuPackage === menu.id
+                                  ? "border-primary bg-primary/5"
+                                  : "border-border hover:border-primary/50"
+                              )}
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between sm:justify-start gap-2">
+                                  <h3 className="font-semibold text-foreground text-sm">{menu.name}</h3>
+                                  <span className="text-primary font-semibold text-sm sm:hidden">
+                                    {menu.price}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                  {menu.items.slice(0, 2).join(' • ')}
+                                  {menu.items.length > 2 && ' ...'}
+                                </p>
+                              </div>
+                              <span className="text-primary font-semibold shrink-0 ml-4 hidden sm:block">
+                                {menu.price}
+                              </span>
+                            </Label>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setPreviewMenu({ menu, variant: variant as 'veg' | 'nonveg' | 'special' });
+                              }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-secondary/20 hover:bg-secondary/40 flex items-center justify-center transition-colors"
+                              title="Preview menu"
+                            >
+                              <Eye className="h-4 w-4 text-secondary" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </RadioGroup>
+                  </div>
+                )}
+
+                {/* Menu Notes */}
+                <div>
+                  <Label htmlFor="menuNotes" className="text-sm">Menu Notes</Label>
+                  <Textarea
+                    id="menuNotes"
+                    value={menuNotes}
+                    onChange={(e) => setMenuNotes(e.target.value)}
+                    placeholder="Any dietary requirements or special menu requests"
+                    rows={2}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* Additional Services */}
+              <div className="space-y-4">
+                <h3 className="font-medium text-lg">Additional Services</h3>
+                <p className="text-sm text-muted-foreground">Select any additional services the customer requires</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {addOnServices.map((service) => (
+                    <div
+                      key={service.id}
+                      onClick={() => toggleService(service.id)}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                        selectedServices.includes(service.id)
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <Checkbox
+                        checked={selectedServices.includes(service.id)}
+                        className="pointer-events-none h-4 w-4"
+                      />
+                      <service.icon className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground text-sm">{service.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {halls.length > 1 ? (
@@ -408,18 +831,60 @@ const NewManualBooking = () => {
               {sections.length > 1 && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Select Section *</label>
-                  <Select value={selectedSection} onValueChange={setSelectedSection}>
+                  {!timeSlot && (
+                    <p className="text-xs text-muted-foreground">Select a time slot first to see available sections</p>
+                  )}
+                  <Select 
+                    value={selectedSection} 
+                    onValueChange={setSelectedSection}
+                    disabled={!timeSlot}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a section" />
+                      <SelectValue placeholder={timeSlot ? "Select a section" : "Select time slot first"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {sections.map((section) => (
-                        <SelectItem key={section.id} value={section.id}>
-                          {section.name}
-                        </SelectItem>
-                      ))}
+                      {sections.map((section) => {
+                        const isAvailable = !timeSlot || isSectionAvailable(timeSlot, section.id);
+                        return (
+                          <SelectItem 
+                            key={section.id} 
+                            value={section.id}
+                            disabled={!isAvailable}
+                            className={cn(!isAvailable && "text-muted-foreground line-through")}
+                          >
+                            <span className="flex items-center gap-2">
+                              {section.name}
+                              {timeSlot && (
+                                isAvailable ? (
+                                  <CheckCircle className="h-3 w-3 text-green-600" />
+                                ) : (
+                                  <span className="text-xs text-destructive">Booked</span>
+                                )
+                              )}
+                            </span>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
+                  {timeSlot && availableSectionsForSlot.length === 0 && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      No sections available for this time slot
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Conflict Warning */}
+              {hasConflict && !isClosed && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  <span className="text-sm">
+                    {hasMultipleSections && selectedSection 
+                      ? 'The selected section is already booked for this time slot.'
+                      : 'This time slot is fully booked. Please select a different time or date.'}
+                  </span>
                 </div>
               )}
 
@@ -435,7 +900,7 @@ const NewManualBooking = () => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={submitting}>
+                <Button type="submit" disabled={submitting || hasConflict}>
                   {submitting ? 'Creating...' : (
                     <>
                       <Plus className="w-4 h-4 mr-2" />
@@ -446,6 +911,14 @@ const NewManualBooking = () => {
               </div>
             </form>
           </Form>
+          
+          {/* Menu Preview Modal */}
+          <MenuQuickViewModal
+            open={!!previewMenu}
+            onOpenChange={(open) => !open && setPreviewMenu(null)}
+            menu={previewMenu?.menu || null}
+            variant={previewMenu?.variant || 'veg'}
+          />
         </CardContent>
       </Card>
     </AdminLayout>

@@ -78,7 +78,7 @@ const HallDetailPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative h-[65vh] flex items-end overflow-hidden">
+      <section className="relative h-[50vh] sm:h-[55vh] md:h-[65vh] flex items-end overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
             src={hall.image}
@@ -90,20 +90,20 @@ const HallDetailPage = () => {
         
         <FloatingElements type="diyas" density="low" />
         
-        <div className="container relative z-10 mx-auto px-4 lg:px-8 pb-16">
+        <div className="container relative z-10 mx-auto px-3 sm:px-4 lg:px-8 pb-8 sm:pb-12 md:pb-16">
           <div className="max-w-3xl animate-fade-in-up">
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
               {hall.eventTypes.map((type) => (
-                <Badge key={type} className="bg-secondary/90 text-secondary-foreground border-secondary">
+                <Badge key={type} className="bg-secondary/90 text-secondary-foreground border-secondary text-xs sm:text-sm">
                   {type}
                 </Badge>
               ))}
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-card mb-4">
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-card mb-2 sm:mb-4">
               {hall.name}
             </h1>
-            <div className="flex items-center gap-2 text-card/90">
-              <Users className="h-5 w-5 text-secondary" />
+            <div className="flex items-center gap-2 text-card/90 text-sm sm:text-base">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
               <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
             </div>
           </div>
@@ -111,23 +111,55 @@ const HallDetailPage = () => {
       </section>
 
       {/* Content */}
-      <section className="relative py-20 bg-background overflow-hidden">
+      <section className="relative py-8 sm:py-12 md:py-20 bg-background overflow-x-hidden">
         <DecorativeBorder position="top" />
         <div className="absolute inset-0 paisley-bg opacity-20" />
         
-        <div className="container relative z-10 mx-auto px-4 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-3">
+        <div className="container relative z-10 mx-auto px-3 sm:px-4 lg:px-8 max-w-full overflow-x-hidden">
+          {/* Mobile: Booking card first, then content */}
+          <div className="lg:hidden mb-6">
+            {/* Mobile Booking Card */}
+            <div className="card-traditional p-4 sm:p-6 animate-fade-in-up">
+              <DiwaRow count={3} className="mb-3 sm:mb-4" />
+              
+              <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground mb-2 sm:mb-4 text-center">
+                {t("hallDetail.bookThis")} <span className="text-gradient-gold">{t("hallDetail.bookThis.highlight")}</span>
+              </h3>
+              <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4 text-center">
+                {hall.name} {t("hallDetail.bookThis.desc")}
+              </p>
+              
+              <HallAvailabilityIndicator hallSlug={hall.slug} />
+              
+              <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
+                <Button asChild className="w-full gold-shimmer group text-sm sm:text-base">
+                  <Link to={`/booking?hall=${hall.slug}`}>
+                    <Calendar className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-pulse" />
+                    {t("hallDetail.bookNow")}
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild className="w-full border-primary/50 hover:bg-primary/10 text-sm sm:text-base">
+                  <a href="tel:+919876543210">
+                    <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                    {t("hallDetail.callInquire")}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 sm:gap-8 md:gap-12 lg:grid-cols-3 w-full max-w-full">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-12">
+            <div className="lg:col-span-2 space-y-6 sm:space-y-8 md:space-y-12 min-w-0 w-full overflow-x-hidden">
               {/* Overview */}
               <div className="animate-fade-in-up">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-secondary text-xl">🪷</span>
-                  <h2 className="font-serif text-2xl font-bold text-foreground">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <span className="text-secondary text-lg sm:text-xl">🪷</span>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
                     {t("hallDetail.overview")}
                   </h2>
                 </div>
-                <p className="text-muted-foreground leading-relaxed text-lg">
+                <p className="text-muted-foreground leading-relaxed text-sm sm:text-base md:text-lg">
                   {hall.description}
                 </p>
               </div>
@@ -145,23 +177,23 @@ const HallDetailPage = () => {
 
               {/* Features */}
               <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-secondary text-xl">✦</span>
-                  <h2 className="font-serif text-2xl font-bold text-foreground">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <span className="text-secondary text-lg sm:text-xl">✦</span>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
                     {t("hallDetail.features")}
                   </h2>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                   {hall.features.map((feature, index) => (
                     <div
                       key={feature}
-                      className="flex items-center gap-3 p-4 card-traditional animate-fade-in-up"
+                      className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 card-traditional animate-fade-in-up"
                       style={{ animationDelay: `${0.2 + index * 0.05}s` }}
                     >
-                      <div className="w-8 h-8 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center shrink-0">
-                        <Check className="h-4 w-4 text-primary" />
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center shrink-0">
+                        <Check className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                       </div>
-                      <span className="text-foreground">{feature}</span>
+                      <span className="text-foreground text-sm sm:text-base">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -169,40 +201,40 @@ const HallDetailPage = () => {
 
               {/* Facilities */}
               <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-secondary text-xl">🪔</span>
-                  <h2 className="font-serif text-2xl font-bold text-foreground">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <span className="text-secondary text-lg sm:text-xl">🪔</span>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
                     {t("hallDetail.facilities")}
                   </h2>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                   {facilities.map((facility, index) => (
                     <div
                       key={facility.name}
-                      className={`flex items-center gap-3 p-4 rounded-lg border transition-all ${
+                      className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-4 rounded-lg border transition-all ${
                         facility.available
                           ? "card-traditional"
                           : "bg-muted/20 border-border/50 opacity-50"
                       }`}
                       style={{ animationDelay: `${0.3 + index * 0.05}s` }}
                     >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 ${
                         facility.available 
                           ? "bg-gradient-to-br from-secondary/30 to-primary/20" 
                           : "bg-muted"
                       }`}>
-                        <facility.icon className={`h-5 w-5 ${facility.available ? "text-primary" : "text-muted-foreground"}`} />
+                        <facility.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${facility.available ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
-                      <span className={facility.available ? "text-foreground" : "text-muted-foreground"}>
+                      <span className={`text-xs sm:text-sm md:text-base ${facility.available ? "text-foreground" : "text-muted-foreground"}`}>
                         {facility.name}
                       </span>
                     </div>
                   ))}
-                  <div className="flex items-center gap-3 p-4 card-traditional">
-                    <div className="w-10 h-10 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-primary" />
+                  <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-4 card-traditional">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center shrink-0">
+                      <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                     </div>
-                    <span className="text-foreground">
+                    <span className="text-foreground text-xs sm:text-sm md:text-base">
                       {hall.facilities.washrooms} {t("hallDetail.washrooms")}
                     </span>
                   </div>
@@ -243,23 +275,23 @@ const HallDetailPage = () => {
 
               {/* Menu Preview */}
               <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-secondary text-xl">🍽️</span>
-                  <h2 className="font-serif text-2xl font-bold text-foreground">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <span className="text-secondary text-lg sm:text-xl">🍽️</span>
+                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
                     {t("hallDetail.virundhu")}
                   </h2>
                 </div>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">
                   {t("hallDetail.virundhu.desc")}
                 </p>
-                <Button variant="outline" asChild className="border-primary/50 hover:bg-primary/10">
+                <Button variant="outline" asChild className="border-primary/50 hover:bg-primary/10 text-sm sm:text-base">
                   <Link to="/menus">{t("hallDetail.viewMenu")}</Link>
                 </Button>
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
+            {/* Sidebar - Hidden on mobile (shown above) */}
+            <div className="hidden lg:block space-y-6">
               {/* Booking Card */}
               <div className="card-traditional p-6 sticky top-24 animate-fade-in-up">
                 <DiwaRow count={3} className="mb-4" />
@@ -385,6 +417,109 @@ const HallDetailPage = () => {
                 </div>
                 <div className="mt-4 pt-4 border-t border-border/50">
                   <p className="text-xs text-muted-foreground text-center">
+                    {t("hallDetail.siteVisits")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: Additional Info Cards */}
+            <div className="lg:hidden space-y-4 sm:space-y-6">
+              {/* Location */}
+              <div className="card-traditional p-4 sm:p-6 animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                  <span className="text-secondary">📍</span>
+                  <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
+                    {t("hallDetail.location")}
+                  </h3>
+                </div>
+                <div className="flex items-start gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
+                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p>123 Temple Street</p>
+                    <p>Nallur, Jaffna</p>
+                    <p>Sri Lanka - 40000</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Facts */}
+              <div className="card-traditional p-4 sm:p-6 animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                  <span className="text-secondary">📋</span>
+                  <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
+                    {t("hallDetail.quickFacts")}
+                  </h3>
+                </div>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center justify-between py-1.5 sm:py-2 border-b border-border/50">
+                    <span className="text-muted-foreground text-xs sm:text-sm">{t("hallDetail.capacity")}</span>
+                    <span className="font-medium text-foreground text-sm sm:text-base">{hall.capacity.min} - {hall.capacity.max}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1.5 sm:py-2 border-b border-border/50">
+                    <span className="text-muted-foreground text-xs sm:text-sm">{t("hallDetail.airConditioned")}</span>
+                    <span className={`font-medium text-sm sm:text-base ${hall.facilities.ac ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      {hall.facilities.ac ? t("hallDetail.yes") : t("hallDetail.no")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between py-1.5 sm:py-2 border-b border-border/50">
+                    <span className="text-muted-foreground text-xs sm:text-sm">{t("hallDetail.parking")}</span>
+                    <span className={`font-medium text-sm sm:text-base ${hall.facilities.parking ? 'text-green-600' : 'text-muted-foreground'}`}>
+                      {hall.facilities.parking ? t("hallDetail.parking.available") : t("hallDetail.parking.limited")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between py-1.5 sm:py-2">
+                    <span className="text-muted-foreground text-xs sm:text-sm">{t("hallDetail.washrooms")}</span>
+                    <span className="font-medium text-foreground text-sm sm:text-base">{hall.facilities.washrooms}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Event Types */}
+              <div className="card-traditional p-4 sm:p-6 animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                  <span className="text-secondary">🎉</span>
+                  <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
+                    {t("hallDetail.idealFor")}
+                  </h3>
+                </div>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  {hall.eventTypes.map((type) => (
+                    <Badge 
+                      key={type} 
+                      variant="outline" 
+                      className="bg-primary/5 border-primary/30 text-foreground hover:bg-primary/10 transition-colors text-xs sm:text-sm"
+                    >
+                      {type}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Hours */}
+              <div className="card-traditional p-4 sm:p-6 animate-fade-in-up">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                  <span className="text-secondary">🕐</span>
+                  <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
+                    {t("hallDetail.officeHours")}
+                  </h3>
+                </div>
+                <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("hallDetail.monFri")}</span>
+                    <span className="text-foreground">9:00 AM - 6:00 PM</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("hallDetail.saturday")}</span>
+                    <span className="text-foreground">9:00 AM - 4:00 PM</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t("hallDetail.sunday")}</span>
+                    <span className="text-foreground">{t("hallDetail.byAppointment")}</span>
+                  </div>
+                </div>
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-border/50">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground text-center">
                     {t("hallDetail.siteVisits")}
                   </p>
                 </div>
