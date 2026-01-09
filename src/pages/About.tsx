@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -14,8 +14,12 @@ import { Timeline } from "@/components/about/Timeline";
 import { useLanguage } from "@/contexts/LanguageContext";
 import aboutVideo from "@/assets/about-venue-video.mp4";
 
+// Low-quality placeholder - tiny base64 blurred image
+const LQIP_PLACEHOLDER = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQrJyEwPENDPzE2O0FBNjpLPT0+S0tBSUVHSkpXWV1NW2ZbYWRoZGRhZGT/2wBDARUXFx4aHR4eHWRQOlBkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGT/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQCEAwEPwAB//9k=";
+
 const AboutPage = () => {
   const { t } = useLanguage();
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const storyRef = useRef<HTMLDivElement>(null);
   const storyInView = useInView(storyRef, { once: true, margin: "-100px" });
@@ -45,19 +49,43 @@ const AboutPage = () => {
           className="absolute inset-0 z-0"
           style={{ y: heroY, scale: heroScale }}
         >
-          <video
+          {/* LQIP Placeholder - shows while video loads */}
+          <AnimatePresence>
+            {!videoLoaded && (
+              <motion.div
+                className="absolute inset-0 z-10"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                <img
+                  src={LQIP_PLACEHOLDER}
+                  alt=""
+                  className="h-full w-full object-cover scale-110 blur-lg"
+                  aria-hidden="true"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Video - fades in when loaded */}
+          <motion.video
             autoPlay
             muted
             loop
             playsInline
+            preload="auto"
             className="h-full w-full object-cover"
-            poster="https://images.unsplash.com/photo-1519741497674-611481863552?w=1920"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: videoLoaded ? 1 : 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            onLoadedData={() => setVideoLoaded(true)}
           >
             <source 
               src={aboutVideo} 
               type="video/mp4" 
             />
-          </video>
+          </motion.video>
           <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/50 to-foreground/80" />
         </motion.div>
         

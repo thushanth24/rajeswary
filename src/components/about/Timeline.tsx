@@ -10,40 +10,40 @@ interface TimelineEvent {
 
 const timelineEvents: TimelineEvent[] = [
   {
-    year: "2009",
-    title: "The Beginning",
-    description: "Started with a single mandapam and a vision to create perfect wedding celebrations.",
-    icon: "🪔",
-  },
-  {
-    year: "2012",
-    title: "Grand Ballroom Opens",
-    description: "Expanded with our flagship venue, accommodating up to 1000 guests in royal elegance.",
+    year: "October 2012",
+    title: "Raajeshwariy Wedding Hall Kondavil",
+    description: "Our journey began with the opening of Raajeshwariy Wedding Hall in Kondavil on October 20, 2012.",
     icon: "🏛️",
   },
   {
-    year: "2015",
-    title: "Complete Services Launch",
-    description: "Introduced catering, decoration, and photography services under one roof.",
+    year: "October 2012",
+    title: "Chelva Mahal",
+    description: "Just a week later, Chelva Mahal opened its doors on October 27, 2012, expanding our presence.",
+    icon: "👑",
+  },
+  {
+    year: "September 2013",
+    title: "Karpaka Raajeshwariy Wedding Hall",
+    description: "Karpaka Raajeshwariy Wedding Hall in Urumpirai was inaugurated on September 7, 2013.",
     icon: "✨",
   },
   {
-    year: "2018",
-    title: "500+ Weddings Milestone",
-    description: "Celebrated hosting over 500 blessed unions with our growing family of happy couples.",
-    icon: "💑",
-  },
-  {
-    year: "2022",
-    title: "Modern Renovations",
-    description: "Upgraded all venues with state-of-the-art facilities while preserving traditional charm.",
+    year: "June 2016",
+    title: "Raajeshwariy Wedding Hall Tellipalai",
+    description: "Our fourth venue opened in Tellipalai on June 22, 2016, bringing elegance to the north.",
     icon: "🎊",
   },
   {
-    year: "2024",
-    title: "Excellence Award",
-    description: "Recognized as the region's premier wedding destination with multiple industry awards.",
-    icon: "🏆",
+    year: "May 2017",
+    title: "Chelva Palace",
+    description: "The majestic Chelva Palace was unveiled on May 27, 2017, our flagship grand venue.",
+    icon: "🏰",
+  },
+  {
+    year: "November 2017",
+    title: "Heritage Bungalow",
+    description: "Heritage Bungalow joined our family on November 23, 2017, offering intimate celebrations.",
+    icon: "🏡",
   },
 ];
 

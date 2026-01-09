@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Phone, LucideIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import mandapamVideo from "@/assets/wedding-mandapam-video.mp4";
+
+// Low-quality placeholder - tiny base64 blurred image
+const LQIP_PLACEHOLDER = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQrJyEwPENDPzE2O0FBNjpLPT0+S0tBSUVHSkpXWV1NW2ZbYWRoZGRhZGT/2wBDARUXFx4aHR4eHWRQOlBkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGRkZGT/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQCEAwEPwAB//9k=";
 
 const defaultVideos = [mandapamVideo];
 
@@ -30,6 +35,7 @@ export function CTASection({
   videos = defaultVideos,
 }: CTASectionProps) {
   const { t } = useLanguage();
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const videoClips = videos;
   
   const displaySubtitle = subtitle || t("cta.subtitle");
@@ -39,17 +45,42 @@ export function CTASection({
   const displayButtonText = primaryButtonText || t("cta.book");
   return (
     <section className="py-20 relative overflow-hidden">
-      {/* Video Background */}
+      {/* Video Background with LQIP */}
       <div className="absolute inset-0">
-        <video
+        {/* LQIP Placeholder - shows while video loads */}
+        <AnimatePresence>
+          {!videoLoaded && (
+            <motion.div
+              className="absolute inset-0 z-10"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <img
+                src={LQIP_PLACEHOLDER}
+                alt=""
+                className="h-full w-full object-cover scale-110 blur-lg"
+                aria-hidden="true"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Video - fades in when loaded */}
+        <motion.video
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
           className="w-full h-full object-cover"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: videoLoaded ? 1 : 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          onLoadedData={() => setVideoLoaded(true)}
         >
           <source src={videoClips[0]} type="video/mp4" />
-        </video>
+        </motion.video>
         <div className="absolute inset-0 bg-background/70" />
       </div>
       

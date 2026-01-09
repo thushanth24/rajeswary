@@ -6,10 +6,10 @@ import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DiyaLamp } from "@/components/animations/DiyaLamp";
 import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/hero-traditional.webp";
-import heroVideo from "@/assets/hero-wedding-video.mp4";
 
 export function HeroSection() {
   const { t } = useLanguage();
+  
   return (
     <section className="relative min-h-[95vh] flex items-center overflow-hidden">
       {/* Background Image */}
