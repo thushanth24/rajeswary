@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import bossImage from "@/assets/boss.jpeg";
+import sonImage from "@/assets/son.jpeg";
 
 interface TeamMember {
   name: string;
@@ -13,32 +15,18 @@ interface TeamMember {
 
 const teamMembers: TeamMember[] = [
   {
-    name: "Rajesh Kumar",
+    name: "Sellathurai Thirumaran",
     role: "Founder & Director",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    image: bossImage,
     quote: "Every wedding we host is a sacred trust. We pour our hearts into making each celebration divine.",
     experience: "25+ years in hospitality",
   },
   {
-    name: "Lakshmi Devi",
-    role: "Head of Operations",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face",
-    quote: "Details matter. From the smallest ritual to the grandest decoration, perfection is our standard.",
-    experience: "18 years experience",
-  },
-  {
-    name: "Suresh Menon",
-    role: "Chief Event Coordinator",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-    quote: "Coordinating a wedding is like conducting a symphony - every element must harmonize perfectly.",
-    experience: "15 years experience",
-  },
-  {
-    name: "Priya Sharma",
-    role: "Décor & Design Head",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-    quote: "We transform spaces into dreamscapes, blending tradition with contemporary elegance.",
-    experience: "12 years experience",
+    name: "Thirumaran Lavaraj",
+    role: "Managing Director",
+    image: sonImage,
+    quote: "Carrying forward our legacy while embracing innovation to create unforgettable celebrations.",
+    experience: "10+ years experience",
   },
 ];
 

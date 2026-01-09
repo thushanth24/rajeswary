@@ -53,7 +53,7 @@ const HallsPage = () => {
           <div className="text-center mb-8 sm:mb-10 md:mb-12">
             <span className="text-secondary text-2xl sm:text-3xl">🪷</span>
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground mt-2">
-              Choose Your Sacred Space
+              {t("halls.page.chooseSpace")}
             </h2>
           </div>
           
@@ -91,11 +91,11 @@ const HallsPage = () => {
       </section>
 
       <CTASection 
-        subtitle="Find Your Perfect Venue"
-        title="Found Your Perfect"
-        highlight="Mandapam"
-        description="Begin your auspicious journey. Book a visit to experience our mandapams or select your muhurtham date."
-        primaryButtonText="Select Muhurtham Date"
+        subtitle={t("halls.cta.subtitle")}
+        title={t("halls.cta.title")}
+        highlight={t("halls.cta.highlight")}
+        description={t("halls.cta.description")}
+        primaryButtonText={t("halls.cta.button")}
         videos={[hallsVideo]}
       />
     </Layout>

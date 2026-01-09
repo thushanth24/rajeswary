@@ -102,26 +102,26 @@ export function HeroSection() {
             <div className="h-px flex-1 bg-gradient-to-r from-secondary via-secondary/50 to-transparent animate-wave" style={{ backgroundSize: "200% 100%", animationDirection: "reverse" }} />
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
             <Button 
               size="lg" 
               asChild 
-              className="text-base bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-gold-glow transition-all duration-300 hover:shadow-xl hover:scale-105 group"
+              className="text-sm sm:text-base bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-gold-glow transition-all duration-300 hover:shadow-xl hover:scale-105 group"
             >
               <Link to="/booking">
-                <Calendar className="mr-2 h-5 w-5 group-hover:animate-swing" />
-                {t("hero.cta.book")}
+                <Calendar className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-swing" />
+                <span className="truncate">{t("hero.cta.book")}</span>
               </Link>
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
               asChild 
-              className="text-base bg-card/10 border-card/40 text-card hover:bg-card/20 hover:text-card transition-all duration-300 hover:scale-105"
+              className="text-sm sm:text-base bg-card/10 border-card/40 text-card hover:bg-card/20 hover:text-card transition-all duration-300 hover:scale-105"
             >
               <Link to="/halls">
-                {t("hero.cta.explore")}
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <span className="truncate">{t("hero.cta.explore")}</span>
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
               </Link>
             </Button>
           </div>

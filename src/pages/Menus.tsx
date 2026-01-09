@@ -73,9 +73,9 @@ const MenusPage = () => {
           <div className="text-center mb-12">
             <span className="text-secondary text-3xl">☀️</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
-              Pubert <span className="text-gradient-gold">(Lunch)</span> Packages
+              {t("menus.pubert.title")} <span className="text-gradient-gold">{t("menus.pubert.highlight")}</span> {t("menus.pubert.packages")}
             </h2>
-            <p className="text-muted-foreground">Traditional afternoon feast selections</p>
+            <p className="text-muted-foreground">{t("menus.pubert.desc")}</p>
           </div>
 
           {/* Desktop Tabs */}
@@ -142,11 +142,11 @@ const MenusPage = () => {
 
           {/* Mobile Accordion */}
           <MobileMenuAccordion
-            title="Pubert (Lunch)"
+            title={`${t("menus.pubert.title")} ${t("menus.pubert.highlight")}`}
             sections={[
-              { id: "pubert-veg", label: "Vegetarian", icon: "veg", packages: menus.pubertVeg, variant: "veg" },
-              { id: "pubert-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.pubertNonVeg, variant: "nonveg" },
-              { id: "pubert-special", label: "Special", icon: "special", packages: menus.pubertSpecial, variant: "special" },
+              { id: "pubert-veg", label: t("menus.veg"), icon: "veg", packages: menus.pubertVeg, variant: "veg" },
+              { id: "pubert-nonveg", label: t("menus.nonveg"), icon: "nonveg", packages: menus.pubertNonVeg, variant: "nonveg" },
+              { id: "pubert-special", label: t("menus.special"), icon: "special", packages: menus.pubertSpecial, variant: "special" },
             ]}
           />
         </div>
@@ -163,9 +163,9 @@ const MenusPage = () => {
           <div className="text-center mb-12">
             <span className="text-secondary text-3xl">🌙</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
-              Dinner <span className="text-gradient-gold">Packages</span>
+              {t("menus.dinner.title")} <span className="text-gradient-gold">{t("menus.dinner.highlight")}</span>
             </h2>
-            <p className="text-muted-foreground">Evening feast selections for your special occasions</p>
+            <p className="text-muted-foreground">{t("menus.dinner.desc")}</p>
           </div>
 
           {/* Desktop Tabs */}
@@ -174,15 +174,15 @@ const MenusPage = () => {
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-background border border-border">
                 <TabsTrigger value="dinner-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
                   <Leaf className="h-4 w-4" />
-                  Veg
+                  {t("menus.veg")}
                 </TabsTrigger>
                 <TabsTrigger value="dinner-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
                   <Drumstick className="h-4 w-4" />
-                  Non-Veg
+                  {t("menus.nonveg")}
                 </TabsTrigger>
                 <TabsTrigger value="dinner-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Sparkles className="h-4 w-4" />
-                  Special
+                  {t("menus.special")}
                 </TabsTrigger>
               </TabsList>
 
@@ -232,11 +232,11 @@ const MenusPage = () => {
 
           {/* Mobile Accordion */}
           <MobileMenuAccordion
-            title="Dinner"
+            title={t("menus.dinner.title")}
             sections={[
-              { id: "dinner-veg", label: "Vegetarian", icon: "veg", packages: menus.dinnerVeg, variant: "veg" },
-              { id: "dinner-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.dinnerNonVeg, variant: "nonveg" },
-              { id: "dinner-special", label: "Special", icon: "special", packages: menus.dinnerSpecial, variant: "special" },
+              { id: "dinner-veg", label: t("menus.veg"), icon: "veg", packages: menus.dinnerVeg, variant: "veg" },
+              { id: "dinner-nonveg", label: t("menus.nonveg"), icon: "nonveg", packages: menus.dinnerNonVeg, variant: "nonveg" },
+              { id: "dinner-special", label: t("menus.special"), icon: "special", packages: menus.dinnerSpecial, variant: "special" },
             ]}
           />
         </div>
@@ -255,9 +255,9 @@ const MenusPage = () => {
           <div className="text-center mb-12">
             <span className="text-secondary text-3xl">💒</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
-              Wedding <span className="text-gradient-gold">Packages</span>
+              {t("menus.wedding.title")} <span className="text-gradient-gold">{t("menus.wedding.highlight")}</span>
             </h2>
-            <p className="text-muted-foreground">Grand feast selections for your special wedding day</p>
+            <p className="text-muted-foreground">{t("menus.wedding.desc")}</p>
           </div>
 
           {/* Desktop Tabs */}
@@ -266,15 +266,15 @@ const MenusPage = () => {
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 mb-12 bg-card border border-border">
                 <TabsTrigger value="wedding-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
                   <Leaf className="h-4 w-4" />
-                  Veg
+                  {t("menus.veg")}
                 </TabsTrigger>
                 <TabsTrigger value="wedding-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
                   <Drumstick className="h-4 w-4" />
-                  Non-Veg
+                  {t("menus.nonveg")}
                 </TabsTrigger>
                 <TabsTrigger value="wedding-special" className="font-serif gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Sparkles className="h-4 w-4" />
-                  Special
+                  {t("menus.special")}
                 </TabsTrigger>
               </TabsList>
 
@@ -324,11 +324,11 @@ const MenusPage = () => {
 
           {/* Mobile Accordion */}
           <MobileMenuAccordion
-            title="Wedding"
+            title={t("menus.wedding.title")}
             sections={[
-              { id: "wedding-veg", label: "Vegetarian", icon: "veg", packages: menus.weddingVeg, variant: "veg" },
-              { id: "wedding-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.weddingNonVeg, variant: "nonveg" },
-              { id: "wedding-special", label: "Special", icon: "special", packages: menus.weddingSpecial, variant: "special" },
+              { id: "wedding-veg", label: t("menus.veg"), icon: "veg", packages: menus.weddingVeg, variant: "veg" },
+              { id: "wedding-nonveg", label: t("menus.nonveg"), icon: "nonveg", packages: menus.weddingNonVeg, variant: "nonveg" },
+              { id: "wedding-special", label: t("menus.special"), icon: "special", packages: menus.weddingSpecial, variant: "special" },
             ]}
           />
         </div>
@@ -347,9 +347,9 @@ const MenusPage = () => {
           <div className="text-center mb-12">
             <span className="text-secondary text-3xl">📝</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-2">
-              Registration <span className="text-gradient-gold">Packages</span>
+              {t("menus.registration.title")} <span className="text-gradient-gold">{t("menus.registration.highlight")}</span>
             </h2>
-            <p className="text-muted-foreground">Perfect feast selections for wedding registrations</p>
+            <p className="text-muted-foreground">{t("menus.registration.desc")}</p>
           </div>
 
           {/* Desktop Tabs */}
@@ -358,11 +358,11 @@ const MenusPage = () => {
               <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12 bg-background border border-border">
                 <TabsTrigger value="registration-veg" className="font-serif gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white">
                   <Leaf className="h-4 w-4" />
-                  Veg
+                  {t("menus.veg")}
                 </TabsTrigger>
                 <TabsTrigger value="registration-nonveg" className="font-serif gap-2 data-[state=active]:bg-orange-600 data-[state=active]:text-white">
                   <Drumstick className="h-4 w-4" />
-                  Non-Veg
+                  {t("menus.nonveg")}
                 </TabsTrigger>
               </TabsList>
 
@@ -398,10 +398,10 @@ const MenusPage = () => {
 
           {/* Mobile Accordion */}
           <MobileMenuAccordion
-            title="Registration"
+            title={t("menus.registration.title")}
             sections={[
-              { id: "registration-veg", label: "Vegetarian", icon: "veg", packages: menus.registrationVeg, variant: "veg" },
-              { id: "registration-nonveg", label: "Non-Vegetarian", icon: "nonveg", packages: menus.registrationNonVeg, variant: "nonveg" },
+              { id: "registration-veg", label: t("menus.veg"), icon: "veg", packages: menus.registrationVeg, variant: "veg" },
+              { id: "registration-nonveg", label: t("menus.nonveg"), icon: "nonveg", packages: menus.registrationNonVeg, variant: "nonveg" },
             ]}
           />
         </div>
@@ -417,10 +417,10 @@ const MenusPage = () => {
           <div className="text-center mb-12">
             <span className="text-secondary text-3xl">🪷</span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-4 mb-4">
-              Dietary <span className="text-gradient-gold">Options</span>
+              {t("menus.dietary.title")} <span className="text-gradient-gold">{t("menus.dietary.highlight")}</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We honor all dietary traditions and requirements with respect.
+              {t("menus.dietary.desc")}
             </p>
           </div>
           
@@ -430,9 +430,9 @@ const MenusPage = () => {
                 <Leaf className="h-7 w-7 text-green-600" />
               </div>
               <div>
-                <h3 className="font-serif font-semibold text-foreground text-lg">சைவ உணவு (Vegetarian)</h3>
+                <h3 className="font-serif font-semibold text-foreground text-lg">{t("menus.dietary.veg.title")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Full vegetarian menu with pure sattvic options
+                  {t("menus.dietary.veg.desc")}
                 </p>
               </div>
             </div>
@@ -441,9 +441,9 @@ const MenusPage = () => {
                 <Drumstick className="h-7 w-7 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-serif font-semibold text-foreground text-lg">அசைவம் (Non-Vegetarian)</h3>
+                <h3 className="font-serif font-semibold text-foreground text-lg">{t("menus.dietary.nonveg.title")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Premium Jaffna-style seafood and meat selections
+                  {t("menus.dietary.nonveg.desc")}
                 </p>
               </div>
             </div>
@@ -452,11 +452,11 @@ const MenusPage = () => {
       </section>
 
       <CTASection 
-        subtitle="Customize Your Feast"
-        title="Ready to Select Your"
-        highlight="Menu Package"
-        description="All menus can be customized to honor your family traditions and preferences. Our master cooks will work with you to create the perfect feast for your auspicious occasion."
-        primaryButtonText="Select Menu & Book"
+        subtitle={t("menus.cta.subtitle")}
+        title={t("menus.cta.title")}
+        highlight={t("menus.cta.highlight")}
+        description={t("menus.cta.description")}
+        primaryButtonText={t("menus.cta.button")}
         videos={[menuVideo]}
       />
 

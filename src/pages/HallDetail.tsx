@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { useHall } from "@/hooks/useHalls";
 import { useHallDetails } from "@/hooks/useHallDetails";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,6 +32,7 @@ const HallDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { hall, loading, error } = useHall(slug);
   const { details, loading: detailsLoading } = useHallDetails(hall?.id);
+  const { t } = useLanguage();
 
   if (loading) {
     return (
@@ -64,13 +66,13 @@ const HallDetailPage = () => {
   }
 
   const facilities = [
-    { name: "குளிரூட்டி (AC)", available: hall.facilities.ac, icon: Snowflake },
-    { name: "வாகன நிறுத்தம்", available: hall.facilities.parking, icon: Car },
-    { name: "உணவு அரங்கு", available: hall.facilities.dining, icon: UtensilsCrossed },
-    { name: "மேடை", available: hall.facilities.stage, icon: User },
-    { name: "மின் காப்பு", available: hall.facilities.powerBackup, icon: Zap },
-    { name: "மணப்பெண் அறை", available: hall.facilities.brideRoom, icon: User },
-    { name: "மணமகன் அறை", available: hall.facilities.groomRoom, icon: User },
+    { name: t("hallDetail.facility.ac"), available: hall.facilities.ac, icon: Snowflake },
+    { name: t("hallDetail.facility.parking"), available: hall.facilities.parking, icon: Car },
+    { name: t("hallDetail.facility.dining"), available: hall.facilities.dining, icon: UtensilsCrossed },
+    { name: t("hallDetail.facility.stage"), available: hall.facilities.stage, icon: User },
+    { name: t("hallDetail.facility.powerBackup"), available: hall.facilities.powerBackup, icon: Zap },
+    { name: t("hallDetail.facility.brideRoom"), available: hall.facilities.brideRoom, icon: User },
+    { name: t("hallDetail.facility.groomRoom"), available: hall.facilities.groomRoom, icon: User },
   ];
 
   return (
@@ -122,7 +124,7 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-secondary text-xl">🪷</span>
                   <h2 className="font-serif text-2xl font-bold text-foreground">
-                    Overview
+                    {t("hallDetail.overview")}
                   </h2>
                 </div>
                 <p className="text-muted-foreground leading-relaxed text-lg">
@@ -146,7 +148,7 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-secondary text-xl">✦</span>
                   <h2 className="font-serif text-2xl font-bold text-foreground">
-                    Key Features
+                    {t("hallDetail.features")}
                   </h2>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -170,7 +172,7 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-secondary text-xl">🪔</span>
                   <h2 className="font-serif text-2xl font-bold text-foreground">
-                    Facilities
+                    {t("hallDetail.facilities")}
                   </h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -201,7 +203,7 @@ const HallDetailPage = () => {
                       <User className="h-5 w-5 text-primary" />
                     </div>
                     <span className="text-foreground">
-                      {hall.facilities.washrooms} கழிவறைகள்
+                      {hall.facilities.washrooms} {t("hallDetail.washrooms")}
                     </span>
                   </div>
                 </div>
@@ -244,15 +246,14 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-secondary text-xl">🍽️</span>
                   <h2 className="font-serif text-2xl font-bold text-foreground">
-                    Virundhu Options
+                    {t("hallDetail.virundhu")}
                   </h2>
                 </div>
                 <p className="text-muted-foreground mb-4">
-                  We offer authentic Jaffna cuisine including traditional banana leaf feast, 
-                  breakfast, lunch, and dinner options with both vegetarian and non-vegetarian choices.
+                  {t("hallDetail.virundhu.desc")}
                 </p>
                 <Button variant="outline" asChild className="border-primary/50 hover:bg-primary/10">
-                  <Link to="/menus">View Full Menu</Link>
+                  <Link to="/menus">{t("hallDetail.viewMenu")}</Link>
                 </Button>
               </div>
             </div>
@@ -264,10 +265,10 @@ const HallDetailPage = () => {
                 <DiwaRow count={3} className="mb-4" />
                 
                 <h3 className="font-serif text-xl font-bold text-foreground mb-4 text-center">
-                  Book This <span className="text-gradient-gold">Mandapam</span>
+                  {t("hallDetail.bookThis")} <span className="text-gradient-gold">{t("hallDetail.bookThis.highlight")}</span>
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4 text-center">
-                  Secure your auspicious muhurtham date at {hall.name}.
+                  {hall.name} {t("hallDetail.bookThis.desc")}
                 </p>
                 
                 {/* Availability Calendar */}
@@ -277,13 +278,13 @@ const HallDetailPage = () => {
                   <Button asChild className="w-full gold-shimmer group">
                     <Link to={`/booking?hall=${hall.slug}`}>
                       <Calendar className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-                      Book Now
+                      {t("hallDetail.bookNow")}
                     </Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full border-primary/50 hover:bg-primary/10">
                     <a href="tel:+919876543210">
                       <Phone className="mr-2 h-5 w-5" />
-                      Call to Inquire
+                      {t("hallDetail.callInquire")}
                     </a>
                   </Button>
                 </div>
@@ -294,7 +295,7 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-secondary">📍</span>
                   <h3 className="font-serif text-xl font-bold text-foreground">
-                    Location
+                    {t("hallDetail.location")}
                   </h3>
                 </div>
                 <div className="flex items-start gap-3 text-muted-foreground">
@@ -312,28 +313,28 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-secondary">📋</span>
                   <h3 className="font-serif text-xl font-bold text-foreground">
-                    Quick Facts
+                    {t("hallDetail.quickFacts")}
                   </h3>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
-                    <span className="text-muted-foreground text-sm">Capacity</span>
+                    <span className="text-muted-foreground text-sm">{t("hallDetail.capacity")}</span>
                     <span className="font-medium text-foreground">{hall.capacity.min} - {hall.capacity.max}</span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
-                    <span className="text-muted-foreground text-sm">Air Conditioned</span>
+                    <span className="text-muted-foreground text-sm">{t("hallDetail.airConditioned")}</span>
                     <span className={`font-medium ${hall.facilities.ac ? 'text-green-600' : 'text-muted-foreground'}`}>
-                      {hall.facilities.ac ? 'Yes' : 'No'}
+                      {hall.facilities.ac ? t("hallDetail.yes") : t("hallDetail.no")}
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-border/50">
-                    <span className="text-muted-foreground text-sm">Parking</span>
+                    <span className="text-muted-foreground text-sm">{t("hallDetail.parking")}</span>
                     <span className={`font-medium ${hall.facilities.parking ? 'text-green-600' : 'text-muted-foreground'}`}>
-                      {hall.facilities.parking ? 'Available' : 'Limited'}
+                      {hall.facilities.parking ? t("hallDetail.parking.available") : t("hallDetail.parking.limited")}
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-muted-foreground text-sm">Washrooms</span>
+                    <span className="text-muted-foreground text-sm">{t("hallDetail.washrooms")}</span>
                     <span className="font-medium text-foreground">{hall.facilities.washrooms}</span>
                   </div>
                 </div>
@@ -344,7 +345,7 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-secondary">🎉</span>
                   <h3 className="font-serif text-xl font-bold text-foreground">
-                    Ideal For
+                    {t("hallDetail.idealFor")}
                   </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -365,26 +366,26 @@ const HallDetailPage = () => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-secondary">🕐</span>
                   <h3 className="font-serif text-xl font-bold text-foreground">
-                    Office Hours
+                    {t("hallDetail.officeHours")}
                   </h3>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Monday - Friday</span>
+                    <span className="text-muted-foreground">{t("hallDetail.monFri")}</span>
                     <span className="text-foreground">9:00 AM - 6:00 PM</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Saturday</span>
+                    <span className="text-muted-foreground">{t("hallDetail.saturday")}</span>
                     <span className="text-foreground">9:00 AM - 4:00 PM</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Sunday</span>
-                    <span className="text-foreground">By Appointment</span>
+                    <span className="text-muted-foreground">{t("hallDetail.sunday")}</span>
+                    <span className="text-foreground">{t("hallDetail.byAppointment")}</span>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-border/50">
                   <p className="text-xs text-muted-foreground text-center">
-                    Site visits available upon request
+                    {t("hallDetail.siteVisits")}
                   </p>
                 </div>
               </div>

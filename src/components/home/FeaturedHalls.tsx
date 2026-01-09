@@ -40,13 +40,13 @@ export function FeaturedHalls() {
           </div>
           
           <span className="text-secondary font-medium tracking-widest uppercase text-sm animate-fade-in">
-            {t("halls.featured.subtitle")}
+            {t("halls.featured.label")}
           </span>
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             {t("halls.featured.title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-            {t("halls.featured.subtitle")}
+            {t("halls.featured.description")}
           </p>
         </div>
 

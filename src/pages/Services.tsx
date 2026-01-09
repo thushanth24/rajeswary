@@ -10,19 +10,21 @@ import { CTASection } from "@/components/home/CTASection";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, ChevronRight, Sparkles, Crown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import servicesVideo from "@/assets/wedding-services-video.mp4";
 
-const categoryConfig: Record<ServiceCategory | "all", { label: string; icon: React.ReactNode; description: string }> = {
-  all: { label: "All Services", icon: <Sparkles className="w-4 h-4" />, description: "Explore our complete range of wedding services" },
-  essential: { label: "Essentials", icon: <Sparkles className="w-4 h-4" />, description: "Core services for your perfect wedding" },
-  premium: { label: "Premium", icon: <Crown className="w-4 h-4" />, description: "Luxury additions for an extraordinary celebration" },
-  addon: { label: "Add-ons", icon: <Plus className="w-4 h-4" />, description: "Extra touches to enhance your special day" },
-};
-
 const ServicesPage = () => {
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<ServiceCategory | "all">("all");
   const carouselRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  
+  const categoryConfig: Record<ServiceCategory | "all", { label: string; icon: React.ReactNode; description: string }> = {
+    all: { label: t("services.tab.all"), icon: <Sparkles className="w-4 h-4" />, description: t("services.tab.all.desc") },
+    essential: { label: t("services.tab.essential"), icon: <Sparkles className="w-4 h-4" />, description: t("services.tab.essential.desc") },
+    premium: { label: t("services.tab.premium"), icon: <Crown className="w-4 h-4" />, description: t("services.tab.premium.desc") },
+    addon: { label: t("services.tab.addon"), icon: <Plus className="w-4 h-4" />, description: t("services.tab.addon.desc") },
+  };
   
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -32,7 +34,7 @@ const ServicesPage = () => {
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
 
-  const filteredServices = activeCategory === "all" 
+  const filteredServices = activeCategory === "all"
     ? services 
     : services.filter(s => s.category === activeCategory);
 
@@ -111,7 +113,7 @@ const ServicesPage = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            ✦ Complete Thirumana Seva ✦
+            ✦ {t("services.hero.tagline")} ✦
           </motion.span>
           
           <motion.h1 
@@ -120,7 +122,7 @@ const ServicesPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Our <span className="text-gradient-gold">Services</span>
+            {t("services.hero.title")} <span className="text-gradient-gold">{t("services.hero.highlight")}</span>
           </motion.h1>
           
           <motion.p 
@@ -129,8 +131,7 @@ const ServicesPage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            Beyond sacred mandapams, we offer complete wedding solutions rooted in tradition, 
-            ensuring your celebration is blessed, seamless, and truly unforgettable.
+            {t("services.hero.description")}
           </motion.p>
           
           {/* Decorative Divider */}
@@ -147,16 +148,16 @@ const ServicesPage = () => {
       <section className="bg-background border-b border-border/50 py-6">
         <div className="container mx-auto px-4 lg:px-8">
           <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as ServiceCategory | "all")}>
-            <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-4 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-full">
+            <TabsList className="w-full max-w-2xl mx-auto grid grid-cols-4 bg-card/80 backdrop-blur-sm border border-border/50 p-1 sm:p-1.5 rounded-full">
               {(["all", "essential", "premium", "addon"] as const).map((cat) => (
                 <TabsTrigger 
                   key={cat} 
                   value={cat}
-                  className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md flex items-center gap-1.5 text-xs sm:text-sm font-medium transition-all duration-300"
+                  className="rounded-full data-[state=active]:bg-gradient-to-r data-[state=active]:from-secondary data-[state=active]:to-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md flex items-center justify-center gap-1 text-[0.65rem] sm:text-xs md:text-sm font-medium transition-all duration-300 px-1 sm:px-2 py-1.5"
                 >
-                  {categoryConfig[cat].icon}
-                  <span className="hidden sm:inline">{categoryConfig[cat].label}</span>
-                  <span className="sm:hidden">{cat === "all" ? "All" : categoryConfig[cat].label.split(" ")[0]}</span>
+                  <span className="shrink-0">{categoryConfig[cat].icon}</span>
+                  <span className="hidden md:inline truncate">{categoryConfig[cat].label}</span>
+                  <span className="md:hidden truncate">{cat === "all" ? "All" : cat.slice(0, 3).charAt(0).toUpperCase() + cat.slice(1, 4)}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -179,7 +180,7 @@ const ServicesPage = () => {
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-serif text-2xl font-bold text-foreground flex items-center gap-2">
               <span className="text-secondary">🪷</span>
-              Quick Browse
+              {t("services.quickBrowse")}
             </h2>
             <div className="flex gap-2">
               <Button
@@ -237,10 +238,10 @@ const ServicesPage = () => {
               🪷
             </motion.span>
             <h2 className="font-serif text-3xl font-bold text-foreground mt-2 mb-2">
-              Sacred Wedding Services
+              {t("services.sacredServices")}
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Hover over each card to discover the full range of features included
+              {t("services.hoverDiscover")}
             </p>
           </div>
           
@@ -276,24 +277,23 @@ const ServicesPage = () => {
             <div className="flex items-center justify-center gap-3 mb-4">
               <span className="text-secondary text-xl">✦</span>
               <span className="text-secondary font-medium tracking-wider uppercase text-sm">
-                Our Tradition of Excellence
+                {t("services.whyChoose.sectionTitle")}
               </span>
               <span className="text-secondary text-xl">✦</span>
             </div>
             <h2 className="font-serif text-3xl font-bold text-foreground mb-4">
-              Why Choose Our <span className="text-gradient-gold">Seva</span>?
+              {t("services.whyChoose.mainTitle")} <span className="text-gradient-gold">{t("services.whyChoose.highlight")}</span>?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              We bring together the finest artisans, priests, and professionals 
-              to ensure your sacred ceremony exceeds all expectations.
+              {t("services.whyChoose.desc")}
             </p>
           </div>
           
           <div className="grid gap-8 md:grid-cols-3">
             {[
-              { number: "15+", label: "Years of Seva", desc: "Over 15 years creating blessed celebrations", icon: "🕉️" },
-              { number: "500+", label: "Sacred Unions", desc: "Hundreds of couples trust our traditions", icon: "💑" },
-              { number: "50+", label: "Expert Partners", desc: "Premium vendors for every ritual", icon: "🤝" },
+              { number: "15+", label: t("services.stats.years"), desc: t("services.stats.years.desc"), icon: "🕉️" },
+              { number: "500+", label: t("services.stats.unions"), desc: t("services.stats.unions.desc"), icon: "💑" },
+              { number: "50+", label: t("services.stats.partners"), desc: t("services.stats.partners.desc"), icon: "🤝" },
             ].map((stat, index) => (
               <motion.div 
                 key={stat.label}
@@ -324,11 +324,11 @@ const ServicesPage = () => {
       </section>
 
       <CTASection 
-        subtitle="Complete Wedding Solutions"
-        title="Ready to Plan Your"
-        highlight="Sacred Union"
-        description="All our seva can be selected during the booking process. Begin your auspicious journey to create the perfect celebration package."
-        primaryButtonText="Begin Sacred Booking"
+        subtitle={t("services.cta.subtitle")}
+        title={t("services.cta.title")}
+        highlight={t("services.cta.highlight")}
+        description={t("services.cta.description")}
+        primaryButtonText={t("services.cta.button")}
         videos={[servicesVideo]}
       />
     </Layout>

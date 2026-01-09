@@ -72,20 +72,20 @@ interface BookingData {
   message: string;
 }
 
-const eventTypes = [
-  { id: "wedding", label: "Wedding Ceremony" },
-  { id: "reception", label: "Wedding Reception" },
-  { id: "engagement", label: "Engagement" },
-  { id: "birthday", label: "Birthday Party" },
-  { id: "anniversary", label: "Anniversary" },
-  { id: "corporate", label: "Corporate Event" },
-  { id: "other", label: "Other" },
+const getEventTypes = (t: (key: string) => string) => [
+  { id: "wedding", label: t("booking.event.wedding") },
+  { id: "reception", label: t("booking.event.reception") },
+  { id: "engagement", label: t("booking.event.engagement") },
+  { id: "birthday", label: t("booking.event.birthday") },
+  { id: "anniversary", label: t("booking.event.anniversary") },
+  { id: "corporate", label: t("booking.event.corporate") },
+  { id: "other", label: t("booking.event.other") },
 ];
 
-const timeSlots = [
-  { id: "morning", label: "Morning (8:00 AM - 4:00 PM)" },
-  { id: "evening", label: "Evening (5:00 PM - 12:00 AM)" },
-  { id: "fullday", label: "Full Day (8:00 AM - 12:00 AM)" },
+const getTimeSlots = (t: (key: string) => string) => [
+  { id: "morning", label: t("booking.time.morning") },
+  { id: "evening", label: t("booking.time.evening") },
+  { id: "fullday", label: t("booking.time.fullday") },
 ];
 
 const BOOKING_REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -100,16 +100,16 @@ function generateBookingReference() {
   return `CH-${year}-${suffix}`;
 }
 
-const addOnServices = [
-  { id: "photography", label: "Photography & Videography", icon: Camera },
-  { id: "vehicles", label: "Wedding Vehicles", icon: Car },
-  { id: "decoration", label: "Decoration & Themes", icon: Palette },
-  { id: "sound-lighting", label: "Sound & Lighting", icon: Music },
-  { id: "coordination", label: "Event Coordination", icon: UserCheck },
-  { id: "dj-music", label: "DJ & Music", icon: Headphones },
-  { id: "makeup", label: "Bridal Makeup", icon: Sparkles },
-  { id: "jewellery", label: "Jewellery Rental", icon: Gem },
-  { id: "other", label: "Other Services", icon: Sparkles },
+const getAddOnServices = (t: (key: string) => string) => [
+  { id: "photography", label: t("booking.service.photography"), icon: Camera },
+  { id: "vehicles", label: t("booking.service.vehicles"), icon: Car },
+  { id: "decoration", label: t("booking.service.decoration"), icon: Palette },
+  { id: "sound-lighting", label: t("booking.service.soundLighting"), icon: Music },
+  { id: "coordination", label: t("booking.service.coordination"), icon: UserCheck },
+  { id: "dj-music", label: t("booking.service.djMusic"), icon: Headphones },
+  { id: "makeup", label: t("booking.service.makeup"), icon: Sparkles },
+  { id: "jewellery", label: t("booking.service.jewellery"), icon: Gem },
+  { id: "other", label: t("booking.service.other"), icon: Sparkles },
 ];
 
 const BookingPage = () => {
@@ -511,6 +511,10 @@ const BookingPage = () => {
   const guestCount = parseInt(bookingData.guestCount) || 0;
   const isOverCapacity = selectedHall && guestCount > selectedHall.capacity.max;
 
+  const eventTypes = getEventTypes(t);
+  const timeSlots = getTimeSlots(t);
+  const addOnServices = getAddOnServices(t);
+
   if (isSubmitted) {
     return (
       <Layout>
@@ -527,73 +531,72 @@ const BookingPage = () => {
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <span className="text-secondary text-xl">✦</span>
                   <span className="text-secondary font-medium tracking-wider uppercase text-sm">
-                    Shubham
+                    {t("booking.submitted.shubham")}
                   </span>
                   <span className="text-secondary text-xl">✦</span>
                 </div>
                 <h1 className="font-serif text-3xl font-bold text-foreground mb-4">
-                  Booking Request <span className="text-gradient-gold">Submitted!</span>
+                  {t("booking.submitted.title").split("!")[0]} <span className="text-gradient-gold">!</span>
                 </h1>
                 
                 {/* Reference Number Display */}
                 {bookingReference && (
                   <div className="bg-gradient-to-r from-secondary/20 to-primary/10 border-2 border-secondary/40 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-muted-foreground mb-1">Your Booking Reference</p>
+                    <p className="text-sm text-muted-foreground mb-1">{t("booking.submitted.reference")}</p>
                     <p className="font-mono text-2xl font-bold text-primary tracking-wider">
                       {bookingReference}
                     </p>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Please save this reference number to track your booking
+                      {t("booking.submitted.saveReference")}
                     </p>
                   </div>
                 )}
                 
                 <p className="text-muted-foreground mb-8">
-                  Thank you for choosing our sacred mandapams. Our team will contact you 
-                  within 24 hours to confirm your muhurtham details.
+                  {t("booking.submitted.thankYou")}
                 </p>
                 
                 <div className="bg-card p-6 rounded-lg border border-secondary/30 text-left mb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-secondary">🪔</span>
-                    <h3 className="font-serif font-semibold text-foreground">Booking Summary</h3>
+                    <h3 className="font-serif font-semibold text-foreground">{t("booking.submitted.summary")}</h3>
                   </div>
                   <div className="space-y-2 text-sm">
                     {bookingReference && (
                       <div className="flex justify-between pb-2 border-b border-secondary/20">
-                        <span className="text-muted-foreground">Reference:</span>
+                        <span className="text-muted-foreground">{t("booking.submitted.reference.label")}</span>
                         <span className="font-mono font-semibold text-primary">{bookingReference}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Event Type:</span>
+                      <span className="text-muted-foreground">{t("booking.summary.eventType")}</span>
                       <span className="text-foreground">{eventTypes.find(e => e.id === bookingData.eventType)?.label}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Date:</span>
+                      <span className="text-muted-foreground">{t("booking.summary.date")}</span>
                       <span className="text-foreground">{bookingData.eventDate ? format(bookingData.eventDate, "PPP") : "-"}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Time Slot:</span>
-                      <span className="text-foreground">{timeSlots.find(t => t.id === bookingData.timeSlot)?.label}</span>
+                      <span className="text-muted-foreground">{t("booking.summary.timeSlot")}</span>
+                      <span className="text-foreground">{timeSlots.find(ts => ts.id === bookingData.timeSlot)?.label}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Mandapam:</span>
+                      <span className="text-muted-foreground">{t("booking.summary.mandapam")}</span>
                       <span className="text-foreground">{selectedHall?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Guests:</span>
+                      <span className="text-muted-foreground">{t("booking.summary.guests")}</span>
                       <span className="text-foreground">{bookingData.guestCount}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Menu:</span>
+                      <span className="text-muted-foreground">{t("booking.summary.menu")}</span>
                       <span className="text-foreground">
                         {menus[bookingData.mealType as keyof typeof menus]?.find(m => m.id === bookingData.menuPackage)?.name}
                       </span>
                     </div>
                     {bookingData.services.length > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Add-on Services:</span>
+                        <span className="text-muted-foreground">{t("booking.summary.services")}</span>
                         <span className="text-foreground text-right">
                           {bookingData.services.map(s => addOnServices.find(a => a.id === s)?.label).join(", ")}
                         </span>
@@ -603,7 +606,7 @@ const BookingPage = () => {
                 </div>
                 
                 <Button asChild variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/5">
-                  <a href="/">Return to Home</a>
+                  <a href="/">{t("booking.submitted.returnHome")}</a>
                 </Button>
               </CardContent>
             </Card>
@@ -690,10 +693,10 @@ const BookingPage = () => {
                   <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-lg md:text-xl">🏛️</span>
-                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Choose Mandapam</CardTitle>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">{t("booking.selectHall")}</CardTitle>
                     </div>
                     <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                      Select your preferred venue to see available dates
+                      {t("booking.selectHall.desc")}
                     </p>
                   </CardHeader>
 
@@ -769,12 +772,12 @@ const BookingPage = () => {
                   <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-lg md:text-xl">📅</span>
-                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Event Details</CardTitle>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">{t("booking.step.event")}</CardTitle>
                     </div>
                   </CardHeader>
 
                   <div>
-                    <Label className="mb-2 md:mb-3 block text-sm">Event Type</Label>
+                    <Label className="mb-2 md:mb-3 block text-sm">{t("booking.eventType")}</Label>
                     <RadioGroup
                       value={bookingData.eventType}
                       onValueChange={(value) => updateBookingData("eventType", value)}
@@ -804,10 +807,10 @@ const BookingPage = () => {
                   </div>
 
                   <div>
-                    <Label>Event Date</Label>
+                    <Label>{t("booking.eventDate")}</Label>
                     <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
                       <Lock className="h-3 w-3" />
-                      Dates with confirmed bookings or closures are unavailable
+                      {t("booking.eventDate.desc")}
                     </p>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -819,7 +822,7 @@ const BookingPage = () => {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {bookingData.eventDate ? format(bookingData.eventDate, "PPP") : "Pick a date"}
+                          {bookingData.eventDate ? format(bookingData.eventDate, "PPP") : t("booking.pickDate")}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -852,13 +855,13 @@ const BookingPage = () => {
                   </div>
 
                   <div>
-                    <Label>Time Slot</Label>
+                    <Label>{t("booking.timeSlot")}</Label>
                     <Select
                       value={bookingData.timeSlot}
                       onValueChange={(value) => updateBookingData("timeSlot", value)}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select time slot" />
+                        <SelectValue placeholder={t("booking.timeSlot")} />
                       </SelectTrigger>
                       <SelectContent>
                         {timeSlots.map((slot) => (
@@ -871,13 +874,13 @@ const BookingPage = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="guestCount">Expected Guest Count</Label>
+                    <Label htmlFor="guestCount">{t("booking.guestCount")}</Label>
                     <Input
                       id="guestCount"
                       type="number"
                       value={bookingData.guestCount}
                       onChange={(e) => updateBookingData("guestCount", e.target.value)}
-                      placeholder="e.g., 300"
+                      placeholder={t("booking.guestCount.placeholder")}
                       min="50"
                       max="10000"
                       className={cn(
@@ -930,12 +933,12 @@ const BookingPage = () => {
                   <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-lg md:text-xl">🍽️</span>
-                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Virundhu Selection</CardTitle>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">{t("booking.step.menu")}</CardTitle>
                     </div>
                   </CardHeader>
 
                   <div>
-                    <Label className="mb-2 md:mb-3 block text-sm">Select Menu Category</Label>
+                    <Label className="mb-2 md:mb-3 block text-sm">{t("booking.selectMealType")}</Label>
                     <RadioGroup
                       value={bookingData.menuSection}
                       onValueChange={(value) => {
@@ -977,7 +980,7 @@ const BookingPage = () => {
 
                   {bookingData.menuSection && (
                     <div>
-                      <Label className="mb-2 md:mb-3 block text-sm">Select Type</Label>
+                      <Label className="mb-2 md:mb-3 block text-sm">{t("booking.selectVariant")}</Label>
                       {(() => {
                         const hasSpecial = ["pubert", "dinner", "wedding"].includes(bookingData.menuSection);
                         const variants = [
@@ -1035,7 +1038,7 @@ const BookingPage = () => {
 
                   {bookingData.mealType && menus[bookingData.mealType as keyof typeof menus] && (
                     <div>
-                      <Label className="mb-2 md:mb-3 block text-sm">Select Package</Label>
+                      <Label className="mb-2 md:mb-3 block text-sm">{t("booking.selectPackage")}</Label>
                       <RadioGroup
                         value={bookingData.menuPackage}
                         onValueChange={(value) => updateBookingData("menuPackage", value)}
@@ -1099,12 +1102,12 @@ const BookingPage = () => {
                   )}
 
                   <div>
-                    <Label htmlFor="menuNotes">Special Requests / Dietary Requirements</Label>
+                    <Label htmlFor="menuNotes">{t("booking.menuNotes")}</Label>
                     <Textarea
                       id="menuNotes"
                       value={bookingData.menuNotes}
                       onChange={(e) => updateBookingData("menuNotes", e.target.value)}
-                      placeholder="Any special requests or dietary requirements..."
+                      placeholder={t("booking.menuNotes.placeholder")}
                       rows={3}
                       className="mt-1"
                     />
@@ -1129,10 +1132,10 @@ const BookingPage = () => {
                   <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-lg md:text-xl">✨</span>
-                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Additional Seva</CardTitle>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">{t("booking.addServices")}</CardTitle>
                     </div>
                     <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                      Select any additional services you'd like to include
+                      {t("booking.addServices.desc")}
                     </p>
                   </CardHeader>
 
@@ -1159,12 +1162,12 @@ const BookingPage = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="serviceNotes" className="text-sm">Special Notes for Services</Label>
+                    <Label htmlFor="serviceNotes" className="text-sm">{t("booking.serviceNotes")}</Label>
                     <Textarea
                       id="serviceNotes"
                       value={bookingData.serviceNotes}
                       onChange={(e) => updateBookingData("serviceNotes", e.target.value)}
-                      placeholder="Any specific requirements for the selected services..."
+                      placeholder={t("booking.serviceNotes.placeholder")}
                       rows={3}
                       className="mt-1 text-sm"
                     />
@@ -1189,37 +1192,37 @@ const BookingPage = () => {
                   <CardHeader className="p-0 mb-4 md:mb-6">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-secondary text-lg md:text-xl">📝</span>
-                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">Your Details</CardTitle>
+                      <CardTitle className="font-serif text-xl md:text-2xl text-gradient-gold">{t("booking.yourDetails")}</CardTitle>
                     </div>
                   </CardHeader>
 
                   <div>
-                    <Label htmlFor="name" className="text-sm">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm">{t("booking.customerName")} *</Label>
                     <Input
                       id="name"
                       value={bookingData.name}
                       onChange={(e) => updateBookingData("name", e.target.value)}
-                      placeholder="Your full name"
+                      placeholder={t("booking.customerName")}
                       required
                       className="mt-1 text-sm md:text-base"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="phone" className="text-sm">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-sm">{t("booking.customerPhone")} *</Label>
                     <Input
                       id="phone"
                       type="tel"
                       value={bookingData.phone}
                       onChange={(e) => updateBookingData("phone", e.target.value)}
-                      placeholder="+91 98765 43210"
+                      placeholder="+94 77 123 4567"
                       required
                       className="mt-1 text-sm md:text-base"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="text-sm">Email Address (Optional)</Label>
+                    <Label htmlFor="email" className="text-sm">{t("booking.customerEmail")}</Label>
                     <Input
                       id="email"
                       type="email"
@@ -1231,12 +1234,12 @@ const BookingPage = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="message" className="text-sm">Additional Message</Label>
+                    <Label htmlFor="message" className="text-sm">{t("booking.specialRequests")}</Label>
                     <Textarea
                       id="message"
                       value={bookingData.message}
                       onChange={(e) => updateBookingData("message", e.target.value)}
-                      placeholder="Any other information you'd like to share..."
+                      placeholder={t("booking.specialRequests.placeholder")}
                       rows={3}
                       className="mt-1 text-sm"
                     />
@@ -1257,7 +1260,7 @@ const BookingPage = () => {
                   size="sm"
                 >
                   <ChevronLeft className="mr-1 md:mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Back</span>
+                  <span className="hidden sm:inline">{t("booking.back")}</span>
                 </Button>
 
                 {step < 5 ? (
@@ -1268,7 +1271,7 @@ const BookingPage = () => {
                     className="border-secondary/30 hover:bg-secondary/10 text-sm md:text-base px-3 md:px-4"
                     size="sm"
                   >
-                    Next
+                    {t("booking.next")}
                     <ChevronRight className="ml-1 md:ml-2 h-4 w-4" />
                   </Button>
                 ) : (
@@ -1279,7 +1282,7 @@ const BookingPage = () => {
                     className="border-foreground/30 text-foreground hover:bg-foreground/5 text-xs sm:text-sm md:text-base px-2 sm:px-3 md:px-4"
                     size="sm"
                   >
-                    {isSubmitting ? "Submitting..." : <><span className="hidden sm:inline">Submit </span>Sacred Booking</>}
+                    {isSubmitting ? t("booking.submitting") : <><span className="hidden sm:inline">{t("booking.submit")} </span>{t("booking.submitSacred")}</>}
                   </Button>
                 )}
               </div>
@@ -1290,11 +1293,11 @@ const BookingPage = () => {
 
       {/* CTA Section */}
       <CTASection 
-        subtitle="Need Assistance?"
-        title="Have Questions About Your"
-        highlight="Booking"
-        description="Our team is here to help you plan your perfect celebration. Reach out to us for personalized assistance."
-        primaryButtonText="Contact Us"
+        subtitle={t("booking.cta.subtitle")}
+        title={t("booking.cta.title")}
+        highlight={t("booking.cta.highlight")}
+        description={t("booking.cta.description")}
+        primaryButtonText={t("booking.cta.contact")}
         primaryButtonLink="/contact"
         showSecondaryButton={true}
       />

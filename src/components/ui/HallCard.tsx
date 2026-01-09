@@ -52,23 +52,23 @@ export function HallCard({ hall, featured = false, showAvailability = false }: H
           <span>{hall.capacity.min} - {hall.capacity.max} {t("halls.guests")}</span>
         </div>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {hall.facilities.ac && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-2 py-1 rounded-md">
-              <Snowflake className="h-3 w-3 text-primary" />
-              {t("halls.ac")}
+            <div className="flex items-center gap-1 text-[0.65rem] sm:text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md whitespace-nowrap">
+              <Snowflake className="h-3 w-3 text-primary shrink-0" />
+              <span className="truncate">{t("halls.ac")}</span>
             </div>
           )}
           {hall.facilities.parking && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-2 py-1 rounded-md">
-              <Car className="h-3 w-3 text-primary" />
-              {t("halls.parking")}
+            <div className="flex items-center gap-1 text-[0.65rem] sm:text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md whitespace-nowrap">
+              <Car className="h-3 w-3 text-primary shrink-0" />
+              <span className="truncate">{t("halls.parking")}</span>
             </div>
           )}
           {hall.facilities.dining && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-2 py-1 rounded-md">
-              <UtensilsCrossed className="h-3 w-3 text-primary" />
-              {t("halls.dining")}
+            <div className="flex items-center gap-1 text-[0.65rem] sm:text-xs text-muted-foreground bg-primary/5 border border-primary/20 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md whitespace-nowrap">
+              <UtensilsCrossed className="h-3 w-3 text-primary shrink-0" />
+              <span className="truncate">{t("halls.dining")}</span>
             </div>
           )}
         </div>
@@ -77,13 +77,13 @@ export function HallCard({ hall, featured = false, showAvailability = false }: H
           <HallAvailabilityIndicator hallSlug={hall.slug} />
         )}
       </CardContent>
-      <CardFooter className="p-6 pt-0 flex gap-3">
-        <Button variant="outline" asChild className="flex-1 border-primary/30 hover:border-primary hover:bg-primary/5">
+      <CardFooter className="p-6 pt-0 flex gap-2 sm:gap-3">
+        <Button variant="outline" asChild className="flex-1 border-primary/30 hover:border-primary hover:bg-primary/5 text-xs sm:text-sm px-2 sm:px-4">
           <Link to={`/halls/${hall.slug}`}>{t("halls.viewDetails")}</Link>
         </Button>
-        <Button asChild className="flex-1 bg-primary hover:bg-primary/90">
+        <Button asChild className="flex-1 bg-primary hover:bg-primary/90 text-xs sm:text-sm px-2 sm:px-4">
           <Link to={`/booking?hall=${hall.id}`}>
-            <span className="mr-1">🪷</span> {t("halls.book")}
+            <span className="mr-1 hidden sm:inline">🪷</span> {t("halls.book")}
           </Link>
         </Button>
       </CardFooter>

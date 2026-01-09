@@ -139,7 +139,7 @@ const ContactPage = () => {
   const contactInfo = [
     {
       icon: Phone,
-      title: "தொலைபேசி (Phone)",
+      title: t("contact.info.phone"),
       content: (
         <div className="space-y-1">
           <CopyableText text="+919876543210" displayText="+91 98765 43210" />
@@ -158,14 +158,14 @@ const ContactPage = () => {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
         >
-          Chat with us on WhatsApp
+          {t("contact.whatsapp")}
           <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
         </a>
       ),
     },
     {
       icon: Mail,
-      title: "மின்னஞ்சல் (Email)",
+      title: t("contact.info.email"),
       content: (
         <div className="space-y-1">
           <CopyableText text="info@celebrationhalls.com" />
@@ -176,7 +176,7 @@ const ContactPage = () => {
     },
     {
       icon: MapPin,
-      title: "முகவரி (Address)",
+      title: t("contact.info.address"),
       content: (
         <p className="text-muted-foreground">
           123 Temple Street,<br />
@@ -187,7 +187,7 @@ const ContactPage = () => {
     },
     {
       icon: Clock,
-      title: "நேரம் (Hours)",
+      title: t("contact.info.hours"),
       content: (
         <p className="text-muted-foreground">
           Mon - Sat: 9:00 AM - 7:00 PM<br />
@@ -290,7 +290,7 @@ const ContactPage = () => {
               >
                 <span className="text-secondary text-2xl">🪷</span>
                 <h2 className="font-serif text-2xl font-bold text-foreground">
-                  Contact Information
+                  {t("contact.info.title")}
                 </h2>
               </motion.div>
               
@@ -336,7 +336,7 @@ const ContactPage = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.5 }}
               >
-                <h3 className="font-serif font-semibold text-foreground mb-4">Follow Us</h3>
+                <h3 className="font-serif font-semibold text-foreground mb-4">{t("contact.followUs")}</h3>
                 <SocialLinks />
               </motion.div>
             </div>
@@ -350,7 +350,7 @@ const ContactPage = () => {
               <div className="flex items-center gap-3 mb-8">
                 <span className="text-secondary text-2xl">✦</span>
                 <h2 className="font-serif text-2xl font-bold text-foreground">
-                  Send us a Message
+                  {t("contact.form.title")}
                 </h2>
               </div>
               
@@ -359,10 +359,9 @@ const ContactPage = () => {
                 <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
                 
                 <CardContent className="relative p-8 bg-card/30 border border-border/50">
-                  {/* Progress Bar */}
                   <div className="mb-8">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-muted-foreground">Form Progress</span>
+                      <span className="text-sm text-muted-foreground">{t("contact.form.progress")}</span>
                       <span className="text-sm text-secondary font-medium">{Math.round(formProgress)}%</span>
                     </div>
                     <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
@@ -400,10 +399,10 @@ const ContactPage = () => {
                           </motion.div>
                         </motion.div>
                         <h3 className="font-serif text-2xl font-bold text-foreground mb-2">
-                          Message Sent!
+                          {t("contact.form.success.title")}
                         </h3>
                         <p className="text-muted-foreground">
-                          We'll get back to you within 24 hours.
+                          {t("contact.form.success.desc")}
                         </p>
                         
                         {/* Confetti-like particles */}
@@ -441,7 +440,7 @@ const ContactPage = () => {
                         exit={{ opacity: 0 }}
                       >
                         <FloatingLabelInput
-                          label="பெயர் (Full Name) *"
+                          label={`${t("contact.form.name")} *`}
                           value={formData.name}
                           onChange={(e) => {
                             setFormData({ ...formData, name: e.target.value });
@@ -451,7 +450,7 @@ const ContactPage = () => {
                         />
                         
                         <FloatingLabelInput
-                          label="மின்னஞ்சல் (Email) *"
+                          label={`${t("contact.form.email")} *`}
                           type="email"
                           value={formData.email}
                           onChange={(e) => {
@@ -462,7 +461,7 @@ const ContactPage = () => {
                         />
                         
                         <FloatingLabelInput
-                          label="தொலைபேசி (Phone) *"
+                          label={`${t("contact.form.phone")} *`}
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => {
@@ -473,7 +472,7 @@ const ContactPage = () => {
                         />
                         
                         <FloatingLabelTextarea
-                          label="செய்தி (Message) *"
+                          label={`${t("contact.form.message")} *`}
                           value={formData.message}
                           onChange={(e) => {
                             setFormData({ ...formData, message: e.target.value });
@@ -496,12 +495,12 @@ const ContactPage = () => {
                               transition={{ duration: 1, repeat: Infinity }}
                             >
                               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                              Sending...
+                              {t("common.loading")}
                             </motion.div>
                           ) : (
                             <>
                               <Send className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                              Send Message
+                              {t("contact.form.submit")}
                             </>
                           )}
                         </Button>
@@ -537,7 +536,7 @@ const ContactPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Frequently Asked <span className="text-gradient-gold">Questions</span>
+              {t("contact.faq.title")}
             </motion.h2>
             <motion.p 
               className="text-muted-foreground max-w-2xl mx-auto"
@@ -546,7 +545,7 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              Find answers to common questions about our services and booking process
+              {t("contact.description")}
             </motion.p>
           </div>
           
@@ -567,7 +566,7 @@ const ContactPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Find <span className="text-gradient-gold">Us</span>
+              {t("contact.findUs")} <span className="text-gradient-gold">{t("contact.findUs.highlight")}</span>
             </motion.h2>
           </div>
           
@@ -605,7 +604,7 @@ const ContactPage = () => {
                   rel="noopener noreferrer"
                 >
                   <MapPin className="mr-2 h-4 w-4" />
-                  Get Directions
+                  {t("contact.getDirections")}
                 </a>
               </Button>
             </div>

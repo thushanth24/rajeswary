@@ -166,7 +166,218 @@
     font-family: var(--font-tamil);
     font-weight: 600;
     letter-spacing: 0;
-    line-height: 1.2;
+    line-height: 1.4;
+  }
+
+  /* Tamil text sizing adjustments - Tamil text is generally longer */
+  html[lang="ta"] {
+    --tamil-scale: 0.9;
+  }
+
+  html[lang="ta"] .text-xs {
+    font-size: 0.65rem;
+    line-height: 1.5;
+  }
+
+  html[lang="ta"] .text-sm {
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  /* Better line heights for Tamil */
+  html[lang="ta"] p,
+  html[lang="ta"] span,
+  html[lang="ta"] a,
+  html[lang="ta"] label {
+    line-height: 1.7;
+  }
+
+  /* Navigation text adjustments for Tamil */
+  html[lang="ta"] nav a {
+    white-space: nowrap;
+    font-size: 0.75rem;
+  }
+
+  /* Button text adjustments for Tamil */
+  html[lang="ta"] button,
+  html[lang="ta"] .btn,
+  html[lang="ta"] [class*="Button"] {
+    font-size: 0.8rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* Larger buttons can have bigger text */
+  html[lang="ta"] button[class*="lg"],
+  html[lang="ta"] .btn-lg {
+    font-size: 0.875rem;
+  }
+
+  /* Card title adjustments for Tamil */
+  html[lang="ta"] .card h3,
+  html[lang="ta"] .font-serif {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Badge adjustments for Tamil */
+  html[lang="ta"] [class*="badge"],
+  html[lang="ta"] .badge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    white-space: nowrap;
+  }
+
+  /* Hero text scaling for Tamil - reduce significantly for longer text */
+  html[lang="ta"] .text-3xl {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
+  html[lang="ta"] .text-4xl {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+
+  html[lang="ta"] .text-5xl {
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+
+  html[lang="ta"] .text-6xl {
+    font-size: 2.25rem;
+    line-height: 1.3;
+  }
+
+  /* Responsive Tamil text sizes for medium screens */
+  @media (min-width: 768px) {
+    html[lang="ta"] .md\:text-4xl {
+      font-size: 2rem;
+    }
+    
+    html[lang="ta"] .md\:text-5xl {
+      font-size: 2.25rem;
+    }
+  }
+
+  /* Responsive Tamil text sizes for large screens */
+  @media (min-width: 1024px) {
+    html[lang="ta"] .lg\:text-5xl {
+      font-size: 2.5rem;
+    }
+    
+    html[lang="ta"] .lg\:text-6xl {
+      font-size: 2.75rem;
+    }
+    
+    html[lang="ta"] .lg\:text-7xl {
+      font-size: 3rem;
+    }
+  }
+
+  /* Tracking adjustments for Tamil - minimal letter spacing */
+  html[lang="ta"] .tracking-widest {
+    letter-spacing: 0.05em;
+  }
+  
+  html[lang="ta"] .tracking-wider {
+    letter-spacing: 0.02em;
+  }
+  
+  html[lang="ta"] .tracking-wide {
+    letter-spacing: 0.01em;
+  }
+
+  html[lang="ta"] [class*="tracking-"] {
+    letter-spacing: 0.02em;
+  }
+
+  /* Uppercase text - Tamil doesn't have uppercase, show normal */
+  html[lang="ta"] .uppercase {
+    text-transform: none;
+  }
+
+  /* Tab and pill adjustments for Tamil */
+  html[lang="ta"] [role="tablist"] button,
+  html[lang="ta"] [class*="TabsTrigger"] {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* Form labels for Tamil */
+  html[lang="ta"] label {
+    font-size: 0.8rem;
+  }
+
+  /* Select and input for Tamil */
+  html[lang="ta"] select,
+  html[lang="ta"] input,
+  html[lang="ta"] textarea {
+    font-size: 0.875rem;
+  }
+
+  /* Radio/checkbox labels for Tamil */
+  html[lang="ta"] [class*="RadioGroup"] label,
+  html[lang="ta"] [class*="Checkbox"] + label {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  /* Accordion/Collapsible for Tamil */
+  html[lang="ta"] [class*="AccordionTrigger"],
+  html[lang="ta"] [class*="CollapsibleTrigger"] {
+    font-size: 0.875rem;
+  }
+
+  /* Card footer buttons - make them flex wrap for Tamil */
+  html[lang="ta"] [class*="CardFooter"] {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  html[lang="ta"] [class*="CardFooter"] a,
+  html[lang="ta"] [class*="CardFooter"] button {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  /* Stats text for Tamil */
+  html[lang="ta"] .text-3xl.font-serif {
+    font-size: 1.5rem;
+  }
+
+  /* Contact info cards for Tamil */
+  html[lang="ta"] [class*="CardContent"] h3 {
+    font-size: 0.9rem;
+  }
+
+  /* FAQ section for Tamil */
+  html[lang="ta"] [class*="Accordion"] h3 {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  /* Prevent text overflow in flex containers */
+  html[lang="ta"] .flex {
+    min-width: 0;
+  }
+
+  html[lang="ta"] .flex > * {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  /* Hero section specific adjustments */
+  html[lang="ta"] section h1 {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  /* Step indicators for booking page */
+  html[lang="ta"] [class*="step"] span {
+    font-size: 0.7rem;
   }
 }
 

@@ -101,15 +101,15 @@ export function CTASection({
             {displayDescription}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button 
               size="lg" 
               asChild 
-              className="text-base"
+              className="text-sm sm:text-base"
             >
               <Link to={primaryButtonLink}>
-                <PrimaryIcon className="mr-2 h-5 w-5" />
-                {displayButtonText}
+                <PrimaryIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                <span className="truncate">{displayButtonText}</span>
               </Link>
             </Button>
             {showSecondaryButton && (
@@ -117,11 +117,11 @@ export function CTASection({
                 size="lg" 
                 variant="outline" 
                 asChild 
-                className="text-base"
+                className="text-sm sm:text-base"
               >
                 <a href="tel:+919876543210">
-                  <Phone className="mr-2 h-5 w-5" />
-                  {t("cta.call")}
+                  <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                  <span className="truncate">{t("cta.call")}</span>
                 </a>
               </Button>
             )}
