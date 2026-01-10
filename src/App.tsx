@@ -19,6 +19,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
 import Bungalows from "./pages/Bungalows";
+import Gallery from "./pages/Gallery";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -59,6 +60,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/bungalows" element={<Bungalows />} />
+              <Route path="/gallery" element={<Gallery />} />
               <Route path="/auth" element={<Auth />} />
 
               {/* Admin Routes - Protected */}

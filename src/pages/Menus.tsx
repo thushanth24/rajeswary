@@ -44,6 +44,7 @@ const MenusPage = () => {
       sectionBg: "bg-background",
       tabsListBg: "bg-card",
       mobileTitle: `${t("menus.pubert.title")} ${t("menus.pubert.highlight")}`,
+      specialLayout: undefined as "single" | undefined,
       variants: {
         veg: menus.pubertVeg,
         nonveg: menus.pubertNonVeg,
@@ -55,12 +56,13 @@ const MenusPage = () => {
       tabLabel: t("menus.dinner.title"),
       title: t("menus.dinner.title"),
       highlight: t("menus.dinner.highlight"),
+      packagesLabel: undefined as string | undefined,
       desc: t("menus.dinner.desc"),
       hasSpecial: true,
       sectionBg: "bg-card",
       tabsListBg: "bg-background",
       mobileTitle: t("menus.dinner.title"),
-      specialLayout: "single",
+      specialLayout: "single" as "single" | undefined,
       variants: {
         veg: menus.dinnerVeg,
         nonveg: menus.dinnerNonVeg,
@@ -72,11 +74,13 @@ const MenusPage = () => {
       tabLabel: t("menus.wedding.title"),
       title: t("menus.wedding.title"),
       highlight: t("menus.wedding.highlight"),
+      packagesLabel: undefined as string | undefined,
       desc: t("menus.wedding.desc"),
       hasSpecial: true,
       sectionBg: "bg-background",
       tabsListBg: "bg-card",
       mobileTitle: t("menus.wedding.title"),
+      specialLayout: undefined as "single" | undefined,
       variants: {
         veg: menus.weddingVeg,
         nonveg: menus.weddingNonVeg,
@@ -88,17 +92,38 @@ const MenusPage = () => {
       tabLabel: t("menus.registration.title"),
       title: t("menus.registration.title"),
       highlight: t("menus.registration.highlight"),
+      packagesLabel: undefined as string | undefined,
       desc: t("menus.registration.desc"),
       hasSpecial: false,
       sectionBg: "bg-card",
       tabsListBg: "bg-background",
       mobileTitle: t("menus.registration.title"),
+      specialLayout: undefined as "single" | undefined,
       variants: {
         veg: menus.registrationVeg,
         nonveg: menus.registrationNonVeg,
+        special: undefined,
       },
     },
-  ] as const;
+    {
+      id: "anthiyeddy",
+      tabLabel: t("menus.anthiyeddy.title"),
+      title: t("menus.anthiyeddy.title"),
+      highlight: t("menus.anthiyeddy.highlight"),
+      packagesLabel: undefined as string | undefined,
+      desc: t("menus.anthiyeddy.desc"),
+      hasSpecial: false,
+      sectionBg: "bg-background",
+      tabsListBg: "bg-card",
+      mobileTitle: t("menus.anthiyeddy.title"),
+      specialLayout: undefined as "single" | undefined,
+      variants: {
+        veg: menus.anthiyeddyVeg,
+        nonveg: menus.anthiyeddyNonVeg,
+        special: undefined,
+      },
+    },
+  ];
 
   return (
     <Layout>
@@ -132,7 +157,7 @@ const MenusPage = () => {
       <Tabs defaultValue="pubert" className="w-full">
         <div className="bg-background">
           <div className="container mx-auto px-4 lg:px-8 py-6">
-            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-2 md:grid-cols-4 bg-card/90 backdrop-blur rounded-xl border border-border/70 p-1 gap-2 md:gap-0 mb-10 md:mb-0 shadow-sm">
+            <TabsList className="grid w-full max-w-5xl mx-auto grid-cols-2 md:grid-cols-5 gap-2 md:gap-0 mb-10 md:mb-0 bg-transparent border-0 p-0 shadow-none">
               {menuSections.map((section) => (
                 <TabsTrigger
                   key={section.id}
@@ -147,6 +172,8 @@ const MenusPage = () => {
         </div>
 
         {menuSections.map((section) => {
+          const hasNonVeg = section.variants.nonveg.length > 0;
+          const hasSpecial = section.hasSpecial && !!section.variants.special?.length;
           const accordionSections = [
             {
               id: `${section.id}-veg`,
@@ -155,14 +182,18 @@ const MenusPage = () => {
               packages: section.variants.veg,
               variant: "veg" as const,
             },
-            {
-              id: `${section.id}-nonveg`,
-              label: t("menus.nonveg"),
-              icon: "nonveg" as const,
-              packages: section.variants.nonveg,
-              variant: "nonveg" as const,
-            },
-            ...(section.hasSpecial && section.variants.special
+            ...(hasNonVeg
+              ? [
+                  {
+                    id: `${section.id}-nonveg`,
+                    label: t("menus.nonveg"),
+                    icon: "nonveg" as const,
+                    packages: section.variants.nonveg,
+                    variant: "nonveg" as const,
+                  },
+                ]
+              : []),
+            ...(hasSpecial
               ? [
                   {
                     id: `${section.id}-special`,
@@ -196,7 +227,13 @@ const MenusPage = () => {
                     <Tabs defaultValue={`${section.id}-veg`} className="w-full">
                       <TabsList
                         className={`grid w-full mx-auto mb-12 border border-border ${
-                          section.hasSpecial ? "max-w-2xl grid-cols-3" : "max-w-md grid-cols-2"
+                          hasNonVeg
+                            ? section.hasSpecial
+                              ? "max-w-2xl grid-cols-3"
+                              : "max-w-md grid-cols-2"
+                            : section.hasSpecial
+                              ? "max-w-md grid-cols-2"
+                              : "max-w-xs grid-cols-1"
                         } ${section.tabsListBg}`}
                       >
                         <TabsTrigger
@@ -205,13 +242,15 @@ const MenusPage = () => {
                         >
                           {t("menus.veg")}
                         </TabsTrigger>
-                        <TabsTrigger
-                          value={`${section.id}-nonveg`}
-                          className="font-serif border border-transparent text-orange-700 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:border-orange-600"
-                        >
-                          {t("menus.nonveg")}
-                        </TabsTrigger>
-                        {section.hasSpecial && (
+                        {hasNonVeg && (
+                          <TabsTrigger
+                            value={`${section.id}-nonveg`}
+                            className="font-serif border border-transparent text-orange-700 data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:border-orange-600"
+                          >
+                            {t("menus.nonveg")}
+                          </TabsTrigger>
+                        )}
+                        {hasSpecial && (
                           <TabsTrigger
                             value={`${section.id}-special`}
                             className="font-serif border border-transparent text-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary"
@@ -235,21 +274,23 @@ const MenusPage = () => {
                         </div>
                       </TabsContent>
 
-                      <TabsContent value={`${section.id}-nonveg`}>
-                        <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
-                          {section.variants.nonveg.map((menu, index) => (
-                            <MenuCard
-                              key={menu.id}
-                              menu={menu}
-                              index={index}
-                              variant="nonveg"
-                              onQuickView={() => handleQuickView(menu, "nonveg")}
-                            />
-                          ))}
-                        </div>
-                      </TabsContent>
+                      {hasNonVeg && (
+                        <TabsContent value={`${section.id}-nonveg`}>
+                          <div className="grid gap-6 md:grid-cols-3 max-w-6xl mx-auto">
+                            {section.variants.nonveg.map((menu, index) => (
+                              <MenuCard
+                                key={menu.id}
+                                menu={menu}
+                                index={index}
+                                variant="nonveg"
+                                onQuickView={() => handleQuickView(menu, "nonveg")}
+                              />
+                            ))}
+                          </div>
+                        </TabsContent>
+                      )}
 
-                      {section.hasSpecial && section.variants.special && (
+                      {hasSpecial && section.variants.special && (
                         <TabsContent value={`${section.id}-special`}>
                           <div className={section.specialLayout === "single" ? "max-w-xl mx-auto" : "grid gap-6 md:grid-cols-3 max-w-6xl mx-auto"}>
                             {section.variants.special.map((menu, index) => (

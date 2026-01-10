@@ -21,6 +21,24 @@ const staticImages: Record<string, string> = {
   'sunset-terrace': raajeshwariyKondavilCover,
 };
 
+// Contact numbers per hall slug
+export const hallContactNumbers: Record<string, { primary: string; landline?: string }> = {
+  'grand-ballroom': { primary: '+94 77 600 2995', landline: '+94 21 222 8123' }, // Chelva Mahal
+  'royal-banquet': { primary: '0212 219 779' }, // Chelva Palace
+  'crystal-palace': { primary: '0770228820' }, // Thellipalai Rajeshwary
+  'emerald-garden': { primary: '+94 21 555 6789' },
+  'sunset-terrace': { primary: '0212 223 999' }, // Urumpirai Rajeswary
+};
+
+// Addresses per hall slug
+export const hallAddresses: Record<string, { street: string; area: string; city: string }> = {
+  'grand-ballroom': { street: '10,12 Poonary Lane', area: 'Kokuvil', city: 'Jaffna' }, // Chelva Mahal
+  'royal-banquet': { street: 'No 1229, KKS Road', area: 'Poonary Marathadi', city: 'Jaffna' }, // Chelva Palace
+  'crystal-palace': { street: '132, Palali Road', area: 'Kondavil', city: 'Jaffna' },
+  'emerald-garden': { street: 'No. 69, Palali Road', area: 'Urumpirai', city: 'Jaffna' },
+  'sunset-terrace': { street: 'No 573, K.K.S Road', area: 'Tellipalai', city: 'Jaffna' },
+};
+
 export interface Hall {
   id: string; // UUID from database
   slug: string;

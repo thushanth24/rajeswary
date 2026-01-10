@@ -411,13 +411,6 @@ const AboutPage = () => {
         
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
-            <motion.span 
-              className="text-secondary text-3xl inline-block"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              👥
-            </motion.span>
             <motion.h2 
               className="font-serif text-3xl md:text-4xl font-bold text-foreground mt-4 mb-4"
               initial={{ opacity: 0, y: 20 }}

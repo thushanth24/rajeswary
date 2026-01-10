@@ -1,6 +1,6 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { useHall } from "@/hooks/useHalls";
+import { useHall, hallContactNumbers, hallAddresses } from "@/hooks/useHalls";
 import { useHallDetails } from "@/hooks/useHallDetails";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,11 @@ const HallDetailPage = () => {
   if (error || !hall) {
     return <Navigate to="/halls" replace />;
   }
+
+  const hallContact = hallContactNumbers[hall.slug];
+  const primaryNumber = hallContact?.primary || "+94 21 222 3456";
+  const landlineNumber = hallContact?.landline;
+  const toTelHref = (value: string) => value.replace(/\s+/g, "");
 
   const facilities = [
     { name: t("hallDetail.facility.ac"), available: hall.facilities.ac, icon: Snowflake },
@@ -139,7 +144,7 @@ const HallDetailPage = () => {
                   </Link>
                 </Button>
                 <Button variant="outline" asChild className="w-full border-primary/50 hover:bg-primary/10 text-sm sm:text-base">
-                  <a href="tel:+919876543210">
+                  <a href={`tel:${toTelHref(primaryNumber)}`}>
                     <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     {t("hallDetail.callInquire")}
                   </a>
@@ -314,7 +319,7 @@ const HallDetailPage = () => {
                     </Link>
                   </Button>
                   <Button variant="outline" asChild className="w-full border-primary/50 hover:bg-primary/10">
-                    <a href="tel:+919876543210">
+                    <a href={`tel:${toTelHref(primaryNumber)}`}>
                       <Phone className="mr-2 h-5 w-5" />
                       {t("hallDetail.callInquire")}
                     </a>
@@ -330,15 +335,37 @@ const HallDetailPage = () => {
                     {t("hallDetail.location")}
                   </h3>
                 </div>
-                <div className="flex items-start gap-3 text-muted-foreground">
-                  <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p>123 Temple Street</p>
-                    <p>Nallur, Jaffna</p>
-                    <p>Sri Lanka - 40000</p>
-                    <div className="mt-3 flex items-center gap-2 text-foreground">
-                      <Phone className="h-4 w-4 text-primary" />
-                      <a href="tel:+919876543210" className="hover:underline">+91 98765 43210</a>
+                <div className="grid gap-4 text-muted-foreground">
+                  <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 p-4">
+                    <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Address</p>
+                      <p className="mt-2 text-foreground">{hallAddresses[hall.slug]?.street || '123 Temple Street'}</p>
+                      <p>
+                        {[hallAddresses[hall.slug]?.area || 'Nallur', hallAddresses[hall.slug]?.city || 'Jaffna']
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      <p>Sri Lanka</p>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-border/60 bg-background/70 p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Phone</p>
+                    <div className="mt-3 space-y-2 text-foreground">
+                      <div className="grid grid-cols-[20px_1fr] items-center gap-2">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <a href={`tel:${toTelHref(primaryNumber)}`} className="hover:underline">
+                          {primaryNumber}
+                        </a>
+                      </div>
+                      {landlineNumber && (
+                        <div className="grid grid-cols-[20px_1fr] items-center gap-2">
+                          <Phone className="h-4 w-4 text-primary" />
+                          <a href={`tel:${toTelHref(landlineNumber)}`} className="hover:underline">
+                            {landlineNumber}
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -437,15 +464,33 @@ const HallDetailPage = () => {
                     {t("hallDetail.location")}
                   </h3>
                 </div>
-                <div className="flex items-start gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
-                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p>123 Temple Street</p>
-                    <p>Nallur, Jaffna</p>
-                    <p>Sri Lanka - 40000</p>
-                    <div className="mt-3 flex items-center gap-2 text-foreground text-sm sm:text-base">
-                      <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                      <a href="tel:+919876543210" className="hover:underline">+91 98765 43210</a>
+                <div className="grid gap-3 text-muted-foreground text-sm sm:text-base">
+                  <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 p-3 sm:p-4">
+                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Address</p>
+                      <p className="mt-2 text-foreground">{hallAddresses[hall.slug]?.street || '123 Temple Street'}</p>
+                      <p>
+                        {[hallAddresses[hall.slug]?.area || 'Nallur', hallAddresses[hall.slug]?.city || 'Jaffna']
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      <p>Sri Lanka</p>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-border/60 bg-background/70 p-3 sm:p-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Phone</p>
+                    <div className="mt-3 space-y-2 text-foreground">
+                      <div className="grid grid-cols-[18px_1fr] items-center gap-2">
+                        <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                        <a href={`tel:${toTelHref(primaryNumber)}`} className="hover:underline">{primaryNumber}</a>
+                      </div>
+                      {landlineNumber && (
+                        <div className="grid grid-cols-[18px_1fr] items-center gap-2">
+                          <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                          <a href={`tel:${toTelHref(landlineNumber)}`} className="hover:underline">{landlineNumber}</a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

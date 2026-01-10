@@ -137,51 +137,69 @@ const ContactPage = () => {
 
   const contactInfo = [
     {
-      icon: Phone,
-      title: t("contact.info.phone"),
+      icon: MapPin,
+      title: "Raajeshwariy Wedding Hall Tellipalai",
       content: (
-        <div className="space-y-1">
-          <CopyableText text="+919876543210" displayText="+91 98765 43210" />
-          <br />
-          <CopyableText text="+919876543211" displayText="+91 98765 43211" />
-        </div>
-      ),
-    },
-    {
-      icon: MessageCircle,
-      title: "WhatsApp",
-      content: (
-        <a 
-          href="https://wa.me/919876543210" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
-        >
-          {t("contact.whatsapp")}
-          <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </a>
-      ),
-    },
-    {
-      icon: Mail,
-      title: t("contact.info.email"),
-      content: (
-        <div className="space-y-1">
-          <CopyableText text="info@celebrationhalls.com" />
-          <br />
-          <CopyableText text="bookings@celebrationhalls.com" />
+        <div className="text-muted-foreground space-y-1">
+          <p>No 573, K.K.S Road, Tellipallai, Sri Lanka</p>
+          <div>
+            <CopyableText text="0212 223 999" />
+          </div>
         </div>
       ),
     },
     {
       icon: MapPin,
-      title: t("contact.info.address"),
+      title: "Karpaka Raajeshwariy Hall Urumpirai",
       content: (
-        <p className="text-muted-foreground">
-          123 Temple Street,<br />
-          Nallur, Jaffna,<br />
-          Sri Lanka - 40000
-        </p>
+        <div className="text-muted-foreground space-y-1">
+          <p>No. 69, Palali Road, Urumpirai</p>
+          <div>
+            <CopyableText text="0212054600" />
+          </div>
+        </div>
+      ),
+    },
+    {
+      icon: MapPin,
+      title: "Chelva Mahal",
+      content: (
+        <div className="text-muted-foreground space-y-1">
+          <p>10,12 Poonary Lane, Kokuvil, Jaffna, Sri Lanka</p>
+          <div>
+            <CopyableText text="0776002995" />
+            <br />
+            <CopyableText text="0212228123" />
+          </div>
+        </div>
+      ),
+    },
+    {
+      icon: MapPin,
+      title: "Chelva Palace",
+      content: (
+        <div className="text-muted-foreground space-y-1">
+          <p>No 1229, KKS Road, Poonary Marathadi, Jaffna</p>
+          <div>
+            <CopyableText text="0212219779" />
+          </div>
+        </div>
+      ),
+    },
+    {
+      icon: MapPin,
+      title: "Raajeshwariy Wedding Hall Kondavil",
+      content: (
+        <div className="text-muted-foreground space-y-1">
+          <p>132, Palali Road, Kondavil, Jaffna, Sri Lanka</p>
+          <div>
+            <CopyableText text="0770228820" />
+            <br />
+            <CopyableText text="0773549757" />
+            <br />
+            <CopyableText text="0770228820" />  
+          </div>
+        </div>
       ),
     },
     {

@@ -152,7 +152,7 @@ export function Footer() {
               <li className="flex items-start gap-3 justify-center md:justify-start">
                 <MapPin className="h-5 w-5 text-secondary shrink-0 mt-0.5" />
                 <span className="text-muted-foreground text-left">
-                  132 Palali Road,<br />
+                  132, Palali Road,<br />
                   Kondavil,<br />
                   Jaffna
                 </span>

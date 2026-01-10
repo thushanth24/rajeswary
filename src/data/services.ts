@@ -577,4 +577,43 @@ export const menus = {
       price: "Rs. 2,300/person",
     },
   ],
+  anthiyeddyVeg: [
+    {
+      name: "Silver Package",
+      id: "anthiyeddy-veg-silver",
+      items: [
+        "Starter: Soft drink",
+        "Rice: Kutharisi Soru",
+        "Curries: Paruppu Kulampu, Katharikai Kadalai Curry, Urulaikizhangu Pirattal, Poosani Maravalli Paal Curry, Vengaya Sambal",
+        "Side dishes: Appalam, Poriththa Milagai, Vadai, Rasam",
+        "Desserts: Paayaasam, Water Bottle"
+      ],
+      price: "Contact for price",
+    },
+    {
+      name: "Gold Package",
+      id: "anthiyeddy-veg-gold",
+      items: [
+        "Starter: Soft drink",
+        "Rice: Kutharisi Soru, Vellai Soru",
+        "Curries: Paruppu Kulampu, Katharikai Kadalai Curry, Urulaikizhangu Pirattal, Paavatkai Curry, Poosani Maravalli Paal Curry, Payitrangaai Pirattal, Vengaya Sambal",
+        "Side dishes: Appalam, Poriththa Milagai, Vadai, Rasam",
+        "Desserts: Paayaasam, Water Bottle"
+      ],
+      price: "Contact for price",
+    },
+    {
+      name: "Platinum Package",
+      id: "anthiyeddy-veg-platinum",
+      items: [
+        "Starter: Soft drink",
+        "Rice: Kutharisi Soru, Vellai Soru",
+        "Curries: Paruppu Kulampu, Katharikai Kadalai Curry, Urulaikizhangu Pirattal, Paavatkai Curry, Poosani Maravalli Paal Curry, Payitrangai Pirattal, Keerai, Vengaya Sambal",
+        "Side dishes: Appalam, Poriththa Milagai, Vadai, Rasam, Vaalaikai Poriyal",
+        "Desserts: Paayaasam, Water Bottle"
+      ],
+      price: "Contact for price",
+    },
+  ],
+  anthiyeddyNonVeg: [],
 };

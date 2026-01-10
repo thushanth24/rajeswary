@@ -10,7 +10,6 @@ interface TeamMember {
   role: string;
   image: string;
   quote: string;
-  experience: string;
 }
 
 const teamMembers: TeamMember[] = [
@@ -19,14 +18,12 @@ const teamMembers: TeamMember[] = [
     role: "Founder & Director",
     image: bossImage,
     quote: "Every wedding we host is a sacred trust. We pour our hearts into making each celebration divine.",
-    experience: "25+ years in hospitality",
   },
   {
     name: "Thirumaran Lavaraj",
     role: "Managing Director",
     image: sonImage,
     quote: "Carrying forward our legacy while embracing innovation to create unforgettable celebrations.",
-    experience: "10+ years experience",
   },
 ];
 
@@ -94,9 +91,6 @@ export const TeamCarousel = () => {
                       {teamMembers[currentIndex].name}
                     </h3>
                     <p className="text-secondary font-medium">{teamMembers[currentIndex].role}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {teamMembers[currentIndex].experience}
-                    </p>
                   </div>
                 </div>
               </div>

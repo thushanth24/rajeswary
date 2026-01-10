@@ -581,10 +581,11 @@ const BookingPage = () => {
     .map((serviceId) => addOnServices.find((service) => service.id === serviceId)?.label)
     .filter(Boolean) as string[];
   const menuSectionLabels: Record<string, string> = {
-    pubert: "Puberty (Lunch)",
+    pubert: "Puberty",
     dinner: "Dinner",
     wedding: "Wedding",
     registration: "Registration",
+    anthiyeddy: "Anthiyeddy",
   };
 
   if (isSubmitted) {
@@ -1053,13 +1054,14 @@ const BookingPage = () => {
                         updateBookingData("mealType", "");
                         updateBookingData("menuPackage", "");
                       }}
-                      className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3"
+                      className="grid grid-cols-2 gap-2 md:grid-cols-5 md:gap-3"
                     >
                       {[
-                        { id: "pubert", label: "Pubert (Lunch)", icon: "☀️" },
+                        { id: "pubert", label: "Puberty", icon: "☀️" },
                         { id: "dinner", label: "Dinner", icon: "🌙" },
                         { id: "wedding", label: "Wedding", icon: "💒" },
                         { id: "registration", label: "Registration", icon: "📝" },
+                        { id: "anthiyeddy", label: "Anthiyeddy", icon: "�Y?�" },
                       ].map((section) => (
                         <div key={section.id}>
                           <RadioGroupItem
@@ -1076,7 +1078,6 @@ const BookingPage = () => {
                                 : "border-border hover:border-primary/50"
                             )}
                           >
-                            <span className="text-xl md:text-2xl mb-1 md:mb-2">{section.icon}</span>
                             <span className="text-xs md:text-sm font-medium leading-tight">{section.label}</span>
                           </Label>
                         </div>

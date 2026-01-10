@@ -41,7 +41,7 @@ export function DiyaLamp({ className = "", size = "md" }: DiyaLampProps) {
 
 export function DiwaRow({ count = 5, className = "" }: { count?: number; className?: string }) {
   return (
-    <div className={`flex justify-center items-center gap-6 ${className}`}>
+    <div className={`flex justify-center items-center gap-6 bg-transparent border-0 shadow-none ${className}`}>
       {[...Array(count)].map((_, i) => (
         <div key={i} className="animate-float" style={{ animationDelay: `${i * 0.3}s` }}>
           <DiyaLamp size="sm" />

@@ -55,9 +55,7 @@ export function TestimonialsSection() {
         </div>
 
         {/* Animated diya row */}
-        <div className="mb-12 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-          <DiwaRow count={7} />
-        </div>
+        <DiwaRow count={7} className="mb-12 animate-fade-in" />
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (

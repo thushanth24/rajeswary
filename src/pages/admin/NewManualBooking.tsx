@@ -39,7 +39,7 @@ const addOnServices = [
 ];
 
 const menuSections = [
-  { id: 'pubert', label: 'Pubert (Lunch)', icon: '☀️' },
+  { id: 'pubert', label: 'Puberty', icon: '☀️' },
   { id: 'dinner', label: 'Dinner', icon: '🌙' },
   { id: 'wedding', label: 'Wedding', icon: '💒' },
   { id: 'registration', label: 'Registration', icon: '📝' },
@@ -673,7 +673,6 @@ const NewManualBooking = () => {
                               : "border-border hover:border-primary/50"
                           )}
                         >
-                          <span className="text-xl mb-1">{section.icon}</span>
                           <span className="text-xs font-medium leading-tight">{section.label}</span>
                         </Label>
                       </div>
