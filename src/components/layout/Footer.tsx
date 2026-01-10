@@ -181,11 +181,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 justify-center md:justify-start text-muted-foreground">
                 <span className="w-5" />
-                Mon - Sat: 9 AM - 7 PM
-              </li>
-              <li className="flex items-center gap-3 justify-center md:justify-start text-muted-foreground">
-                <span className="w-5" />
-                Sunday: 9 AM - 6 PM
+                Daily: 9 AM - 6 PM
               </li>
             </ul>
           </CollapsibleSection>

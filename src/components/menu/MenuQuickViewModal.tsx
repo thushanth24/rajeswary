@@ -132,14 +132,6 @@ export function MenuQuickViewModal({ menu, variant, open, onOpenChange }: MenuQu
             </DialogTitle>
           </DialogHeader>
           
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="mt-4 inline-block relative z-10"
-          >
-            <span className="text-4xl font-bold text-gradient-gold">{menu.price}</span>
-          </motion.div>
-          
           <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground relative z-10">
             <Users className="h-4 w-4" />
             <span>Ideal for 50-500 guests</span>

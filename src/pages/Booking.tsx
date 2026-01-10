@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
@@ -129,6 +130,7 @@ const BookingPage = () => {
   const [isRevalidating, setIsRevalidating] = useState(false);
   const [bookingReference, setBookingReference] = useState<string | null>(null);
   const [previewMenu, setPreviewMenu] = useState<{ menu: any; variant: "veg" | "nonveg" | "special" } | null>(null);
+  const [isDetailsPreviewOpen, setIsDetailsPreviewOpen] = useState(false);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -227,6 +229,10 @@ const BookingPage = () => {
 
   const handleNext = () => {
     if (step < 5) {
+      if (step === 4) {
+        setIsDetailsPreviewOpen(true);
+        return;
+      }
       setStep((prev) => (prev + 1) as BookingStep);
     }
   };
@@ -568,6 +574,18 @@ const BookingPage = () => {
   const eventTypes = getEventTypes(t);
   const timeSlots = getTimeSlots(t);
   const addOnServices = getAddOnServices(t);
+  const selectedMenuPackage = bookingData.mealType
+    ? menus[bookingData.mealType as keyof typeof menus]?.find((menu) => menu.id === bookingData.menuPackage)
+    : undefined;
+  const selectedServiceLabels = bookingData.services
+    .map((serviceId) => addOnServices.find((service) => service.id === serviceId)?.label)
+    .filter(Boolean) as string[];
+  const menuSectionLabels: Record<string, string> = {
+    pubert: "Puberty (Lunch)",
+    dinner: "Dinner",
+    wedding: "Wedding",
+    registration: "Registration",
+  };
 
   if (isSubmitted) {
     return (
@@ -1157,18 +1175,12 @@ const BookingPage = () => {
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center justify-between sm:justify-start gap-2">
                                     <h3 className="font-semibold text-foreground text-sm md:text-base">{menu.name}</h3>
-                                    <span className="text-primary font-semibold text-sm md:text-base sm:hidden">
-                                      {menu.price}
-                                    </span>
                                   </div>
                                   <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">
                                     {menu.items.slice(0, 2).join(" • ")}
                                     {menu.items.length > 2 && " ..."}
                                   </p>
                                 </div>
-                                <span className="text-primary font-semibold shrink-0 ml-4 hidden sm:block">
-                                  {menu.price}
-                                </span>
                               </Label>
                               <button
                                 type="button"
@@ -1378,6 +1390,80 @@ const BookingPage = () => {
           </Card>
         </div>
       </section>
+
+      <Dialog open={isDetailsPreviewOpen} onOpenChange={setIsDetailsPreviewOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Review your selection</DialogTitle>
+            <DialogDescription>
+              Confirm the details below before entering your contact information.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 rounded-lg border border-border/60 bg-card/60 p-4 space-y-3 text-sm">
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">{t("booking.summary.mandapam")}</span>
+              <span className="text-foreground text-right">{selectedHall?.name || "-"}</span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">{t("booking.summary.eventType")}</span>
+              <span className="text-foreground text-right">
+                {eventTypes.find((e) => e.id === bookingData.eventType)?.label || "-"}
+              </span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">{t("booking.summary.date")}</span>
+              <span className="text-foreground text-right">
+                {bookingData.eventDate ? format(bookingData.eventDate, "PPP") : "-"}
+              </span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">{t("booking.summary.timeSlot")}</span>
+              <span className="text-foreground text-right">
+                {timeSlots.find((slot) => slot.id === bookingData.timeSlot)?.label || "-"}
+              </span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">{t("booking.summary.guests")}</span>
+              <span className="text-foreground text-right">{bookingData.guestCount || "-"}</span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">Event Package</span>
+              <span className="text-foreground text-right">
+                {menuSectionLabels[bookingData.menuSection] || "-"}
+              </span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">Menu Package</span>
+              <span className="text-foreground text-right">{selectedMenuPackage?.name || "-"}</span>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-muted-foreground">{t("booking.summary.services")}</span>
+              <span className="text-foreground text-right">
+                {selectedServiceLabels.length > 0 ? selectedServiceLabels.join(", ") : "None"}
+              </span>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsDetailsPreviewOpen(false)}
+              className="border-secondary/30 hover:bg-secondary/10"
+            >
+              Edit selection
+            </Button>
+            <Button
+              onClick={() => {
+                setIsDetailsPreviewOpen(false);
+                setStep(5);
+              }}
+              className="border-secondary/30 hover:bg-secondary/10"
+              variant="outline"
+            >
+              Continue to details
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* CTA Section */}
       <CTASection 

@@ -189,8 +189,7 @@ const ContactPage = () => {
       title: t("contact.info.hours"),
       content: (
         <p className="text-muted-foreground">
-          Mon - Sat: 9:00 AM - 7:00 PM<br />
-          Sunday: 10:00 AM - 5:00 PM<br />
+          Daily: 9:00 AM - 6:00 PM<br />
           <span className="text-secondary text-sm">*Special hours for auspicious days</span>
         </p>
       ),

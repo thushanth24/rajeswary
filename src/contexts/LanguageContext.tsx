@@ -239,7 +239,7 @@ const en: Record<string, string> = {
   "menus.calculator.title": "Price Calculator",
   "menus.calculator.guests": "Number of Guests",
   "menus.calculator.estimate": "Estimated Price",
-  "menus.pubert.title": "Pubert",
+  "menus.pubert.title": "Puberty",
   "menus.pubert.highlight": "(Lunch)",
   "menus.pubert.packages": "Packages",
   "menus.pubert.desc": "Traditional afternoon feast selections",
