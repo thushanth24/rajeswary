@@ -55,7 +55,6 @@ const MenusPage = () => {
       tabLabel: t("menus.dinner.title"),
       title: t("menus.dinner.title"),
       highlight: t("menus.dinner.highlight"),
-      packagesLabel: "",
       desc: t("menus.dinner.desc"),
       hasSpecial: true,
       sectionBg: "bg-card",
@@ -73,7 +72,6 @@ const MenusPage = () => {
       tabLabel: t("menus.wedding.title"),
       title: t("menus.wedding.title"),
       highlight: t("menus.wedding.highlight"),
-      packagesLabel: "",
       desc: t("menus.wedding.desc"),
       hasSpecial: true,
       sectionBg: "bg-background",
@@ -90,7 +88,6 @@ const MenusPage = () => {
       tabLabel: t("menus.registration.title"),
       title: t("menus.registration.title"),
       highlight: t("menus.registration.highlight"),
-      packagesLabel: "",
       desc: t("menus.registration.desc"),
       hasSpecial: false,
       sectionBg: "bg-card",
@@ -302,3 +299,7 @@ const MenusPage = () => {
 };
 
 export default MenusPage;
+
+
+
+

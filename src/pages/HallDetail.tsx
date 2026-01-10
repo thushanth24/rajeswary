@@ -336,6 +336,10 @@ const HallDetailPage = () => {
                     <p>123 Temple Street</p>
                     <p>Nallur, Jaffna</p>
                     <p>Sri Lanka - 40000</p>
+                    <div className="mt-3 flex items-center gap-2 text-foreground">
+                      <Phone className="h-4 w-4 text-primary" />
+                      <a href="tel:+919876543210" className="hover:underline">+91 98765 43210</a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -439,6 +443,10 @@ const HallDetailPage = () => {
                     <p>123 Temple Street</p>
                     <p>Nallur, Jaffna</p>
                     <p>Sri Lanka - 40000</p>
+                    <div className="mt-3 flex items-center gap-2 text-foreground text-sm sm:text-base">
+                      <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      <a href="tel:+919876543210" className="hover:underline">+91 98765 43210</a>
+                    </div>
                   </div>
                 </div>
               </div>

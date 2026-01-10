@@ -60,17 +60,6 @@ import chelvaMahal09 from "@/assets/chelva mahal 09.webp";
 // Static gallery images by hall ID
 const staticGalleryImages: Record<string, { image_url: string; caption: string }[]> = {
   '0114eb14-287f-4f18-95d1-15e7e429f3a4': [ // Raajeshwariy Weeding hall Kondavil
-    { image_url: raajeshwariyKondavil01, caption: 'Hall Interior View 1' },
-    { image_url: raajeshwariyKondavil02, caption: 'Hall Interior View 2' },
-    { image_url: raajeshwariyKondavil03, caption: 'Hall Interior View 3' },
-    { image_url: raajeshwariyKondavil04, caption: 'Hall Interior View 4' },
-    { image_url: raajeshwariyKondavil05, caption: 'Hall Interior View 5' },
-    { image_url: raajeshwariyKondavil06, caption: 'Hall Interior View 6' },
-    { image_url: raajeshwariyKondavil07, caption: 'Hall Interior View 7' },
-    { image_url: raajeshwariyKondavil08, caption: 'Hall Interior View 8' },
-    { image_url: raajeshwariyKondavil09, caption: 'Hall Interior View 9' },
-  ],
-  'f3001a24-a3f0-46e5-a6b4-7547d80d02e9': [ // Raajeshwariy Wedding Hall Tellipalai
     { image_url: raajeshwariyTellipalai01, caption: 'Hall Interior View 1' },
     { image_url: raajeshwariyTellipalai02, caption: 'Hall Interior View 2' },
     { image_url: raajeshwariyTellipalai03, caption: 'Hall Interior View 3' },
@@ -80,6 +69,17 @@ const staticGalleryImages: Record<string, { image_url: string; caption: string }
     { image_url: raajeshwariyTellipalai07, caption: 'Hall Interior View 7' },
     { image_url: raajeshwariyTellipalai08, caption: 'Hall Interior View 8' },
     { image_url: raajeshwariyTellipalai09, caption: 'Hall Interior View 9' },
+  ],
+  'f3001a24-a3f0-46e5-a6b4-7547d80d02e9': [ // Raajeshwariy Wedding Hall Tellipalai
+    { image_url: raajeshwariyKondavil01, caption: 'Hall Interior View 1' },
+    { image_url: raajeshwariyKondavil02, caption: 'Hall Interior View 2' },
+    { image_url: raajeshwariyKondavil03, caption: 'Hall Interior View 3' },
+    { image_url: raajeshwariyKondavil04, caption: 'Hall Interior View 4' },
+    { image_url: raajeshwariyKondavil05, caption: 'Hall Interior View 5' },
+    { image_url: raajeshwariyKondavil06, caption: 'Hall Interior View 6' },
+    { image_url: raajeshwariyKondavil07, caption: 'Hall Interior View 7' },
+    { image_url: raajeshwariyKondavil08, caption: 'Hall Interior View 8' },
+    { image_url: raajeshwariyKondavil09, caption: 'Hall Interior View 9' },
   ],
   'b3938423-dfa7-468c-ada1-a8e3791131e0': [ // Karpaka Raajeshwariy Wedding Hall
     { image_url: karpakaRaajeshwariy01, caption: 'Hall Interior View 1' },

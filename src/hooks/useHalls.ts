@@ -16,9 +16,9 @@ import chelvaMahalCover from "@/assets/chelva mahal cover .jpeg";
 const staticImages: Record<string, string> = {
   'grand-ballroom': chelvaMahalCover, // Chelva Mahal
   'royal-banquet': chelvaPalaceCover, // Chelva Palace
-  'crystal-palace': raajeshwariyKondavilCover,
+  'crystal-palace': raajeshwariyTellipalaiCover,
   'emerald-garden': hallEmeraldGarden, // Keep existing Karpaka cover
-  'sunset-terrace': raajeshwariyTellipalaiCover,
+  'sunset-terrace': raajeshwariyKondavilCover,
 };
 
 export interface Hall {
