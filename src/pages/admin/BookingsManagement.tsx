@@ -18,6 +18,7 @@ import { format, differenceInHours, isPast, startOfDay } from 'date-fns';
 interface Booking {
   id: string;
   hall_id: string;
+  section_id: string | null;
   customer_name: string;
   customer_email: string | null;
   customer_phone: string;
@@ -32,6 +33,7 @@ interface Booking {
   reference_number: string | null;
   expected_guests: number | null;
   halls?: { name: string };
+  hall_sections?: { name: string } | null;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -78,7 +80,7 @@ const BookingsManagement = () => {
       // Build the query with filters
       let query = supabase
         .from('bookings')
-        .select('*, halls(name)', { count: 'exact' })
+        .select('*, halls(name), hall_sections(name)', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
@@ -282,7 +284,7 @@ const BookingsManagement = () => {
       // Fetch ALL bookings matching current filters for export (no pagination)
       let query = supabase
         .from('bookings')
-        .select('*, halls(name)')
+        .select('*, halls(name), hall_sections(name)')
         .order('created_at', { ascending: false });
 
       if (statusFilter !== 'all') {
@@ -499,7 +501,14 @@ const BookingsManagement = () => {
                           <p className="text-sm text-muted-foreground">{booking.customer_phone}</p>
                         </div>
                       </TableCell>
-                      <TableCell>{booking.halls?.name || 'N/A'}</TableCell>
+                      <TableCell>
+                        <div>
+                          <span>{booking.halls?.name || 'N/A'}</span>
+                          {booking.hall_sections?.name && (
+                            <p className="text-xs text-muted-foreground">{booking.hall_sections.name}</p>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>{booking.event_type}</TableCell>
                       <TableCell>{format(new Date(booking.event_date), 'PPP')}</TableCell>
                       <TableCell>{getStatusBadge(booking)}</TableCell>
@@ -630,7 +639,12 @@ const BookingsManagement = () => {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Hall</p>
-                    <p className="font-medium">{selectedBooking.halls?.name}</p>
+                    <p className="font-medium">
+                      {selectedBooking.halls?.name}
+                      {selectedBooking.hall_sections?.name && (
+                        <span className="text-primary"> • {selectedBooking.hall_sections.name}</span>
+                      )}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Event Type</p>

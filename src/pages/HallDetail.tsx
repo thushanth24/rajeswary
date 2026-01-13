@@ -27,6 +27,7 @@ import { HallImageGallery } from "@/components/hall/HallImageGallery";
 import { HallReviews } from "@/components/hall/HallReviews";
 import { HallFloorPlan } from "@/components/hall/HallFloorPlan";
 import { HallEventPhotos } from "@/components/hall/HallEventPhotos";
+import { HallSectionsGallery } from "@/components/hall/HallSectionsGallery";
 
 const HallDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -180,29 +181,12 @@ const HallDetailPage = () => {
                 mainImage={hall.image}
               />
 
-              {/* Features */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <span className="text-secondary text-lg sm:text-xl">✦</span>
-                  <h2 className="font-serif text-xl sm:text-2xl font-bold text-foreground">
-                    {t("hallDetail.features")}
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-                  {hall.features.map((feature, index) => (
-                    <div
-                      key={feature}
-                      className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 card-traditional animate-fade-in-up"
-                      style={{ animationDelay: `${0.2 + index * 0.05}s` }}
-                    >
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center shrink-0">
-                        <Check className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-                      </div>
-                      <span className="text-foreground text-sm sm:text-base">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Hall Sections */}
+              <HallSectionsGallery 
+                hallId={hall.id}
+                hallSlug={hall.slug}
+                hallName={hall.name}
+              />
 
               {/* Facilities */}
               <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
@@ -235,14 +219,6 @@ const HallDetailPage = () => {
                       </span>
                     </div>
                   ))}
-                  <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-4 card-traditional">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-secondary/30 to-primary/20 rounded-full flex items-center justify-center shrink-0">
-                      <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                    </div>
-                    <span className="text-foreground text-xs sm:text-sm md:text-base">
-                      {hall.facilities.washrooms} {t("hallDetail.washrooms")}
-                    </span>
-                  </div>
                 </div>
               </div>
 
@@ -396,10 +372,6 @@ const HallDetailPage = () => {
                       {hall.facilities.parking ? t("hallDetail.parking.available") : t("hallDetail.parking.limited")}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-muted-foreground text-sm">{t("hallDetail.washrooms")}</span>
-                    <span className="font-medium text-foreground">{hall.facilities.washrooms}</span>
-                  </div>
                 </div>
               </div>
 
@@ -520,10 +492,6 @@ const HallDetailPage = () => {
                     <span className={`font-medium text-sm sm:text-base ${hall.facilities.parking ? 'text-green-600' : 'text-muted-foreground'}`}>
                       {hall.facilities.parking ? t("hallDetail.parking.available") : t("hallDetail.parking.limited")}
                     </span>
-                  </div>
-                  <div className="flex items-center justify-between py-1.5 sm:py-2">
-                    <span className="text-muted-foreground text-xs sm:text-sm">{t("hallDetail.washrooms")}</span>
-                    <span className="font-medium text-foreground text-sm sm:text-base">{hall.facilities.washrooms}</span>
                   </div>
                 </div>
               </div>

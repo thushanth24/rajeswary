@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,13 @@ import {
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
 
+interface HallSection {
+  id: string;
+  name: string;
+  capacity_min: number | null;
+  capacity_max: number | null;
+}
+
 interface BookingData {
   // Step 1 - Hall (NEW ORDER)
   hallId: string;
@@ -57,6 +64,7 @@ interface BookingData {
   eventType: string;
   eventDate: Date | undefined;
   timeSlot: string;
+  sectionId: string;
   guestCount: string;
   // Step 3 - Menu
   menuSection: string;
@@ -118,6 +126,7 @@ const BookingPage = () => {
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const preselectedHall = searchParams.get("hall");
+  const preselectedSection = searchParams.get("section");
   
   // Fetch halls from database
   const { halls, loading: hallsLoading, getHallById } = useHalls();
@@ -136,6 +145,7 @@ const BookingPage = () => {
     eventType: "",
     eventDate: undefined,
     timeSlot: "",
+    sectionId: preselectedSection || "",
     guestCount: "",
     hallId: preselectedHall || "",
     menuSection: "",
@@ -151,6 +161,9 @@ const BookingPage = () => {
     message: "",
   });
 
+  // State for hall sections
+  const [hallSections, setHallSections] = useState<HallSection[]>([]);
+
   // Fetch blocked dates for the selected hall (for calendar display)
   const { isDateBlocked, getBlockedReason } = useBlockedDates(selectedHallUUID);
   
@@ -161,35 +174,83 @@ const BookingPage = () => {
     hasMultipleSections,
     isClosed: isSelectedDateClosed,
     isSlotAvailable,
+    isSectionAvailable,
     sectionCount,
+    bookings,
   } = useSectionAwareAvailability(selectedHallUUID, selectedDateStr);
 
-  // Set hall UUID directly when hall is selected (hallId is already the UUID)
+  // Get the selected hall (can be looked up by slug or id)
+  const selectedHall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
+
+  // Set hall UUID from the resolved hall
   useEffect(() => {
-    if (!bookingData.hallId) {
+    if (selectedHall?.id) {
+      setSelectedHallUUID(selectedHall.id);
+    } else {
       setSelectedHallUUID(null);
-      return;
     }
-    // bookingData.hallId is already the UUID from the halls list
-    setSelectedHallUUID(bookingData.hallId);
-  }, [bookingData.hallId]);
+  }, [selectedHall?.id]);
 
   useEffect(() => {
     if (preselectedHall) {
-      setBookingData((prev) => ({ ...prev, hallId: preselectedHall }));
+      setBookingData((prev) => ({ 
+        ...prev, 
+        hallId: preselectedHall,
+        sectionId: preselectedSection || prev.sectionId,
+      }));
     }
-  }, [preselectedHall]);
+  }, [preselectedHall, preselectedSection]);
+
+  // Fetch sections when hall changes
+  useEffect(() => {
+    const fetchSections = async () => {
+      if (!selectedHallUUID) {
+        setHallSections([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("hall_sections")
+        .select("id, name, capacity_min, capacity_max")
+        .eq("hall_id", selectedHallUUID)
+        .eq("is_active", true)
+        .order("display_order");
+
+      if (!error && data) {
+        setHallSections((data as any[]).map(s => ({
+          id: String(s.id),
+          name: String(s.name),
+          capacity_min: s.capacity_min ?? null,
+          capacity_max: s.capacity_max ?? null,
+        })));
+      }
+    };
+
+    fetchSections();
+  }, [selectedHallUUID]);
+
+  // Calculate available sections for the selected time slot
+  const availableSectionsForSlot = useMemo(() => {
+    if (!bookingData.timeSlot || !hasMultipleSections || hallSections.length === 0) {
+      return hallSections;
+    }
+
+    return hallSections.filter(section => 
+      isSectionAvailable(bookingData.timeSlot, section.id)
+    );
+  }, [hallSections, bookingData.timeSlot, hasMultipleSections, isSectionAvailable]);
 
   const updateBookingData = (field: keyof BookingData, value: string | string[] | Date | undefined) => {
     setBookingData((prev) => {
-      // Clear date and time slot if hall changes (different halls may have different availability)
+      // Clear date, time slot, and section if hall changes (different halls have different sections)
       if (field === "hallId" && typeof value === "string" && value !== prev.hallId) {
-        return { ...prev, hallId: value, eventDate: undefined, timeSlot: "" };
+        return { ...prev, hallId: value, eventDate: undefined, timeSlot: "", sectionId: "" };
       }
-      // Clear time slot if date changes (different dates have different availability)
+      // Only clear time slot if date changes - keep section since it's selected before date
       if (field === "eventDate") {
         return { ...prev, eventDate: value as Date | undefined, timeSlot: "" };
       }
+      // Keep section when time slot changes - section is selected first in Step 1
       return { ...prev, [field]: value } as BookingData;
     });
   };
@@ -203,14 +264,34 @@ const BookingPage = () => {
     }));
   };
 
+  // Get selected section details
+  const selectedSection = hallSections.find(s => s.id === bookingData.sectionId);
+  const selectedSectionName = selectedSection?.name || null;
+  const selectedSectionCapacity = selectedSection 
+    ? { min: selectedSection.capacity_min, max: selectedSection.capacity_max }
+    : null;
+  
+  // Calculate effective capacity (section if selected, otherwise hall)
+  const getEffectiveCapacity = () => {
+    const hall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
+    if (selectedSectionCapacity?.max) {
+      return { min: selectedSectionCapacity.min || hall?.capacity.min || 0, max: selectedSectionCapacity.max };
+    }
+    return hall?.capacity || { min: 0, max: 0 };
+  };
+  
   const canProceed = (): boolean => {
     const hall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
     const guests = parseInt(bookingData.guestCount) || 0;
-    const overCapacity = hall && guests > hall.capacity.max;
+    const effectiveCap = getEffectiveCapacity();
+    const overCapacity = effectiveCap.max > 0 && guests > effectiveCap.max;
 
     switch (step) {
       case 1:
-        // Step 1 is now Hall selection
+        // Step 1 is now Hall selection - require section if multi-section hall
+        if (hallSections.length > 1 && !bookingData.sectionId) {
+          return false;
+        }
         return !!bookingData.hallId;
       case 2:
         // Step 2 is now Event details - block if over capacity
@@ -414,7 +495,7 @@ const BookingPage = () => {
         // Check time slot conflicts based on sections
         if (existingBookings && existingBookings.length > 0 && selectedSlotTimes) {
           const totalSections = sectionsData?.length || 1;
-          const hasMultipleSections = totalSections > 1;
+          const hallHasMultipleSections = totalSections > 1;
           
           // Helper to check if slots conflict
           const slotsConflict = (existingStart: string | null, existingEnd: string | null): boolean => {
@@ -434,7 +515,22 @@ const BookingPage = () => {
             slotsConflict(b.event_start_time, b.event_end_time)
           );
 
-          if (hasMultipleSections) {
+          if (hallHasMultipleSections) {
+            // If user selected a section, check if that specific section is still available
+            if (bookingData.sectionId) {
+              const sectionIsBooked = conflictingBookings.some(b => b.section_id === bookingData.sectionId);
+              if (sectionIsBooked) {
+                toast({
+                  title: "Section No Longer Available",
+                  description: "This section has been booked. Please select a different section.",
+                  variant: "destructive",
+                });
+                setStep(2);
+                setIsSubmitting(false);
+                return;
+              }
+            }
+
             // Count booked sections for this time slot
             const bookedSections = new Set<string>();
             let hasUnassigned = false;
@@ -502,6 +598,7 @@ const BookingPage = () => {
         .from('bookings')
         .insert({
           hall_id: hallUUID,
+          section_id: hasMultipleSections && bookingData.sectionId ? bookingData.sectionId : null,
           event_date: format(bookingData.eventDate, "yyyy-MM-dd"),
           event_start_time: times.start,
           event_end_time: times.end,
@@ -567,9 +664,10 @@ const BookingPage = () => {
     }
   };
 
-  const selectedHall = bookingData.hallId ? getHallById(bookingData.hallId) : undefined;
+  // selectedHall is already defined above
   const guestCount = parseInt(bookingData.guestCount) || 0;
-  const isOverCapacity = selectedHall && guestCount > selectedHall.capacity.max;
+  const effectiveCapacity = getEffectiveCapacity();
+  const isOverCapacity = effectiveCapacity.max > 0 && guestCount > effectiveCapacity.max;
 
   const eventTypes = getEventTypes(t);
   const timeSlots = getTimeSlots(t);
@@ -587,6 +685,8 @@ const BookingPage = () => {
     registration: "Registration",
     anthiyeddy: "Anthiyeddy",
   };
+
+  // selectedSectionName is defined above in the canProceed section
 
   if (isSubmitted) {
     return (
@@ -657,6 +757,12 @@ const BookingPage = () => {
                       <span className="text-muted-foreground">{t("booking.summary.mandapam")}</span>
                       <span className="text-foreground">{selectedHall?.name}</span>
                     </div>
+                    {selectedSectionName && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Section</span>
+                        <span className="text-foreground">{selectedSectionName}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("booking.summary.guests")}</span>
                       <span className="text-foreground">{bookingData.guestCount}</span>
@@ -783,7 +889,7 @@ const BookingPage = () => {
                       onValueChange={(value) => updateBookingData("hallId", value)}
                       className="grid gap-3 md:gap-4"
                     >
-                    {halls.map((hall) => (
+                {halls.map((hall) => (
                       <div key={hall.id}>
                         <RadioGroupItem
                           value={hall.id}
@@ -828,6 +934,51 @@ const BookingPage = () => {
                     ))}
                   </RadioGroup>
                   )}
+
+                  {/* Section Selection - Show immediately when multi-section hall is selected */}
+                  {bookingData.hallId && hallSections.length > 1 && (
+                    <div className="mt-4 md:mt-6 p-4 bg-muted/30 rounded-lg border border-secondary/30">
+                      <Label className="flex items-center gap-2 mb-2">
+                        <Building2 className="h-4 w-4 text-secondary" />
+                        <span className="text-gradient-gold font-semibold">Select Section *</span>
+                      </Label>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        This venue has {hallSections.length} sections. Please select which section you'd like to book.
+                      </p>
+                      <RadioGroup
+                        value={bookingData.sectionId}
+                        onValueChange={(value) => updateBookingData("sectionId", value)}
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"
+                      >
+                        {hallSections.map((section) => (
+                          <div key={section.id}>
+                            <RadioGroupItem
+                              value={section.id}
+                              id={`section-step1-${section.id}`}
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor={`section-step1-${section.id}`}
+                              className={cn(
+                                "flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer transition-all text-center gap-1",
+                                bookingData.sectionId === section.id
+                                  ? "border-primary bg-primary/10 text-primary font-semibold"
+                                  : "border-border hover:border-primary/50 bg-card"
+                              )}
+                            >
+                              <span className="font-medium">{section.name}</span>
+                              {section.capacity_min && section.capacity_max && (
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Users className="h-3 w-3" />
+                                  {section.capacity_min} - {section.capacity_max}
+                                </span>
+                              )}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -839,6 +990,8 @@ const BookingPage = () => {
                     <SelectedHallSummary
                       hall={selectedHall}
                       onChangeHall={() => setStep(1)}
+                      sectionName={selectedSectionName || undefined}
+                      sectionCapacity={selectedSectionCapacity || undefined}
                     />
                   )}
 
@@ -929,9 +1082,9 @@ const BookingPage = () => {
 
                   <div>
                     <Label>{t("booking.timeSlot")}</Label>
-                    {hasMultipleSections && bookingData.eventDate && (
+                    {selectedSectionName && bookingData.eventDate && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        This venue has {sectionCount} sections. Available sections vary by time slot.
+                        Showing availability for <span className="font-medium text-primary">{selectedSectionName}</span>
                       </p>
                     )}
                     <Select
@@ -950,27 +1103,27 @@ const BookingPage = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {timeSlots.map((slot) => {
-                          const availability = slotAvailability[slot.id as keyof typeof slotAvailability];
-                          const isAvailable = availability?.available > 0;
-                          const sectionInfo = hasMultipleSections
-                            ? ` (${availability?.available || 0}/${availability?.total || 0} sections)` 
-                            : '';
+                          // If section is selected, check if that specific section is available
+                          // Otherwise fall back to general slot availability
+                          const isSlotAvailableForSection = bookingData.sectionId 
+                            ? isSectionAvailable(slot.id, bookingData.sectionId)
+                            : isSlotAvailable(slot.id);
                           
                           return (
                             <SelectItem 
                               key={slot.id} 
                               value={slot.id}
-                              disabled={!isAvailable}
+                              disabled={!isSlotAvailableForSection}
                               className={cn(
-                                !isAvailable && "text-muted-foreground line-through opacity-60"
+                                !isSlotAvailableForSection && "text-muted-foreground line-through opacity-60"
                               )}
                             >
                               <span className="flex items-center gap-2">
                                 {slot.label}
-                                {isAvailable ? (
-                                  <span className="text-green-600 text-xs">{sectionInfo || '✓ Available'}</span>
+                                {isSlotAvailableForSection ? (
+                                  <span className="text-green-600 text-xs">✓ Available</span>
                                 ) : (
-                                  <span className="text-destructive text-xs">Fully Booked</span>
+                                  <span className="text-destructive text-xs">Booked</span>
                                 )}
                               </span>
                             </SelectItem>
@@ -979,6 +1132,7 @@ const BookingPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
+
 
                   <div>
                     <Label htmlFor="guestCount">{t("booking.guestCount")}</Label>
@@ -1001,20 +1155,20 @@ const BookingPage = () => {
                           <div className="flex items-start gap-2 mt-2 p-2 md:p-3 rounded-lg bg-destructive/10 border border-destructive/30">
                             <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                             <p className="text-xs md:text-sm text-destructive">
-                              <strong>Exceeds capacity!</strong> Max {selectedHall.capacity.max} guests. 
-                              <span className="hidden sm:inline"> Please reduce guest count or select a larger venue.</span>
+                              <strong>Exceeds capacity!</strong> Max {effectiveCapacity.max} guests{selectedSectionName ? ` for ${selectedSectionName}` : ''}. 
+                              <span className="hidden sm:inline"> Please reduce guest count or select a larger {selectedSectionName ? 'section' : 'venue'}.</span>
                             </p>
                           </div>
-                        ) : guestCount < selectedHall.capacity.min * 0.5 ? (
+                        ) : effectiveCapacity.min && guestCount < effectiveCapacity.min * 0.5 ? (
                           <div className="flex items-start gap-2 mt-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
                             <Users className="h-4 w-4 text-yellow-600 shrink-0 mt-0.5" />
                             <p className="text-xs md:text-sm text-yellow-600">
-                              Hall may be too large for {guestCount} guests.
+                              {selectedSectionName || 'Hall'} may be too large for {guestCount} guests.
                             </p>
                           </div>
                         ) : (
                           <p className="text-xs mt-1 text-muted-foreground">
-                            Capacity: {selectedHall.capacity.min} - {selectedHall.capacity.max} guests ✓
+                            Capacity: {effectiveCapacity.min} - {effectiveCapacity.max} guests ✓
                           </p>
                         )}
                       </>
@@ -1061,7 +1215,7 @@ const BookingPage = () => {
                         { id: "dinner", label: "Dinner", icon: "🌙" },
                         { id: "wedding", label: "Wedding", icon: "💒" },
                         { id: "registration", label: "Registration", icon: "📝" },
-                        { id: "anthiyeddy", label: "Anthiyeddy", icon: "�Y?�" },
+                        { id: "anthiyeddy", label: "Anthiyeddy", icon: "🍽️" },
                       ].map((section) => (
                         <div key={section.id}>
                           <RadioGroupItem
@@ -1405,6 +1559,12 @@ const BookingPage = () => {
               <span className="text-muted-foreground">{t("booking.summary.mandapam")}</span>
               <span className="text-foreground text-right">{selectedHall?.name || "-"}</span>
             </div>
+            {selectedSectionName && (
+              <div className="flex items-start justify-between gap-4">
+                <span className="text-muted-foreground">Section</span>
+                <span className="text-foreground text-right">{selectedSectionName}</span>
+              </div>
+            )}
             <div className="flex items-start justify-between gap-4">
               <span className="text-muted-foreground">{t("booking.summary.eventType")}</span>
               <span className="text-foreground text-right">

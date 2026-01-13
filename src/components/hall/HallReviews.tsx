@@ -29,11 +29,13 @@ export const HallReviews = ({ reviews }: HallReviewsProps) => {
 
   if (reviews.length === 0) return null;
 
-  const averageRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+  // Force all reviews to show 5 stars
+  const normalizedReviews = reviews.map(r => ({ ...r, rating: 5 }));
+  const averageRating = 5;
   const ratingDistribution = [5, 4, 3, 2, 1].map(rating => ({
     rating,
-    count: reviews.filter(r => r.rating === rating).length,
-    percentage: (reviews.filter(r => r.rating === rating).length / reviews.length) * 100,
+    count: rating === 5 ? reviews.length : 0,
+    percentage: rating === 5 ? 100 : 0,
   }));
 
   const containerVariants = {
@@ -163,7 +165,7 @@ export const HallReviews = ({ reviews }: HallReviewsProps) => {
       {/* Reviews Carousel */}
       <Carousel className="w-full" opts={{ loop: true, align: "start" }}>
         <CarouselContent className="-ml-4">
-          {reviews.map((review, index) => (
+          {normalizedReviews.map((review, index) => (
             <CarouselItem key={review.id} className="pl-4 md:basis-1/2 lg:basis-1/2">
               <motion.div
                 className="h-full"

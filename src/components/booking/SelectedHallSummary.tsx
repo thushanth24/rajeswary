@@ -1,4 +1,4 @@
-import { Users, Building2, CalendarIcon, Clock, X } from "lucide-react";
+import { Users, Building2, CalendarIcon, Clock, X, Layers } from "lucide-react";
 import { format } from "date-fns";
 import type { Hall } from "@/hooks/useHalls";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ interface SelectedHallSummaryProps {
   guestCount?: number;
   onChangeHall?: () => void;
   className?: string;
+  sectionName?: string;
+  sectionCapacity?: { min: number | null; max: number | null };
 }
 
 const timeSlotLabels: Record<string, string> = {
@@ -25,9 +27,16 @@ export function SelectedHallSummary({
   guestCount,
   onChangeHall,
   className,
+  sectionName,
+  sectionCapacity,
 }: SelectedHallSummaryProps) {
-  const isOverCapacity = guestCount && guestCount > hall.capacity.max;
-  const isUnderCapacity = guestCount && guestCount < hall.capacity.min * 0.5;
+  // Use section capacity if available, otherwise hall capacity
+  const effectiveCapacity = sectionCapacity?.max 
+    ? { min: sectionCapacity.min || hall.capacity.min, max: sectionCapacity.max }
+    : hall.capacity;
+    
+  const isOverCapacity = guestCount && guestCount > effectiveCapacity.max;
+  const isUnderCapacity = guestCount && effectiveCapacity.min && guestCount < effectiveCapacity.min * 0.5;
 
   return (
     <div className={cn(
@@ -56,10 +65,18 @@ export function SelectedHallSummary({
             )}
           </div>
           
+          {/* Section Name */}
+          {sectionName && (
+            <div className="flex items-center gap-1.5 mt-1 text-sm text-primary">
+              <Layers className="h-3 w-3" />
+              <span className="font-medium">{sectionName}</span>
+            </div>
+          )}
+          
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              <span>{hall.capacity.min} - {hall.capacity.max} guests</span>
+              <span>{effectiveCapacity.min} - {effectiveCapacity.max} guests</span>
             </div>
             
             {eventDate && (
@@ -81,14 +98,14 @@ export function SelectedHallSummary({
           {isOverCapacity && (
             <div className="mt-2 flex items-center gap-1 text-xs text-destructive bg-destructive/10 px-2 py-1 rounded">
               <X className="h-3 w-3" />
-              <span>Guest count exceeds hall capacity ({hall.capacity.max} max)</span>
+              <span>Guest count exceeds {sectionName ? 'section' : 'hall'} capacity ({effectiveCapacity.max} max)</span>
             </div>
           )}
           
           {isUnderCapacity && (
             <div className="mt-2 flex items-center gap-1 text-xs text-yellow-600 bg-yellow-500/10 px-2 py-1 rounded">
               <Users className="h-3 w-3" />
-              <span>Hall may be too large for {guestCount} guests (min recommended: {Math.floor(hall.capacity.min * 0.5)})</span>
+              <span>{sectionName ? 'Section' : 'Hall'} may be too large for {guestCount} guests (min recommended: {Math.floor((effectiveCapacity.min || 0) * 0.5)})</span>
             </div>
           )}
         </div>

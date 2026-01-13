@@ -9,6 +9,7 @@ import { CTASection } from "@/components/home/CTASection";
 import { MenuCard } from "@/components/menu/MenuCard";
 import { MobileMenuAccordion } from "@/components/menu/MobileMenuAccordion";
 import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
+import { FoodGallery } from "@/components/menu/FoodGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
 import menuVideo from "@/assets/wedding-food-display-video.mp4";
 
@@ -157,12 +158,12 @@ const MenusPage = () => {
       <Tabs defaultValue="pubert" className="w-full">
         <div className="bg-background">
           <div className="container mx-auto px-4 lg:px-8 py-6">
-            <TabsList className="grid w-full max-w-5xl mx-auto grid-cols-2 md:grid-cols-5 gap-2 md:gap-0 mb-10 md:mb-0 bg-transparent border-0 p-0 shadow-none">
+            <TabsList className="grid h-auto w-full max-w-5xl mx-auto grid-cols-2 md:grid-cols-5 gap-2 md:gap-0 mb-10 md:mb-0 bg-transparent border-0 p-0 shadow-none">
               {menuSections.map((section) => (
                 <TabsTrigger
                   key={section.id}
                   value={section.id}
-                  className="font-serif text-xs sm:text-sm py-2.5 md:py-3 rounded-lg border border-border/60 bg-background/80 hover:bg-background/95 transition-colors tracking-wide data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:border-secondary"
+                  className="font-serif text-sm sm:text-base py-2.5 md:py-3 rounded-lg border border-border/60 bg-background/80 hover:bg-background/95 transition-colors tracking-wide data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground data-[state=active]:border-secondary"
                 >
                   {section.tabLabel}
                 </TabsTrigger>
@@ -318,6 +319,9 @@ const MenusPage = () => {
           );
         })}
       </Tabs>
+
+      {/* Food Gallery Section */}
+      <FoodGallery />
 
       <CTASection 
         subtitle={t("menus.cta.subtitle")}

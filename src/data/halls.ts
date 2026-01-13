@@ -1,8 +1,8 @@
-import hallGrandBallroom from "@/assets/hall-grand-ballroom.webp";
-import hallRoyalBanquet from "@/assets/hall-royal-banquet.webp";
-import hallCrystalPalace from "@/assets/hall-crystal-palace.webp";
-import hallEmeraldGarden from "@/assets/hall-emerald-garden.jpg";
-import hallSunsetTerrace from "@/assets/hall-sunset-terrace.jpg";
+import kondavilCover from "@/assets/Raajeshwariy Weeding hall Kondavil cover.webp";
+import tellipalaiCover from "@/assets/Raajeshwariy Wedding Hall Tellipalai cover.webp";
+import chelvaMahalCover from "@/assets/chelva mahal cover .jpeg";
+import chelvaPalaceCover from "@/assets/Chelva Palace cover.webp";
+import urumpiraiCover from "@/assets/Karpaka Raajeshwariy Wedding Hall 01.webp";
 
 export interface Hall {
   id: string;
@@ -30,11 +30,11 @@ export interface Hall {
 export const halls: Hall[] = [
   {
     id: "grand-ballroom",
-    name: "Grand Ballroom",
+    name: "Chelva Mahal",
     slug: "grand-ballroom",
-    image: hallGrandBallroom,
+    image: chelvaMahalCover,
     capacity: { min: 300, max: 800 },
-    description: "Our flagship venue, the Grand Ballroom offers unparalleled elegance with soaring ceilings, crystal chandeliers, and a spacious dance floor. Perfect for grand weddings and large receptions that demand sophistication and style.",
+    description: "Our flagship venue, Chelva Mahal offers unparalleled elegance with soaring ceilings, crystal chandeliers, and a spacious dance floor. Perfect for grand weddings and large receptions that demand sophistication and style.",
     shortDescription: "Elegant venue for grand celebrations with crystal chandeliers and spacious layout.",
     features: ["Crystal Chandeliers", "Grand Entrance", "Private Lawn", "VIP Lounge"],
     facilities: {
@@ -52,11 +52,11 @@ export const halls: Hall[] = [
   },
   {
     id: "royal-banquet",
-    name: "Royal Banquet Hall",
+    name: "Chelva Palace",
     slug: "royal-banquet",
-    image: hallRoyalBanquet,
+    image: chelvaPalaceCover,
     capacity: { min: 200, max: 500 },
-    description: "Experience royalty at the Royal Banquet Hall. Featuring ornate gold accents, plush seating, and exceptional lighting, this venue creates an atmosphere of timeless luxury for your special day.",
+    description: "Experience royalty at Chelva Palace. Featuring ornate gold accents, plush seating, and exceptional lighting, this venue creates an atmosphere of timeless luxury for your special day.",
     shortDescription: "Luxurious setting with royal ambiance and gold accents.",
     features: ["Gold Accents", "Royal Decor", "Premium Sound System", "LED Stage"],
     facilities: {
@@ -74,11 +74,11 @@ export const halls: Hall[] = [
   },
   {
     id: "crystal-palace",
-    name: "Crystal Palace",
+    name: "Raajeshwariy Wedding Hall Kondavil",
     slug: "crystal-palace",
-    image: hallCrystalPalace,
+    image: kondavilCover,
     capacity: { min: 100, max: 300 },
-    description: "The Crystal Palace combines intimate elegance with modern amenities. Its warm wooden accents and crystal decorations create a cozy yet sophisticated atmosphere ideal for medium-sized celebrations.",
+    description: "Raajeshwariy Wedding Hall Kondavil combines intimate elegance with modern amenities. Its warm wooden accents and crystal decorations create a cozy yet sophisticated atmosphere ideal for medium-sized celebrations.",
     shortDescription: "Intimate elegance with warm ambiance and crystal decorations.",
     features: ["Wooden Ceiling", "Intimate Setting", "Garden View", "Customizable Lighting"],
     facilities: {
@@ -96,11 +96,11 @@ export const halls: Hall[] = [
   },
   {
     id: "emerald-garden",
-    name: "Emerald Garden Hall",
+    name: "Karpaka Raajeshwariy Wedding Hall Urumpirai",
     slug: "emerald-garden",
-    image: hallEmeraldGarden,
+    image: urumpiraiCover,
     capacity: { min: 250, max: 600 },
-    description: "A modern masterpiece featuring contemporary design elements, floor-to-ceiling windows, and state-of-the-art amenities. The Emerald Garden Hall brings natural light and elegance together beautifully.",
+    description: "A modern masterpiece featuring contemporary design elements, floor-to-ceiling windows, and state-of-the-art amenities. Karpaka Raajeshwariy Wedding Hall brings natural light and elegance together beautifully.",
     shortDescription: "Modern venue with natural lighting and contemporary design.",
     features: ["Floor-to-Ceiling Windows", "Modern Design", "Premium AV System", "Rooftop Access"],
     facilities: {
@@ -118,12 +118,12 @@ export const halls: Hall[] = [
   },
   {
     id: "sunset-terrace",
-    name: "Sunset Terrace",
+    name: "Raajeshwariy Wedding Hall Tellipalai",
     slug: "sunset-terrace",
-    image: hallSunsetTerrace,
+    image: tellipalaiCover,
     capacity: { min: 150, max: 400 },
-    description: "An enchanting outdoor venue surrounded by lush greenery and twinkling lights. The Sunset Terrace offers a magical garden wedding experience under the stars with a beautiful pavilion.",
-    shortDescription: "Magical outdoor venue with garden setting and string lights.",
+    description: "An enchanting venue surrounded by lush greenery and twinkling lights. Raajeshwariy Wedding Hall Tellipalai offers a magical wedding experience with a beautiful pavilion.",
+    shortDescription: "Magical venue with garden setting and string lights.",
     features: ["Outdoor Setting", "Garden Pavilion", "String Lights", "Natural Backdrop"],
     facilities: {
       ac: false,

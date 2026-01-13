@@ -98,14 +98,14 @@ export function useSectionAwareAvailability(
       setLoading(true);
 
       // Parallel fetch bookings and closed dates
-      // Include new, acknowledged, and confirmed bookings - all count as "booked"
+      // Only confirmed bookings block the slot - pending bookings don't restrict others
       const [bookingsResult, closedResult] = await Promise.all([
         supabase
           .from("bookings")
           .select("section_id, event_start_time, event_end_time")
           .eq("hall_id", hallId)
           .eq("event_date", date)
-          .in("status", ["new", "acknowledged", "confirmed"]),
+          .eq("status", "confirmed"),
         supabase
           .from("hall_closed_dates")
           .select("id")

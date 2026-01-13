@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 // Import static images as fallback
-import hallEmeraldGarden from "@/assets/hall-emerald-garden.jpg";
+import hallEmeraldGarden from "@/assets/urumpirai.jpeg";
 // Raajeshwariy Kondavil images
 import raajeshwariyKondavilCover from "@/assets/Raajeshwariy Weeding hall Kondavil cover.webp";
 // Raajeshwariy Tellipalai images
@@ -113,6 +113,26 @@ function mapDBHallToHall(dbHall: DBHall): Hall {
   };
 }
 
+// Custom display order for halls (by slug)
+const hallDisplayOrder: string[] = [
+  'crystal-palace',    //  Kondavil
+  'sunset-terrace',    // Tellipalai
+  'grand-ballroom',    // Chelva Mahal
+  'royal-banquet',     // Chelva Palace
+  'emerald-garden',    // Urumpirai
+];
+
+function sortHallsByDisplayOrder(halls: Hall[]): Hall[] {
+  return [...halls].sort((a, b) => {
+    const indexA = hallDisplayOrder.indexOf(a.slug);
+    const indexB = hallDisplayOrder.indexOf(b.slug);
+    // If not in order list, put at end
+    const orderA = indexA === -1 ? 999 : indexA;
+    const orderB = indexB === -1 ? 999 : indexB;
+    return orderA - orderB;
+  });
+}
+
 export function useHalls() {
   const [halls, setHalls] = useState<Hall[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,13 +144,13 @@ export function useHalls() {
         const { data, error } = await supabase
           .from('halls')
           .select('*')
-          .eq('is_active', true)
-          .order('name');
+          .eq('is_active', true);
 
         if (error) throw error;
 
         const mappedHalls = (data as DBHall[]).map(mapDBHallToHall);
-        setHalls(mappedHalls);
+        const sortedHalls = sortHallsByDisplayOrder(mappedHalls);
+        setHalls(sortedHalls);
       } catch (err) {
         console.error('Error fetching halls:', err);
         setError('Failed to load halls');
