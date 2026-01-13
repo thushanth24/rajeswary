@@ -51,9 +51,9 @@ function getSlotType(start: string | null, end: string | null): string {
   const normalizedStart = start.substring(0, 5);
   const normalizedEnd = end.substring(0, 5);
   
-  if (normalizedStart === "08:00" && normalizedEnd === "16:00") return "morning";
-  if (normalizedStart === "17:00" && normalizedEnd === "00:00") return "evening";
-  if (normalizedStart === "08:00" && normalizedEnd === "00:00") return "fullday";
+  if (normalizedStart === "09:00" && normalizedEnd === "14:00") return "morning";
+  if (normalizedStart === "14:00" && normalizedEnd === "18:00") return "evening";
+  if (normalizedStart === "09:00" && normalizedEnd === "18:00") return "fullday";
   return "fullday"; // Unknown patterns treated as fullday for safety
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +18,8 @@ interface HallSection {
   id: string;
   name: string;
   display_order: number | null;
+  capacity_min: number | null;
+  capacity_max: number | null;
 }
 
 interface HallSectionsGalleryProps {
@@ -46,13 +48,19 @@ export function HallSectionsGallery({ hallId, hallSlug, hallName }: HallSections
     const fetchSections = async () => {
       const { data, error } = await supabase
         .from("hall_sections")
-        .select("id, name, display_order")
+        .select("id, name, display_order, capacity_min, capacity_max")
         .eq("hall_id", hallId)
         .eq("is_active", true)
         .order("display_order");
 
       if (!error && data && data.length > 1) {
-        setSections(data);
+        setSections((data as any[]).map(s => ({
+          id: String(s.id),
+          name: String(s.name),
+          display_order: s.display_order ?? null,
+          capacity_min: s.capacity_min ?? null,
+          capacity_max: s.capacity_max ?? null,
+        })));
       }
       setLoading(false);
     };
@@ -111,6 +119,18 @@ export function HallSectionsGallery({ hallId, hallSlug, hallName }: HallSections
                     <h3 className="font-serif text-lg sm:text-xl font-bold text-card">
                       {section.name}
                     </h3>
+                    {(section.capacity_min || section.capacity_max) && (
+                      <div className="flex items-center gap-1.5 mt-1 text-card/90 text-sm">
+                        <Users className="h-4 w-4" />
+                        <span>
+                          {section.capacity_min && section.capacity_max
+                            ? `${section.capacity_min} - ${section.capacity_max} guests`
+                            : section.capacity_max
+                              ? `Up to ${section.capacity_max} guests`
+                              : `${section.capacity_min}+ guests`}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 

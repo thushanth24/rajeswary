@@ -22,9 +22,9 @@ import { menus } from '@/data/services';
 import { MenuQuickViewModal } from '@/components/menu/MenuQuickViewModal';
 import { useSectionAwareAvailability } from '@/hooks/useSectionAwareAvailability';
 const timeSlots = [
-  { id: 'morning', label: 'Morning (08:00 - 16:00)', start: '08:00', end: '16:00' },
-  { id: 'evening', label: 'Evening (17:00 - 00:00)', start: '17:00', end: '00:00' },
-  { id: 'fullday', label: 'Full Day (08:00 - 00:00)', start: '08:00', end: '00:00' },
+  { id: 'morning', label: 'Morning (09:00 - 14:00)', start: '09:00', end: '14:00' },
+  { id: 'evening', label: 'Evening (14:00 - 18:00)', start: '14:00', end: '18:00' },
+  { id: 'fullday', label: 'Full Day (09:00 - 18:00)', start: '09:00', end: '18:00' },
 ];
 
 const addOnServices = [
@@ -137,9 +137,9 @@ const NewManualBooking = () => {
           b.section_id === s.id &&
           ((b.event_start_time === null && b.event_end_time === null) || // Legacy fullday
            (timeSlot === 'fullday') ||
-           (b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '00:00') || // existing fullday
-           (timeSlot === 'morning' && b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '16:00') ||
-           (timeSlot === 'evening' && b.event_start_time?.substring(0, 5) === '17:00' && b.event_end_time?.substring(0, 5) === '00:00'))
+           (b.event_start_time?.substring(0, 5) === '09:00' && b.event_end_time?.substring(0, 5) === '18:00') || // existing fullday
+           (timeSlot === 'morning' && b.event_start_time?.substring(0, 5) === '09:00' && b.event_end_time?.substring(0, 5) === '14:00') ||
+           (timeSlot === 'evening' && b.event_start_time?.substring(0, 5) === '14:00' && b.event_end_time?.substring(0, 5) === '18:00'))
       );
       if (hasConflict) return false;
 
@@ -149,9 +149,9 @@ const NewManualBooking = () => {
           !b.section_id &&
           ((b.event_start_time === null && b.event_end_time === null) ||
            (timeSlot === 'fullday') ||
-           (b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '00:00') ||
-           (timeSlot === 'morning' && b.event_start_time?.substring(0, 5) === '08:00' && b.event_end_time?.substring(0, 5) === '16:00') ||
-           (timeSlot === 'evening' && b.event_start_time?.substring(0, 5) === '17:00' && b.event_end_time?.substring(0, 5) === '00:00'))
+           (b.event_start_time?.substring(0, 5) === '09:00' && b.event_end_time?.substring(0, 5) === '18:00') ||
+           (timeSlot === 'morning' && b.event_start_time?.substring(0, 5) === '09:00' && b.event_end_time?.substring(0, 5) === '14:00') ||
+           (timeSlot === 'evening' && b.event_start_time?.substring(0, 5) === '14:00' && b.event_end_time?.substring(0, 5) === '18:00'))
       );
       return !hasUnassigned;
     });

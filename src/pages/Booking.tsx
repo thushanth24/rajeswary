@@ -140,6 +140,7 @@ const BookingPage = () => {
   const [bookingReference, setBookingReference] = useState<string | null>(null);
   const [previewMenu, setPreviewMenu] = useState<{ menu: any; variant: "veg" | "nonveg" | "special" } | null>(null);
   const [isDetailsPreviewOpen, setIsDetailsPreviewOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -450,9 +451,9 @@ const BookingPage = () => {
         
         // Get time slot times
         const timeSlotMap: Record<string, { start: string; end: string }> = {
-          morning: { start: "08:00", end: "16:00" },
-          evening: { start: "17:00", end: "00:00" },
-          fullday: { start: "08:00", end: "00:00" },
+          morning: { start: "09:00", end: "14:00" },
+          evening: { start: "14:00", end: "18:00" },
+          fullday: { start: "09:00", end: "18:00" },
         };
         const selectedSlotTimes = timeSlotMap[bookingData.timeSlot];
         
@@ -500,9 +501,9 @@ const BookingPage = () => {
           // Helper to check if slots conflict
           const slotsConflict = (existingStart: string | null, existingEnd: string | null): boolean => {
             const existingSlot = 
-              existingStart === "08:00" && existingEnd === "16:00" ? "morning" :
-              existingStart === "17:00" && existingEnd === "00:00" ? "evening" :
-              existingStart === "08:00" && existingEnd === "00:00" ? "fullday" : "unknown";
+              existingStart === "09:00" && existingEnd === "14:00" ? "morning" :
+              existingStart === "14:00" && existingEnd === "18:00" ? "evening" :
+              existingStart === "09:00" && existingEnd === "18:00" ? "fullday" : "unknown";
             
             // Full day conflicts with everything
             if (existingSlot === "fullday" || bookingData.timeSlot === "fullday") return true;
@@ -572,9 +573,9 @@ const BookingPage = () => {
 
       // Map time slot to actual times
       const timeSlotMap: Record<string, { start: string; end: string }> = {
-        morning: { start: "08:00", end: "16:00" },
-        evening: { start: "17:00", end: "00:00" },
-        fullday: { start: "08:00", end: "00:00" },
+        morning: { start: "09:00", end: "14:00" },
+        evening: { start: "14:00", end: "18:00" },
+        fullday: { start: "09:00", end: "18:00" },
       };
       const times = timeSlotMap[bookingData.timeSlot] || { start: null, end: null };
 
@@ -889,95 +890,95 @@ const BookingPage = () => {
                       onValueChange={(value) => updateBookingData("hallId", value)}
                       className="grid gap-3 md:gap-4"
                     >
-                {halls.map((hall) => (
-                      <div key={hall.id}>
-                        <RadioGroupItem
-                          value={hall.id}
-                          id={hall.id}
-                          className="peer sr-only"
-                        />
-                        <Label
-                          htmlFor={hall.id}
-                          className={cn(
-                            "flex gap-3 md:gap-4 p-3 md:p-4 rounded-lg border cursor-pointer transition-all",
-                            bookingData.hallId === hall.id
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-primary/50"
-                          )}
-                        >
-                          <img
-                            src={hall.image}
-                            alt={hall.name}
-                            className="w-16 h-14 md:w-24 md:h-20 object-cover rounded-md shrink-0"
+                      {halls.map((hall) => (
+                        <div key={hall.id}>
+                          <RadioGroupItem
+                            value={hall.id}
+                            id={hall.id}
+                            className="peer sr-only"
                           />
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-foreground text-sm md:text-base truncate">{hall.name}</h3>
-                            <div className="flex items-center gap-1 md:gap-2 mt-1 text-xs md:text-sm text-muted-foreground">
-                              <Users className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
-                              <span className="truncate">{hall.capacity.min} - {hall.capacity.max} guests</span>
-                            </div>
-                            <div className="flex gap-1 md:gap-2 mt-1 md:mt-2 flex-wrap">
-                              {hall.facilities.ac && (
-                                <span className="text-[10px] md:text-xs bg-muted/50 px-1.5 md:px-2 py-0.5 rounded flex items-center gap-0.5 md:gap-1">
-                                  <Snowflake className="h-2.5 w-2.5 md:h-3 md:w-3" /> AC
-                                </span>
-                              )}
-                              {hall.facilities.parking && (
-                                <span className="text-[10px] md:text-xs bg-muted/50 px-1.5 md:px-2 py-0.5 rounded flex items-center gap-0.5 md:gap-1">
-                                  <Car className="h-2.5 w-2.5 md:h-3 md:w-3" /> Parking
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                  )}
-
-                  {/* Section Selection - Show immediately when multi-section hall is selected */}
-                  {bookingData.hallId && hallSections.length > 1 && (
-                    <div className="mt-4 md:mt-6 p-4 bg-muted/30 rounded-lg border border-secondary/30">
-                      <Label className="flex items-center gap-2 mb-2">
-                        <Building2 className="h-4 w-4 text-secondary" />
-                        <span className="text-gradient-gold font-semibold">Select Section *</span>
-                      </Label>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        This venue has {hallSections.length} sections. Please select which section you'd like to book.
-                      </p>
-                      <RadioGroup
-                        value={bookingData.sectionId}
-                        onValueChange={(value) => updateBookingData("sectionId", value)}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"
-                      >
-                        {hallSections.map((section) => (
-                          <div key={section.id}>
-                            <RadioGroupItem
-                              value={section.id}
-                              id={`section-step1-${section.id}`}
-                              className="peer sr-only"
+                          <Label
+                            htmlFor={hall.id}
+                            className={cn(
+                              "flex gap-3 md:gap-4 p-3 md:p-4 rounded-lg border cursor-pointer transition-all",
+                              bookingData.hallId === hall.id
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/50"
+                            )}
+                          >
+                            <img
+                              src={hall.image}
+                              alt={hall.name}
+                              className="w-16 h-14 md:w-24 md:h-20 object-cover rounded-md shrink-0"
                             />
-                            <Label
-                              htmlFor={`section-step1-${section.id}`}
-                              className={cn(
-                                "flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer transition-all text-center gap-1",
-                                bookingData.sectionId === section.id
-                                  ? "border-primary bg-primary/10 text-primary font-semibold"
-                                  : "border-border hover:border-primary/50 bg-card"
-                              )}
-                            >
-                              <span className="font-medium">{section.name}</span>
-                              {section.capacity_min && section.capacity_max && (
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Users className="h-3 w-3" />
-                                  {section.capacity_min} - {section.capacity_max}
-                                </span>
-                              )}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-foreground text-sm md:text-base truncate">{hall.name}</h3>
+                              <div className="flex items-center gap-1 md:gap-2 mt-1 text-xs md:text-sm text-muted-foreground">
+                                <Users className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
+                                <span className="truncate">{hall.capacity.min} - {hall.capacity.max} guests</span>
+                              </div>
+                              <div className="flex gap-1 md:gap-2 mt-1 md:mt-2 flex-wrap">
+                                {hall.facilities.ac && (
+                                  <span className="text-[10px] md:text-xs bg-muted/50 px-1.5 md:px-2 py-0.5 rounded flex items-center gap-0.5 md:gap-1">
+                                    <Snowflake className="h-2.5 w-2.5 md:h-3 md:w-3" /> AC
+                                  </span>
+                                )}
+                                {hall.facilities.parking && (
+                                  <span className="text-[10px] md:text-xs bg-muted/50 px-1.5 md:px-2 py-0.5 rounded flex items-center gap-0.5 md:gap-1">
+                                    <Car className="h-2.5 w-2.5 md:h-3 md:w-3" /> Parking
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </Label>
+
+                          {/* Section Selection - Show directly under this hall when selected */}
+                          {bookingData.hallId === hall.id && hallSections.length > 1 && (
+                            <div className="mt-2 ml-4 p-4 bg-muted/30 rounded-lg border border-secondary/30">
+                              <Label className="flex items-center gap-2 mb-2">
+                                <Building2 className="h-4 w-4 text-secondary" />
+                                <span className="text-gradient-gold font-semibold">Select Section *</span>
+                              </Label>
+                              <p className="text-xs text-muted-foreground mb-3">
+                                This venue has {hallSections.length} sections. Please select which section you'd like to book.
+                              </p>
+                              <RadioGroup
+                                value={bookingData.sectionId}
+                                onValueChange={(value) => updateBookingData("sectionId", value)}
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"
+                              >
+                                {hallSections.map((section) => (
+                                  <div key={section.id}>
+                                    <RadioGroupItem
+                                      value={section.id}
+                                      id={`section-step1-${section.id}`}
+                                      className="peer sr-only"
+                                    />
+                                    <Label
+                                      htmlFor={`section-step1-${section.id}`}
+                                      className={cn(
+                                        "flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer transition-all text-center gap-1",
+                                        bookingData.sectionId === section.id
+                                          ? "border-primary bg-primary/10 text-primary font-semibold"
+                                          : "border-border hover:border-primary/50 bg-card"
+                                      )}
+                                    >
+                                      <span className="font-medium">{section.name}</span>
+                                      {section.capacity_min && section.capacity_max && (
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                          <Users className="h-3 w-3" />
+                                          {section.capacity_min} - {section.capacity_max}
+                                        </span>
+                                      )}
+                                    </Label>
+                                  </div>
+                                ))}
+                              </RadioGroup>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </RadioGroup>
                   )}
                 </div>
               )}
@@ -1038,7 +1039,7 @@ const BookingPage = () => {
                       <Lock className="h-3 w-3" />
                       {t("booking.eventDate.desc")}
                     </p>
-                    <Popover>
+                    <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
@@ -1067,6 +1068,7 @@ const BookingPage = () => {
                               return;
                             }
                             updateBookingData("eventDate", date);
+                            setIsCalendarOpen(false);
                           }}
                           disabled={(date) => {
                             if (date < new Date()) return true;

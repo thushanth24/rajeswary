@@ -170,6 +170,13 @@ const HallDetailPage = () => {
                 </p>
               </div>
 
+              {/* Hall Sections */}
+              <HallSectionsGallery 
+                hallId={hall.id}
+                hallSlug={hall.slug}
+                hallName={hall.name}
+              />
+
               {/* Image Gallery */}
               <HallImageGallery 
                 images={details.images.map(img => ({
@@ -179,13 +186,6 @@ const HallDetailPage = () => {
                 }))}
                 hallName={hall.name}
                 mainImage={hall.image}
-              />
-
-              {/* Hall Sections */}
-              <HallSectionsGallery 
-                hallId={hall.id}
-                hallSlug={hall.slug}
-                hallName={hall.name}
               />
 
               {/* Facilities */}
@@ -406,16 +406,8 @@ const HallDetailPage = () => {
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("hallDetail.monFri")}</span>
+                    <span className="text-muted-foreground">{t("hallDetail.daily")}</span>
                     <span className="text-foreground">9:00 AM - 6:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("hallDetail.saturday")}</span>
-                    <span className="text-foreground">9:00 AM - 4:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("hallDetail.sunday")}</span>
-                    <span className="text-foreground">{t("hallDetail.byAppointment")}</span>
                   </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-border/50">
@@ -527,16 +519,8 @@ const HallDetailPage = () => {
                 </div>
                 <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("hallDetail.monFri")}</span>
+                    <span className="text-muted-foreground">{t("hallDetail.daily")}</span>
                     <span className="text-foreground">9:00 AM - 6:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("hallDetail.saturday")}</span>
-                    <span className="text-foreground">9:00 AM - 4:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t("hallDetail.sunday")}</span>
-                    <span className="text-foreground">{t("hallDetail.byAppointment")}</span>
                   </div>
                 </div>
                 <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-border/50">
