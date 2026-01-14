@@ -1,7 +1,7 @@
-import kondavilCover from "@/assets/Raajeshwariy Weeding hall Kondavil cover.webp";
-import tellipalaiCover from "@/assets/Raajeshwariy Wedding Hall Tellipalai cover.webp";
-import chelvaMahalCover from "@/assets/chelva mahal cover .jpeg";
-import chelvaPalaceCover from "@/assets/Chelva Palace cover.webp";
+import kondavilCover from "@/assets/thellipalaicover.jpeg";
+import tellipalaiCover from "@/assets/kondavilcover.jpg";
+import chelvaMahalCover from "@/assets/chelvamahalcover.jpeg";
+import chelvaPalaceCover from "@/assets/palacecover.jpeg";
 import urumpiraiCover from "@/assets/Karpaka Raajeshwariy Wedding Hall 01.webp";
 
 export interface Hall {

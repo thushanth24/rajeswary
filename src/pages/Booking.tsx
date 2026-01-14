@@ -669,6 +669,15 @@ const BookingPage = () => {
   const guestCount = parseInt(bookingData.guestCount) || 0;
   const effectiveCapacity = getEffectiveCapacity();
   const isOverCapacity = effectiveCapacity.max > 0 && guestCount > effectiveCapacity.max;
+  const suggestedHalls = useMemo(() => {
+    if (!isOverCapacity || guestCount <= 0) {
+      return [];
+    }
+
+    return halls
+      .filter((hall) => hall.capacity.max >= guestCount && hall.id !== bookingData.hallId)
+      .sort((a, b) => a.capacity.max - b.capacity.max);
+  }, [isOverCapacity, guestCount, halls, bookingData.hallId]);
 
   const eventTypes = getEventTypes(t);
   const timeSlots = getTimeSlots(t);
@@ -680,11 +689,11 @@ const BookingPage = () => {
     .map((serviceId) => addOnServices.find((service) => service.id === serviceId)?.label)
     .filter(Boolean) as string[];
   const menuSectionLabels: Record<string, string> = {
-    pubert: "Puberty",
+    pubert: "Lunch",
     dinner: "Dinner",
-    wedding: "Wedding",
-    registration: "Registration",
-    anthiyeddy: "Anthiyeddy",
+    wedding: "Standard",
+    registration: "Supreme",
+    anthiyeddy: "Signature",
   };
 
   // selectedSectionName is defined above in the canProceed section
@@ -1154,12 +1163,38 @@ const BookingPage = () => {
                     {selectedHall && guestCount > 0 && (
                       <>
                         {isOverCapacity ? (
-                          <div className="flex items-start gap-2 mt-2 p-2 md:p-3 rounded-lg bg-destructive/10 border border-destructive/30">
-                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                            <p className="text-xs md:text-sm text-destructive">
-                              <strong>Exceeds capacity!</strong> Max {effectiveCapacity.max} guests{selectedSectionName ? ` for ${selectedSectionName}` : ''}. 
-                              <span className="hidden sm:inline"> Please reduce guest count or select a larger {selectedSectionName ? 'section' : 'venue'}.</span>
-                            </p>
+                          <div className="mt-2 space-y-2">
+                            <div className="flex items-start gap-2 p-2 md:p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                              <p className="text-xs md:text-sm text-destructive">
+                                <strong>Exceeds capacity!</strong> Max {effectiveCapacity.max} guests{selectedSectionName ? ` for ${selectedSectionName}` : ''}. 
+                                <span className="hidden sm:inline"> Please reduce guest count or select a larger {selectedSectionName ? 'section' : 'venue'}.</span>
+                              </p>
+                            </div>
+                            {suggestedHalls.length > 0 && (
+                              <div className="rounded-lg border border-secondary/30 bg-secondary/10 p-2 md:p-3">
+                                <p className="text-xs md:text-sm text-foreground">
+                                  Suggested halls that fit {guestCount} guests:
+                                </p>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  {suggestedHalls.map((hall) => (
+                                    <Button
+                                      key={hall.id}
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        updateBookingData("hallId", hall.id);
+                                        setStep(1);
+                                      }}
+                                      className="border-secondary/40 hover:bg-secondary/20 text-xs md:text-sm"
+                                    >
+                                      {hall.name} ({hall.capacity.min}-{hall.capacity.max})
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         ) : effectiveCapacity.min && guestCount < effectiveCapacity.min * 0.5 ? (
                           <div className="flex items-start gap-2 mt-2 p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
@@ -1213,11 +1248,11 @@ const BookingPage = () => {
                       className="grid grid-cols-2 gap-2 md:grid-cols-5 md:gap-3"
                     >
                       {[
-                        { id: "pubert", label: "Puberty", icon: "☀️" },
+                        { id: "pubert", label: "Lunch", icon: "☀️" },
                         { id: "dinner", label: "Dinner", icon: "🌙" },
-                        { id: "wedding", label: "Wedding", icon: "💒" },
-                        { id: "registration", label: "Registration", icon: "📝" },
-                        { id: "anthiyeddy", label: "Anthiyeddy", icon: "🍽️" },
+                        { id: "wedding", label: "Standard", icon: "💒" },
+                        { id: "registration", label: "Supreme", icon: "📝" },
+                        { id: "anthiyeddy", label: "Signature", icon: "🍽️" },
                       ].map((section) => (
                         <div key={section.id}>
                           <RadioGroupItem
@@ -1651,3 +1686,4 @@ const BookingPage = () => {
 };
 
 export default BookingPage;
+

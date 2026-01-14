@@ -39,10 +39,10 @@ const addOnServices = [
 ];
 
 const menuSections = [
-  { id: 'pubert', label: 'Puberty', icon: '☀️' },
+  { id: 'pubert', label: 'Lunch', icon: '☀️' },
   { id: 'dinner', label: 'Dinner', icon: '🌙' },
-  { id: 'wedding', label: 'Wedding', icon: '💒' },
-  { id: 'registration', label: 'Registration', icon: '📝' },
+  { id: 'wedding', label: 'Standard', icon: '💒' },
+  { id: 'registration', label: 'Supreme', icon: '📝' },
 ];
 
 const menuVariants = [
@@ -956,3 +956,4 @@ const NewManualBooking = () => {
 };
 
 export default NewManualBooking;
+

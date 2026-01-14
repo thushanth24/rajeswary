@@ -4,13 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 // Import static images as fallback
 import hallEmeraldGarden from "@/assets/urumpirai.jpeg";
 // Raajeshwariy Kondavil images
-import raajeshwariyKondavilCover from "@/assets/Raajeshwariy Weeding hall Kondavil cover.webp";
+import raajeshwariyKondavilCover from "@/assets/thellipalaicover.jpeg";
 // Raajeshwariy Tellipalai images
-import raajeshwariyTellipalaiCover from "@/assets/Raajeshwariy Wedding Hall Tellipalai cover.webp";
+import raajeshwariyTellipalaiCover from "@/assets/kondavilcover.jpg";
 // Chelva Palace images
-import chelvaPalaceCover from "@/assets/Chelva Palace cover.webp";
+import chelvaPalaceCover from "@/assets/palacecover.jpeg";
 // Chelva Mahal images
-import chelvaMahalCover from "@/assets/chelva mahal cover .jpeg";
+import chelvaMahalCover from "@/assets/chelvamahalcover.jpeg";
 
 // Static image mapping by slug
 const staticImages: Record<string, string> = {
