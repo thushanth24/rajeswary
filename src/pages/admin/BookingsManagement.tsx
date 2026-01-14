@@ -36,17 +36,25 @@ interface Booking {
   hall_sections?: { name: string } | null;
 }
 
+interface Hall {
+  id: string;
+  name: string;
+}
+
 const ITEMS_PER_PAGE = 10;
 
 const BookingsManagement = () => {
   const { user, isHallManager } = useAuth();
   const { toast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [halls, setHalls] = useState<Hall[]>([]);
+  const [managerHallIds, setManagerHallIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [internalNotes, setInternalNotes] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [hallFilter, setHallFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -69,7 +77,37 @@ const BookingsManagement = () => {
   // Reset page when status filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [statusFilter]);
+  }, [statusFilter, hallFilter]);
+
+  useEffect(() => {
+    const fetchManagerHalls = async () => {
+      if (!isHallManager || !user?.id) return;
+
+      const { data, error } = await supabase
+        .from('hall_managers')
+        .select('hall_id, halls(name)')
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching hall manager assignments:', error);
+        return;
+      }
+
+      const hallIds = (data || []).map((row: any) => row.hall_id);
+      const hallRows = (data || [])
+        .map((row: any) => ({
+          id: row.hall_id,
+          name: row.halls?.name || 'Hall',
+        }))
+        .filter((hall: Hall) => hall.id);
+
+      setManagerHallIds(hallIds);
+      setHalls(hallRows);
+    };
+
+    fetchManagerHalls();
+  }, [isHallManager, user?.id]);
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
@@ -85,6 +123,14 @@ const BookingsManagement = () => {
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter as any);
+      }
+
+      if (isHallManager && managerHallIds.length > 0) {
+        query = query.in('hall_id', managerHallIds);
+      }
+
+      if (hallFilter !== 'all') {
+        query = query.eq('hall_id', hallFilter);
       }
 
       // Server-side search using ilike for text fields
@@ -113,7 +159,7 @@ const BookingsManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, statusFilter, debouncedSearch, toast]);
+  }, [currentPage, statusFilter, hallFilter, debouncedSearch, isHallManager, managerHallIds, toast]);
 
   useEffect(() => {
     fetchBookings();
@@ -291,6 +337,14 @@ const BookingsManagement = () => {
         query = query.eq('status', statusFilter as any);
       }
 
+      if (isHallManager && managerHallIds.length > 0) {
+        query = query.in('hall_id', managerHallIds);
+      }
+
+      if (hallFilter !== 'all') {
+        query = query.eq('hall_id', hallFilter);
+      }
+
       if (debouncedSearch.trim()) {
         const searchTerm = `%${debouncedSearch.trim()}%`;
         query = query.or(
@@ -449,6 +503,22 @@ const BookingsManagement = () => {
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
+
+            {isHallManager && halls.length > 0 && (
+              <Select value={hallFilter} onValueChange={setHallFilter}>
+                <SelectTrigger className="w-full sm:w-44">
+                  <SelectValue placeholder="Filter by hall" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Halls</SelectItem>
+                  {halls.map((hall) => (
+                    <SelectItem key={hall.id} value={hall.id}>
+                      {hall.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
             {/* Export Button */}
             <Button variant="outline" onClick={exportToCSV} disabled={totalCount === 0 || isExporting}>

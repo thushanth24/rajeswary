@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, addMonths, subMonths } from "date-fns";
+import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, addMonths, subMonths, setYear } from "date-fns";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -64,6 +64,15 @@ const AdminCalendar = () => {
   const [managerHallId, setManagerHallId] = useState<string | null>(null);
   const [managerHallIds, setManagerHallIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const currentYear = currentMonth.getFullYear();
+  const yearOptions = useMemo(() => {
+    const startYear = currentYear - 5;
+    return Array.from({ length: 11 }, (_, index) => startYear + index);
+  }, [currentYear]);
+  const availableHalls = useMemo(
+    () => (isAdminOrAbove ? halls : halls.filter((hall) => managerHallIds.includes(hall.id))),
+    [halls, isAdminOrAbove, managerHallIds]
+  );
 
   // Close date dialog state
   const [showCloseDialog, setShowCloseDialog] = useState(false);
@@ -94,6 +103,12 @@ const AdminCalendar = () => {
 
     fetchManagerHalls();
   }, [user?.id, isAdminOrAbove]);
+
+  useEffect(() => {
+    if (!isAdminOrAbove && managerHallIds.length === 1) {
+      setSelectedHallFilter(managerHallIds[0]);
+    }
+  }, [isAdminOrAbove, managerHallIds]);
 
   // Fetch halls and sections
   useEffect(() => {
@@ -184,7 +199,7 @@ const AdminCalendar = () => {
     const dateStr = format(date, "yyyy-MM-dd");
     let filtered = bookings.filter((b) => b.event_date === dateStr);
     
-    if (selectedHallFilter !== "all" && isAdminOrAbove) {
+    if (selectedHallFilter !== "all") {
       filtered = filtered.filter((b) => b.hall_id === selectedHallFilter);
     }
     
@@ -196,7 +211,7 @@ const AdminCalendar = () => {
     const dateStr = format(date, "yyyy-MM-dd");
     let filtered = closedDates.filter((c) => c.closed_date === dateStr);
     
-    if (selectedHallFilter !== "all" && isAdminOrAbove) {
+    if (selectedHallFilter !== "all") {
       filtered = filtered.filter((c) => c.hall_id === selectedHallFilter);
     }
     
@@ -229,9 +244,11 @@ const AdminCalendar = () => {
   const handleCloseDate = async () => {
     if (!dateToClose) return;
 
-    const hallId = isAdminOrAbove && selectedHallFilter !== "all" 
-      ? selectedHallFilter 
-      : managerHallId;
+    const hallId = selectedHallFilter !== "all"
+      ? selectedHallFilter
+      : !isAdminOrAbove
+        ? managerHallId
+        : null;
 
     if (!hallId) {
       toast({
@@ -384,6 +401,23 @@ const AdminCalendar = () => {
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
+            <Select
+              value={String(currentYear)}
+              onValueChange={(value) =>
+                setCurrentMonth(setYear(currentMonth, Number.parseInt(value, 10)))
+              }
+            >
+              <SelectTrigger className="w-[110px]">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                {yearOptions.map((year) => (
+                  <SelectItem key={year} value={String(year)}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               variant="ghost"
               size="sm"
@@ -393,14 +427,14 @@ const AdminCalendar = () => {
             </Button>
           </div>
 
-          {isAdminOrAbove && (
+          {(isAdminOrAbove || managerHallIds.length > 0) && (
             <Select value={selectedHallFilter} onValueChange={setSelectedHallFilter}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filter by hall" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Halls</SelectItem>
-                {halls.map((hall) => (
+                {availableHalls.map((hall) => (
                   <SelectItem key={hall.id} value={hall.id}>
                     {hall.name}
                   </SelectItem>
@@ -510,7 +544,7 @@ const AdminCalendar = () => {
                     </div>
 
                     {/* Manager close date button */}
-                    {!isPast && !isClosed && isCurrentMonth && (!isAdminOrAbove || selectedHallFilter !== "all") && (
+                    {!isPast && !isClosed && isCurrentMonth && selectedHallFilter !== "all" && (
                       <Button
                         size="sm"
                         variant="ghost"
