@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Users, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,6 +37,13 @@ const sectionCoverImages: Record<string, string> = {
   // Kondavil sections
   "Section A": kondavilSectionA,
   "Section B": kondavil05,
+};
+
+// Map section names to their Google Maps embed URLs
+const sectionMapEmbeds: Record<string, string> = {
+  "Malligai Aranku": "https://www.google.com/maps/embed?pb=!4v1768462727922!6m8!1m7!1sCAoSLEFGMVFpcE5MeWlQdGdtaTVlNEMxR0Vuc05UcWtIVmw3cVd2X3IyNkhiX2M0!2m2!1d9.692194146719507!2d80.01331342829232!3f317.59!4f-2.8100000000000023!5f0.5970117501821992",
+  "Mullai Aranku": "https://www.google.com/maps/embed?pb=!4v1768462904767!6m8!1m7!1sCAoSLEFGMVFpcE9jc01NT2FuNEJHbEdSZThzR21HdXMxcEcxc1R5LWFqQTJlQmFl!2m2!1d9.692182608000477!2d80.01328339923796!3f303!4f0!5f0.5970117501821992",
+  "Aambal Aranku": "https://www.google.com/maps/embed?pb=!4v1768462960816!6m8!1m7!1sCAoSLEFGMVFpcE90ZW5xMjk4YmR2SWFlQmNtbUx2bkowTWZsd25MTjZiZ2stMmNt!2m2!1d9.692249226120925!2d80.01336836778535!3f308.71!4f-4.469999999999999!5f0.5970117501821992",
 };
 
 export function HallSectionsGallery({ hallId, hallSlug, hallName }: HallSectionsGalleryProps) {
@@ -152,6 +159,58 @@ export function HallSectionsGallery({ hallId, hallSlug, hallName }: HallSections
           );
         })}
       </div>
+
+      {/* 360° Virtual Tour Gallery */}
+      {sections.some(s => sectionMapEmbeds[s.name]) && (
+        <div className="mt-10 sm:mt-12">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <span className="text-secondary text-lg sm:text-xl">🗺️</span>
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-foreground">
+              360° Virtual Tour
+            </h3>
+          </div>
+          <p className="text-muted-foreground mb-6 text-sm sm:text-base">
+            Explore each section with our interactive 360° views. Click and drag to look around.
+          </p>
+          
+          <div className="space-y-8">
+            {sections.map((section, index) => {
+              const mapUrl = sectionMapEmbeds[section.name];
+              if (!mapUrl) return null;
+              
+              return (
+                <motion.div
+                  key={`map-${section.id}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.15 }}
+                  className="card-traditional overflow-hidden"
+                >
+                  <div className="p-4 sm:p-5 border-b border-border/50 bg-gradient-to-r from-secondary/10 to-transparent">
+                    <h4 className="font-serif text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                      <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-secondary" />
+                      {section.name}
+                    </h4>
+                  </div>
+                  <div className="aspect-[16/9] sm:aspect-[21/9] w-full">
+                    <iframe
+                      src={mapUrl}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title={`${section.name} 360° Virtual Tour`}
+                      className="w-full h-full"
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

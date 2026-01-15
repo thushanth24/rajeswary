@@ -1,10 +1,13 @@
-﻿import serviceCatering from "@/assets/catering-buffet.jpg";
+import serviceCatering from "@/assets/catering-buffet.jpg";
 import servicePhotography from "@/assets/service-photography.jpg";
 import serviceVehicle from "@/assets/service-vehicle.jpg";
 import serviceDecoration from "@/assets/service-decoration.jpg";
 import serviceDjMusic from "@/assets/service-dj-music.jpg";
 import serviceMakeup from "@/assets/service-makeup.jpg";
 import serviceJewellery from "@/assets/service-jewellery.jpg";
+import serviceLiveKitchen from "@/assets/service-live-kitchen.jpg";
+import serviceEventCoordination from "@/assets/service-event-coordination.jpg";
+import serviceSoundLighting from "@/assets/service-sound-lighting.jpg";
 
 export type ServiceCategory = "essential" | "premium" | "addon";
 export type ServiceBadge = "popular" | "premium" | "new" | null;
@@ -44,7 +47,7 @@ export const services: Service[] = [
     id: "live-kitchen",
     name: "Live Kitchen",
     description: "Bring the aroma and excitement of live cooking to your celebration. Our chefs prepare signature dishes fresh on-site for a memorable guest experience.",
-    image: serviceCatering,
+    image: serviceLiveKitchen,
     features: [
       "Chef-led live counters",
       "Customizable station menu",
@@ -116,7 +119,7 @@ export const services: Service[] = [
     id: "sound-lighting",
     name: "Sound & Lighting",
     description: "Set the perfect ambiance with professional sound and lighting services. From DJ setups to theatrical lighting, we create the atmosphere that makes your event unforgettable.",
-    image: serviceDecoration,
+    image: serviceSoundLighting,
     features: [
       "Professional DJ services",
       "LED walls & screens",
@@ -134,7 +137,7 @@ export const services: Service[] = [
     id: "coordination",
     name: "Event Coordination",
     description: "Let our experienced coordinators handle every detail of your event. From planning to execution, we ensure a seamless, stress-free celebration.",
-    image: serviceCatering,
+    image: serviceEventCoordination,
     features: [
       "Day-of coordination",
       "Vendor management",
