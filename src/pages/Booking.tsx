@@ -796,6 +796,24 @@ const BookingPage = () => {
                   </div>
                 </div>
                 
+                {/* Priority Booking Notice */}
+                <div className="mb-8 p-4 rounded-lg border-2 border-amber-500/50 bg-gradient-to-r from-amber-500/15 to-yellow-500/10">
+                  <div className="flex items-start gap-3 text-left">
+                    <AlertTriangle className="h-6 w-6 text-amber-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold text-amber-600 dark:text-amber-400 mb-2">
+                        ⚠️ {t("booking.paymentNotice.successTitle")}
+                      </p>
+                      <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                        {t("booking.paymentNotice.successMessage")}
+                      </p>
+                      <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white">
+                        <a href="/contact">{t("booking.paymentNotice.contactButton")}</a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                
                 <Button asChild variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/5">
                   <a href="/">{t("booking.submitted.returnHome")}</a>
                 </Button>
@@ -1537,6 +1555,21 @@ const BookingPage = () => {
                       rows={3}
                       className="mt-1 text-sm"
                     />
+                  </div>
+
+                  {/* Advance Payment Priority Notice */}
+                  <div className="mt-4 p-4 rounded-lg border border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/5">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-amber-600 dark:text-amber-400 mb-1">
+                          {t("booking.paymentNotice.title")}
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {t("booking.paymentNotice.message")} <a href="/contact" className="text-primary underline underline-offset-2 hover:text-primary/80">{t("cta.contact")}</a>. <span className="font-medium text-foreground">{t("booking.paymentNotice.priority")}</span>
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

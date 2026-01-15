@@ -395,6 +395,14 @@ const en: Record<string, string> = {
   "common.amenities": "Features & Amenities",
   "common.rules": "Rules & Policies",
 
+  // Booking Payment Notice
+  "booking.paymentNotice.title": "Important: Booking Confirmation",
+  "booking.paymentNotice.message": "Your booking request will not be automatically confirmed. Please contact us and make an advance payment to secure your date.",
+  "booking.paymentNotice.priority": "Bookings with advance payment will be given priority.",
+  "booking.paymentNotice.successTitle": "Your Booking is Not Yet Confirmed",
+  "booking.paymentNotice.successMessage": "To secure your date and get priority confirmation, please contact us and make an advance payment. Bookings with advance payment will be given priority over other requests.",
+  "booking.paymentNotice.contactButton": "Contact Us to Confirm",
+
   // Footer
   "footer.about": "About Us",
   "footer.aboutText": "We are dedicated to creating unforgettable wedding experiences with our beautiful traditional venues and exceptional services.",
@@ -780,6 +788,14 @@ const ta: Record<string, string> = {
   "common.tariff": "கட்டண விவரங்கள்",
   "common.amenities": "வசதிகள் & சேவைகள்",
   "common.rules": "விதிகள் & கொள்கைகள்",
+
+  // Booking Payment Notice
+  "booking.paymentNotice.title": "முக்கியம்: முன்பதிவு உறுதிப்படுத்தல்",
+  "booking.paymentNotice.message": "உங்கள் முன்பதிவு கோரிக்கை தானாக உறுதிப்படுத்தப்படாது. உங்கள் தேதியை உறுதிப்படுத்த எங்களை தொடர்பு கொண்டு முன்பணம் செலுத்தவும்.",
+  "booking.paymentNotice.priority": "முன்பணம் செலுத்திய முன்பதிவுகளுக்கு முன்னுரிமை வழங்கப்படும்.",
+  "booking.paymentNotice.successTitle": "உங்கள் முன்பதிவு இன்னும் உறுதிப்படுத்தப்படவில்லை",
+  "booking.paymentNotice.successMessage": "உங்கள் தேதியை உறுதிப்படுத்தி முன்னுரிமை பெற, எங்களை தொடர்பு கொண்டு முன்பணம் செலுத்தவும். முன்பணம் செலுத்திய முன்பதிவுகளுக்கு மற்ற கோரிக்கைகளை விட முன்னுரிமை வழங்கப்படும்.",
+  "booking.paymentNotice.contactButton": "உறுதிப்படுத்த தொடர்பு கொள்க",
 };
 
 const translations: Record<Language, Record<string, string>> = { en, ta };
