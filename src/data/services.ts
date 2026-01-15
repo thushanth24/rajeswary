@@ -1,4 +1,4 @@
-import serviceCatering from "@/assets/catering-buffet.jpg";
+﻿import serviceCatering from "@/assets/catering-buffet.jpg";
 import servicePhotography from "@/assets/service-photography.jpg";
 import serviceVehicle from "@/assets/service-vehicle.jpg";
 import serviceDecoration from "@/assets/service-decoration.jpg";
@@ -39,6 +39,24 @@ export const services: Service[] = [
     category: "essential",
     badge: "popular",
     icon: "🍽️",
+  },
+  {
+    id: "live-kitchen",
+    name: "Live Kitchen",
+    description: "Bring the aroma and excitement of live cooking to your celebration. Our chefs prepare signature dishes fresh on-site for a memorable guest experience.",
+    image: serviceCatering,
+    features: [
+      "Chef-led live counters",
+      "Customizable station menu",
+      "Fresh, made-to-order dishes",
+      "Interactive guest experience",
+      "Hygienic setup",
+      "Efficient service flow",
+    ],
+    bookingNote: "Counter setup options available",
+    category: "addon",
+    badge: "new",
+    icon: "LK",
   },
   {
     id: "photography",
@@ -617,3 +635,4 @@ export const menus = {
   ],
   anthiyeddyNonVeg: [],
 };
+

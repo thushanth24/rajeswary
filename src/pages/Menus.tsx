@@ -12,6 +12,7 @@ import { MenuQuickViewModal } from "@/components/menu/MenuQuickViewModal";
 import { FoodGallery } from "@/components/menu/FoodGallery";
 import { useLanguage } from "@/contexts/LanguageContext";
 import menuVideo from "@/assets/wedding-food-display-video.mp4";
+import { Mail } from "lucide-react";
 
 interface MenuPackage {
   id: string;
@@ -329,6 +330,9 @@ const MenusPage = () => {
         highlight={t("menus.cta.highlight")}
         description={t("menus.cta.description")}
         primaryButtonText={t("menus.cta.button")}
+        secondaryButtonText={t("cta.contact")}
+        secondaryButtonLink="/contact"
+        secondaryButtonIcon={Mail}
         videos={[menuVideo]}
       />
 

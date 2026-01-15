@@ -16,7 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, Eye, AlertTriangle } from 'lucide-react';
+import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, Eye, AlertTriangle, UtensilsCrossed } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { menus } from '@/data/services';
 import { MenuQuickViewModal } from '@/components/menu/MenuQuickViewModal';
@@ -32,6 +32,7 @@ const addOnServices = [
   { id: 'vehicles', label: 'Vehicles', icon: Car },
   { id: 'decoration', label: 'Decoration', icon: Palette },
   { id: 'sound-lighting', label: 'Sound & Lighting', icon: Music },
+  { id: 'live-kitchen', label: 'Live Kitchen', icon: UtensilsCrossed },
   { id: 'coordination', label: 'Coordination', icon: UserCheck },
   { id: 'dj-music', label: 'DJ & Music', icon: Headphones },
   { id: 'makeup', label: 'Makeup', icon: Sparkles },

@@ -20,6 +20,9 @@ interface CTASectionProps {
   primaryButtonLink?: string;
   primaryButtonIcon?: LucideIcon;
   showSecondaryButton?: boolean;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  secondaryButtonIcon?: LucideIcon;
   videos?: string[];
 }
 
@@ -32,6 +35,9 @@ export function CTASection({
   primaryButtonLink = "/booking",
   primaryButtonIcon: PrimaryIcon = Calendar,
   showSecondaryButton = true,
+  secondaryButtonText,
+  secondaryButtonLink,
+  secondaryButtonIcon: SecondaryIcon = Phone,
   videos = defaultVideos,
 }: CTASectionProps) {
   const { t } = useLanguage();
@@ -43,6 +49,11 @@ export function CTASection({
   const displayHighlight = highlight || "";
   const displayDescription = description || t("cta.description");
   const displayButtonText = primaryButtonText || t("cta.book");
+  const displaySecondaryText = secondaryButtonText || t("cta.call");
+  const displaySecondaryLink = secondaryButtonLink || "tel:+919876543210";
+  const isSecondaryExternal = ["http://", "https://", "mailto:", "tel:"].some((prefix) =>
+    displaySecondaryLink.startsWith(prefix)
+  );
   return (
     <section className="py-20 relative overflow-hidden">
       {/* Video Background with LQIP */}
@@ -119,10 +130,17 @@ export function CTASection({
                 asChild 
                 className="text-sm sm:text-base"
               >
-                <a href="tel:+919876543210">
-                  <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-                  <span className="truncate">{t("cta.call")}</span>
-                </a>
+                {isSecondaryExternal ? (
+                  <a href={displaySecondaryLink}>
+                    <SecondaryIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                    <span className="truncate">{displaySecondaryText}</span>
+                  </a>
+                ) : (
+                  <Link to={displaySecondaryLink}>
+                    <SecondaryIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                    <span className="truncate">{displaySecondaryText}</span>
+                  </Link>
+                )}
               </Button>
             )}
           </div>

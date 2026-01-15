@@ -46,6 +46,7 @@ import {
   Eye,
   Headphones,
   Gem,
+  UtensilsCrossed,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -115,6 +116,7 @@ const getAddOnServices = (t: (key: string) => string) => [
   { id: "vehicles", label: t("booking.service.vehicles"), icon: Car },
   { id: "decoration", label: t("booking.service.decoration"), icon: Palette },
   { id: "sound-lighting", label: t("booking.service.soundLighting"), icon: Music },
+  { id: "live-kitchen", label: t("booking.service.liveKitchen"), icon: UtensilsCrossed },
   { id: "coordination", label: t("booking.service.coordination"), icon: UserCheck },
   { id: "dj-music", label: t("booking.service.djMusic"), icon: Headphones },
   { id: "makeup", label: t("booking.service.makeup"), icon: Sparkles },

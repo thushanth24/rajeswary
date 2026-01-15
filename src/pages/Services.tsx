@@ -8,7 +8,7 @@ import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import servicesVideo from "@/assets/wedding-services-video.mp4";
@@ -326,6 +326,9 @@ const ServicesPage = () => {
         highlight={t("services.cta.highlight")}
         description={t("services.cta.description")}
         primaryButtonText={t("services.cta.button")}
+        secondaryButtonText={t("cta.contact")}
+        secondaryButtonLink="/contact"
+        secondaryButtonIcon={Mail}
         videos={[servicesVideo]}
       />
     </Layout>

@@ -8,6 +8,7 @@ import { CTASection } from "@/components/home/CTASection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import hallsVideo from "@/assets/halls-wedding-video.mp4";
+import { Mail } from "lucide-react";
 
 const HallsPage = () => {
   const { halls, loading, error } = useHalls();
@@ -96,6 +97,9 @@ const HallsPage = () => {
         highlight={t("halls.cta.highlight")}
         description={t("halls.cta.description")}
         primaryButtonText={t("halls.cta.button")}
+        secondaryButtonText={t("cta.contact")}
+        secondaryButtonLink="/contact"
+        secondaryButtonIcon={Mail}
         videos={[hallsVideo]}
       />
     </Layout>

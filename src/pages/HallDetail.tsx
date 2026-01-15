@@ -17,6 +17,7 @@ import {
   MapPin,
   Calendar,
   Phone,
+  ArrowUpDown,
 } from "lucide-react";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
@@ -70,12 +71,14 @@ const HallDetailPage = () => {
   const primaryNumber = hallContact?.primary || "+94 21 222 3456";
   const landlineNumber = hallContact?.landline;
   const toTelHref = (value: string) => value.replace(/\s+/g, "");
+  const hasLift = !["grand-ballroom", "sunset-terrace"].includes(hall.slug);
 
   const facilities = [
     { name: t("hallDetail.facility.ac"), available: hall.facilities.ac, icon: Snowflake },
     { name: t("hallDetail.facility.parking"), available: hall.facilities.parking, icon: Car },
     { name: t("hallDetail.facility.dining"), available: hall.facilities.dining, icon: UtensilsCrossed },
     { name: t("hallDetail.facility.stage"), available: hall.facilities.stage, icon: User },
+    { name: t("hallDetail.facility.lift"), available: hasLift, icon: ArrowUpDown },
     { name: t("hallDetail.facility.powerBackup"), available: hall.facilities.powerBackup, icon: Zap },
     { name: t("hallDetail.facility.brideRoom"), available: hall.facilities.brideRoom, icon: User },
     { name: t("hallDetail.facility.groomRoom"), available: hall.facilities.groomRoom, icon: User },

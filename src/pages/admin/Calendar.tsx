@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, addMonths, subMonths, setYear } from "date-fns";
+import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, addMonths, subMonths, setYear, setMonth } from "date-fns";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,10 +65,15 @@ const AdminCalendar = () => {
   const [managerHallIds, setManagerHallIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const currentYear = currentMonth.getFullYear();
+  const currentMonthIndex = currentMonth.getMonth();
   const yearOptions = useMemo(() => {
     const startYear = currentYear - 5;
     return Array.from({ length: 11 }, (_, index) => startYear + index);
   }, [currentYear]);
+  const monthOptions = useMemo(
+    () => Array.from({ length: 12 }, (_, index) => format(new Date(2000, index, 1), "MMM")),
+    []
+  );
   const availableHalls = useMemo(
     () => (isAdminOrAbove ? halls : halls.filter((hall) => managerHallIds.includes(hall.id))),
     [halls, isAdminOrAbove, managerHallIds]
@@ -401,6 +406,23 @@ const AdminCalendar = () => {
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
+            <Select
+              value={String(currentMonthIndex)}
+              onValueChange={(value) =>
+                setCurrentMonth(setMonth(currentMonth, Number.parseInt(value, 10)))
+              }
+            >
+              <SelectTrigger className="w-[110px]">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                {monthOptions.map((label, index) => (
+                  <SelectItem key={label} value={String(index)}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select
               value={String(currentYear)}
               onValueChange={(value) =>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+﻿import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export type Language = "en" | "ta";
 
@@ -92,6 +92,7 @@ const en: Record<string, string> = {
   "hallDetail.facility.parking": "Parking",
   "hallDetail.facility.dining": "Dining Hall",
   "hallDetail.facility.stage": "Stage",
+  "hallDetail.facility.lift": "Lift",
   "hallDetail.facility.powerBackup": "Power Backup",
   "hallDetail.facility.brideRoom": "Bride Room",
   "hallDetail.facility.groomRoom": "Groom Room",
@@ -151,6 +152,7 @@ const en: Record<string, string> = {
   "cta.description": "Let us help you plan the wedding of your dreams. Our expert team is ready to make your special day truly unforgettable.",
   "cta.book": "Book Your Date",
   "cta.call": "Call Us Now",
+  "cta.contact": "Contact Us",
 
   // About Page
   "about.title": "Our Sacred Story",
@@ -358,6 +360,7 @@ const en: Record<string, string> = {
   "booking.service.vehicles": "Wedding Vehicles",
   "booking.service.decoration": "Decoration & Themes",
   "booking.service.soundLighting": "Sound & Lighting",
+  "booking.service.liveKitchen": "Live Kitchen",
   "booking.service.coordination": "Event Coordination",
   "booking.service.djMusic": "DJ & Music",
   "booking.service.makeup": "Bridal Makeup",
@@ -475,6 +478,7 @@ const ta: Record<string, string> = {
   "hallDetail.facility.parking": "வாகன நிறுத்தம்",
   "hallDetail.facility.dining": "உணவு அரங்கு",
   "hallDetail.facility.stage": "மேடை",
+  "hallDetail.facility.lift": "Lift",
   "hallDetail.facility.powerBackup": "மின் காப்பு",
   "hallDetail.facility.brideRoom": "மணப்பெண் அறை",
   "hallDetail.facility.groomRoom": "மணமகன் அறை",
@@ -534,6 +538,7 @@ const ta: Record<string, string> = {
   "cta.description": "உங்கள் கனவுக்குரிய திருமணத்தை திட்டமிட எங்கள் உதவியைப் பெறுங்கள்.",
   "cta.book": "தேதியை முன்பதிவு செய்க",
   "cta.call": "இப்போது அழைக்கவும்",
+  "cta.contact": "Contact Us",
 
   // About Page
   "about.title": "எங்கள் புனித கதை",
@@ -741,6 +746,7 @@ const ta: Record<string, string> = {
   "booking.service.vehicles": "திருமண வாகனங்கள்",
   "booking.service.decoration": "அலங்காரம் & தீம்",
   "booking.service.soundLighting": "ஒலி & ஒளி",
+  "booking.service.liveKitchen": "Live Kitchen",
   "booking.service.coordination": "நிகழ்வு ஒருங்கிணைப்பு",
   "booking.service.djMusic": "DJ & இசை",
   "booking.service.makeup": "மணமகள் அலங்காரம்",
@@ -815,3 +821,6 @@ export function useLanguage() {
   }
   return context;
 }
+
+
+
