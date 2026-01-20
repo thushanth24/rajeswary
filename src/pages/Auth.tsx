@@ -184,6 +184,7 @@ const Auth = () => {
                   )}
                 />
                 
+                {/*
                 <div className="text-right">
                   <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
                     <DialogTrigger asChild>
@@ -245,6 +246,7 @@ const Auth = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
+                */}
 
                 <Button
                   type="submit"

@@ -58,10 +58,28 @@ const bookingSchema = z.object({
   customer_email: z.string().email().optional().or(z.literal('')),
   customer_address: z.string().optional(),
   event_type: z.string().min(1, 'Please select an event type'),
+  event_type_other: z.string().optional(),
   event_date: z.string().min(1, 'Please select a date'),
   time_slot: z.string().min(1, 'Please select a time slot'),
   expected_guests: z.number().optional(),
   special_requests: z.string().optional(),
+}).superRefine((values, ctx) => {
+  if (values.event_type === 'Other') {
+    const other = values.event_type_other?.trim() || '';
+    if (!other) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['event_type_other'],
+        message: 'Please specify the event type',
+      });
+    } else if (other.length > 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['event_type_other'],
+        message: 'Event type must be 100 characters or less',
+      });
+    }
+  }
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -104,6 +122,7 @@ const NewManualBooking = () => {
       customer_email: '',
       customer_address: '',
       event_type: '',
+      event_type_other: '',
       event_date: '',
       time_slot: '',
       expected_guests: undefined,
@@ -114,6 +133,7 @@ const NewManualBooking = () => {
   // Watch form values for real-time availability checking
   const eventDate = useWatch({ control: form.control, name: 'event_date' });
   const timeSlot = useWatch({ control: form.control, name: 'time_slot' });
+  const eventType = useWatch({ control: form.control, name: 'event_type' });
 
   // Use the section-aware availability hook
   const {
@@ -271,6 +291,12 @@ const NewManualBooking = () => {
     fetchSections();
   }, [selectedHall]);
 
+  useEffect(() => {
+    if (eventType !== 'Other') {
+      form.setValue('event_type_other', '');
+    }
+  }, [eventType, form]);
+
   const onSubmit = async (values: BookingFormValues) => {
     if (!selectedHall) {
       toast({
@@ -305,6 +331,10 @@ const NewManualBooking = () => {
 
     setSubmitting(true);
     try {
+      const eventTypeLabel = values.event_type === 'Other'
+        ? (values.event_type_other || '').trim()
+        : values.event_type;
+
       // Get time slot details
       const selectedTimeSlot = timeSlots.find(ts => ts.id === values.time_slot);
       
@@ -344,7 +374,7 @@ const NewManualBooking = () => {
           customer_phone: values.customer_phone,
           customer_email: values.customer_email || null,
           customer_address: values.customer_address || null,
-          event_type: values.event_type,
+          event_type: eventTypeLabel.substring(0, 100),
           event_date: values.event_date,
           event_start_time: selectedTimeSlot?.start || null,
           event_end_time: selectedTimeSlot?.end || null,
@@ -543,6 +573,21 @@ const NewManualBooking = () => {
                       </FormItem>
                     )}
                   />
+                  {eventType === 'Other' && (
+                    <FormField
+                      control={form.control}
+                      name="event_type_other"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel>Specify Event *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="E.g., Baby shower" maxLength={100} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
                 {/* Availability Warning */}
                 {eventDate && isClosed && (

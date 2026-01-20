@@ -15,26 +15,53 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+    setFormSuccess(null);
 
-    if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
+    if (!user?.email) {
+      toast.error('Unable to determine current user email');
+      setFormError('Unable to determine current user email');
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    if (!currentPassword) {
+      toast.error('Please enter your current password');
+      setFormError('Please enter your current password');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      setFormError('New passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      setFormError('Password must be at least 8 characters');
       return;
     }
 
     setIsLoading(true);
 
     try {
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+
+      if (reauthError) {
+        throw reauthError;
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -42,11 +69,14 @@ const Settings = () => {
       if (error) throw error;
 
       toast.success('Password updated successfully');
+      setFormError(null);
+      setFormSuccess('Password updated successfully');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
       toast.error(error.message || 'Failed to update password');
+      setFormError(error.message || 'Failed to update password');
     } finally {
       setIsLoading(false);
     }
@@ -75,10 +105,6 @@ const Settings = () => {
                 <Label className="text-muted-foreground">Email</Label>
                 <p className="text-foreground font-medium">{user?.email}</p>
               </div>
-              <div>
-                <Label className="text-muted-foreground">User ID</Label>
-                <p className="text-foreground font-mono text-sm">{user?.id}</p>
-              </div>
             </CardContent>
           </Card>
 
@@ -92,7 +118,32 @@ const Settings = () => {
               <CardDescription>Update your password</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handlePasswordChange} className="space-y-4">
+              <form onSubmit={handlePasswordChange} className="space-y-4" noValidate>
+                <div className="space-y-2">
+                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="currentPassword"
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      required
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {formError && <p className="text-sm text-destructive">{formError}</p>}
+                {formSuccess && <p className="text-sm text-emerald-600">{formSuccess}</p>}
+
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">New Password</Label>
                   <div className="relative">

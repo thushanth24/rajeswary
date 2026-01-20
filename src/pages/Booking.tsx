@@ -63,6 +63,7 @@ interface BookingData {
   hallId: string;
   // Step 2 - Event Details (NEW ORDER)
   eventType: string;
+  eventTypeOther: string;
   eventDate: Date | undefined;
   timeSlot: string;
   sectionId: string;
@@ -146,6 +147,7 @@ const BookingPage = () => {
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
+    eventTypeOther: "",
     eventDate: undefined,
     timeSlot: "",
     sectionId: preselectedSection || "",
@@ -249,6 +251,14 @@ const BookingPage = () => {
       if (field === "hallId" && typeof value === "string" && value !== prev.hallId) {
         return { ...prev, hallId: value, eventDate: undefined, timeSlot: "", sectionId: "" };
       }
+      if (field === "eventType") {
+        const nextType = value as string;
+        return {
+          ...prev,
+          eventType: nextType,
+          eventTypeOther: nextType === "other" ? prev.eventTypeOther : "",
+        };
+      }
       // Only clear time slot if date changes - keep section since it's selected before date
       if (field === "eventDate") {
         return { ...prev, eventDate: value as Date | undefined, timeSlot: "" };
@@ -299,7 +309,13 @@ const BookingPage = () => {
       case 2:
         // Step 2 is now Event details - block if over capacity
         if (overCapacity) return false;
-        return !!(bookingData.eventType && bookingData.eventDate && bookingData.timeSlot && bookingData.guestCount);
+        return !!(
+          bookingData.eventType &&
+          bookingData.eventDate &&
+          bookingData.timeSlot &&
+          bookingData.guestCount &&
+          (bookingData.eventType !== "other" || bookingData.eventTypeOther.trim())
+        );
       case 3:
         return !!(bookingData.mealType && bookingData.menuPackage);
       case 4:
@@ -413,6 +429,18 @@ const BookingPage = () => {
 
       // Limit free text fields to prevent abuse
       const maxTextLength = 2000;
+      if (bookingData.eventType === "other") {
+        const trimmedEventTypeOther = bookingData.eventTypeOther.trim();
+        if (!trimmedEventTypeOther || trimmedEventTypeOther.length > 100) {
+          toast({
+            title: "Validation Error",
+            description: "Please specify the event type (max 100 characters).",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
       if (bookingData.message && bookingData.message.length > maxTextLength) {
         toast({
           title: "Validation Error",
@@ -457,7 +485,7 @@ const BookingPage = () => {
           evening: { start: "14:00", end: "18:00" },
           fullday: { start: "09:00", end: "18:00" },
         };
-        const selectedSlotTimes = timeSlotMap[bookingData.timeSlot];
+      const selectedSlotTimes = timeSlotMap[bookingData.timeSlot];
         
         // Check for confirmed bookings with conflicting time slots
         const { data: existingBookings } = await supabase
@@ -592,6 +620,9 @@ const BookingPage = () => {
       ].filter(Boolean);
       
       const specialRequests = specialRequestsParts.join("\n").substring(0, 5000);
+      const eventTypeLabel = bookingData.eventType === "other"
+        ? bookingData.eventTypeOther.trim()
+        : eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType;
 
       // Generate a customer-facing reference locally so we don't need to read the (private) booking row back.
       // Reading back would require SELECT policies on a table that contains PII.
@@ -605,7 +636,7 @@ const BookingPage = () => {
           event_date: format(bookingData.eventDate, "yyyy-MM-dd"),
           event_start_time: times.start,
           event_end_time: times.end,
-          event_type: eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType.substring(0, 100),
+          event_type: eventTypeLabel.substring(0, 100),
           customer_name: trimmedName.substring(0, 200),
           customer_phone: trimmedPhone.substring(0, 20),
           customer_email: trimmedEmail ? trimmedEmail.substring(0, 255) : null,
@@ -632,7 +663,7 @@ const BookingPage = () => {
       // Send confirmation email (fire and forget - don't block the UI)
       if (trimmedEmail) {
         const hallName = halls.find(h => h.slug === bookingData.hallId)?.name || 'Hall';
-        const eventTypeName = eventTypes.find(e => e.id === bookingData.eventType)?.label || bookingData.eventType;
+        const eventTypeName = eventTypeLabel;
 
         supabase.functions.invoke('send-booking-confirmation', {
           body: {
@@ -684,6 +715,9 @@ const BookingPage = () => {
   const eventTypes = getEventTypes(t);
   const timeSlots = getTimeSlots(t);
   const addOnServices = getAddOnServices(t);
+  const eventTypeLabel = bookingData.eventType === "other"
+    ? bookingData.eventTypeOther.trim()
+    : eventTypes.find((e) => e.id === bookingData.eventType)?.label || bookingData.eventType;
   const selectedMenuPackage = bookingData.mealType
     ? menus[bookingData.mealType as keyof typeof menus]?.find((menu) => menu.id === bookingData.menuPackage)
     : undefined;
@@ -755,7 +789,7 @@ const BookingPage = () => {
                     )}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("booking.summary.eventType")}</span>
-                      <span className="text-foreground">{eventTypes.find(e => e.id === bookingData.eventType)?.label}</span>
+                      <span className="text-foreground">{eventTypeLabel || "-"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("booking.summary.date")}</span>
@@ -1061,6 +1095,21 @@ const BookingPage = () => {
                       ))}
                     </RadioGroup>
                   </div>
+                  {bookingData.eventType === "other" && (
+                    <div>
+                      <Label htmlFor="eventTypeOther" className="text-sm">
+                        {t("booking.event.otherLabel")}
+                      </Label>
+                      <Input
+                        id="eventTypeOther"
+                        value={bookingData.eventTypeOther}
+                        onChange={(e) => updateBookingData("eventTypeOther", e.target.value)}
+                        placeholder={t("booking.event.otherPlaceholder")}
+                        maxLength={100}
+                        className="mt-1 text-sm md:text-base"
+                      />
+                    </div>
+                  )}
 
                   <div>
                     <Label>{t("booking.eventDate")}</Label>
@@ -1640,7 +1689,7 @@ const BookingPage = () => {
             <div className="flex items-start justify-between gap-4">
               <span className="text-muted-foreground">{t("booking.summary.eventType")}</span>
               <span className="text-foreground text-right">
-                {eventTypes.find((e) => e.id === bookingData.eventType)?.label || "-"}
+                {eventTypeLabel || "-"}
               </span>
             </div>
             <div className="flex items-start justify-between gap-4">
