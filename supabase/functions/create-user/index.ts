@@ -10,7 +10,7 @@ const allowedOrigins = [
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const isAllowed = origin && allowedOrigins.some(allowed => 
-    origin === allowed || origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.dev')
+    origin === allowed || origin.endsWith('.lovableproject.com') || origin.endsWith('.lovable.dev') || origin.endsWith('.lovable.app')
   );
   
   return {
