@@ -252,21 +252,6 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Real-time Stats Grid */}
-        <RealTimeStats stats={stats} />
-
-        {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BookingTrendChart bookings={bookings} days={30} />
-          <BookingStatusChart bookings={bookings} />
-        </div>
-
-        {/* Charts Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MonthlyBookingsChart bookings={bookings} months={6} />
-          <HallPerformanceChart bookings={bookings} halls={halls} />
-        </div>
-
         {/* Recent Bookings & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RecentBookings bookings={bookings} />
@@ -318,6 +303,21 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Real-time Stats Grid */}
+        <RealTimeStats stats={stats} />
+
+        {/* Charts Row 1 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <BookingTrendChart bookings={bookings} days={30} />
+          <BookingStatusChart bookings={bookings} />
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <MonthlyBookingsChart bookings={bookings} months={6} />
+          <HallPerformanceChart bookings={bookings} halls={halls} />
         </div>
       </div>
     </AdminLayout>

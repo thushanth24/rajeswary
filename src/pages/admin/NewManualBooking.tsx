@@ -383,6 +383,8 @@ const NewManualBooking = () => {
     'Birthday Party',
     'Anniversary',
     'Corporate Event',
+    'Puberty Ceremony',
+    'Anthiyetti',
     'Pre-Wedding',
     'Other',
   ];
