@@ -443,6 +443,8 @@ export type Database = {
       }
       hall_sections: {
         Row: {
+          capacity_max: number | null
+          capacity_min: number | null
           created_at: string | null
           display_order: number | null
           hall_id: string
@@ -451,6 +453,8 @@ export type Database = {
           name: string
         }
         Insert: {
+          capacity_max?: number | null
+          capacity_min?: number | null
           created_at?: string | null
           display_order?: number | null
           hall_id: string
@@ -459,6 +463,8 @@ export type Database = {
           name: string
         }
         Update: {
+          capacity_max?: number | null
+          capacity_min?: number | null
           created_at?: string | null
           display_order?: number | null
           hall_id?: string
