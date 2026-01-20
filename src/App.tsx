@@ -21,6 +21,7 @@ import Booking from "./pages/Booking";
 import Bungalows from "./pages/Bungalows";
 import Gallery from "./pages/Gallery";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/bungalows" element={<Bungalows />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
 
               {/* Admin Routes - Protected */}
               <Route
