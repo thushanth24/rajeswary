@@ -55,6 +55,7 @@ const AdminSidebar = () => {
     { title: 'Contact Messages', url: '/admin/contact-messages', icon: MessageSquare },
     { title: 'Audit Logs', url: '/admin/audit-logs', icon: FileText },
     { title: 'Reports', url: '/admin/reports', icon: BarChart3 },
+    { title: 'Settings', url: '/admin/settings', icon: Settings },
   ];
 
   const adminItems = [
@@ -65,6 +66,7 @@ const AdminSidebar = () => {
     { title: 'Unacknowledged', url: '/admin/unacknowledged', icon: AlertTriangle },
     { title: 'Contact Messages', url: '/admin/contact-messages', icon: MessageSquare },
     { title: 'Reports', url: '/admin/reports', icon: BarChart3 },
+    { title: 'Settings', url: '/admin/settings', icon: Settings },
   ];
 
   const managerItems = [
@@ -72,6 +74,7 @@ const AdminSidebar = () => {
     { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
     { title: 'My Bookings', url: '/admin/bookings', icon: Calendar },
     { title: 'New Booking', url: '/admin/new-booking', icon: Calendar },
+    { title: 'Settings', url: '/admin/settings', icon: Settings },
   ];
 
   let menuItems = managerItems;

@@ -37,6 +37,7 @@ import AuditLogs from "./pages/admin/AuditLogs";
 import Reports from "./pages/admin/Reports";
 import AdminCalendar from "./pages/admin/Calendar";
 import ContactMessages from "./pages/admin/ContactMessages";
+import Settings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -159,6 +160,14 @@ const App = () => (
                 element={
                   <ProtectedRoute allowedRoles={['super_admin', 'admin']}>
                     <ContactMessages />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
                   </ProtectedRoute>
                 }
               />
