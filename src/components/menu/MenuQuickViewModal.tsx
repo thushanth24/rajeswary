@@ -132,10 +132,7 @@ export function MenuQuickViewModal({ menu, variant, open, onOpenChange }: MenuQu
             </DialogTitle>
           </DialogHeader>
           
-          <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground relative z-10">
-            <Users className="h-4 w-4" />
-            <span>Ideal for 50-500 guests</span>
-          </div>
+          
         </div>
 
         {/* Content */}

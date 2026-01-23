@@ -220,9 +220,9 @@ export const HallImageGallery = ({ images, hallName, mainImage }: HallImageGalle
 
       {/* Lightbox */}
       <Dialog open={selectedIndex !== null} onOpenChange={() => closeLightbox()}>
-        <DialogContent className="max-w-6xl p-0 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
+        <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
           {selectedIndex !== null && (
-            <div className="relative">
+            <div className="relative flex max-h-[90vh] flex-col overflow-y-auto">
               {/* Close Button */}
               <Button
                 variant="ghost"
@@ -234,7 +234,7 @@ export const HallImageGallery = ({ images, hallName, mainImage }: HallImageGalle
               </Button>
               
               {/* Main Image */}
-              <div className="relative aspect-video bg-muted overflow-hidden">
+              <div className="relative bg-muted overflow-hidden h-[60vh] sm:h-[70vh] lg:h-[75vh]">
                 <img
                   key={selectedIndex}
                   src={allImages[selectedIndex].image_url}

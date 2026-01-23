@@ -207,9 +207,9 @@ export const HallFloorPlan = ({ floorPlanUrl, hallName }: HallFloorPlanProps) =>
       <AnimatePresence>
         {isOpen && (
           <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetView(); }}>
-            <DialogContent className="max-w-6xl p-0 bg-background border-border/50 overflow-hidden">
+            <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] p-0 bg-background border-border/50 overflow-hidden">
               <motion.div 
-                className="relative"
+                className="relative flex max-h-[90vh] flex-col overflow-hidden"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -296,7 +296,7 @@ export const HallFloorPlan = ({ floorPlanUrl, hallName }: HallFloorPlanProps) =>
                 
                 {/* Floor Plan with Zoom */}
                 <motion.div 
-                  className="p-4 md:p-8 bg-gradient-to-br from-muted/30 to-muted/50 overflow-auto"
+                  className="p-4 md:p-8 bg-gradient-to-br from-muted/30 to-muted/50 overflow-auto flex-1"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}

@@ -275,9 +275,9 @@ export const HallEventPhotos = ({ photos, hallName }: HallEventPhotosProps) => {
       <AnimatePresence>
         {selectedIndex !== null && (
           <Dialog open={selectedIndex !== null} onOpenChange={() => closeLightbox()}>
-            <DialogContent className="max-w-6xl p-0 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
+            <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] p-0 bg-background/95 backdrop-blur-xl border-border/50 overflow-hidden">
               <motion.div 
-                className="relative"
+                className="relative flex max-h-[90vh] flex-col overflow-y-auto"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -294,7 +294,7 @@ export const HallEventPhotos = ({ photos, hallName }: HallEventPhotosProps) => {
                 </Button>
 
                 {/* Main Image with Animation */}
-                <div className="relative aspect-video bg-muted overflow-hidden">
+                <div className="relative bg-muted overflow-hidden h-[60vh] sm:h-[70vh] lg:h-[75vh]">
                   <AnimatePresence mode="wait">
                     <motion.img
                       key={selectedIndex}
