@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { useHalls } from "@/hooks/useHalls";
 import { menus } from "@/data/services";
+import { menusTamil } from "@/data/menusTamil";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FloatingElements } from "@/components/animations/FloatingElements";
@@ -127,6 +128,7 @@ const getAddOnServices = (t: (key: string) => string) => [
 
 const BookingPage = () => {
   const { t } = useLanguage();
+  const displayMenus = menusTamil;
   const [searchParams] = useSearchParams();
   const preselectedHall = searchParams.get("hall");
   const preselectedSection = searchParams.get("section");
@@ -719,7 +721,7 @@ const BookingPage = () => {
     ? bookingData.eventTypeOther.trim()
     : eventTypes.find((e) => e.id === bookingData.eventType)?.label || bookingData.eventType;
   const selectedMenuPackage = bookingData.mealType
-    ? menus[bookingData.mealType as keyof typeof menus]?.find((menu) => menu.id === bookingData.menuPackage)
+    ? displayMenus[bookingData.mealType as keyof typeof displayMenus]?.find((menu) => menu.id === bookingData.menuPackage)
     : undefined;
   const selectedServiceLabels = bookingData.services
     .map((serviceId) => addOnServices.find((service) => service.id === serviceId)?.label)
@@ -816,7 +818,7 @@ const BookingPage = () => {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("booking.summary.menu")}</span>
                       <span className="text-foreground">
-                        {menus[bookingData.mealType as keyof typeof menus]?.find(m => m.id === bookingData.menuPackage)?.name}
+                        {displayMenus[bookingData.mealType as keyof typeof displayMenus]?.find(m => m.id === bookingData.menuPackage)?.name}
                       </span>
                     </div>
                     {bookingData.services.length > 0 && (
@@ -1403,7 +1405,7 @@ const BookingPage = () => {
                     </div>
                   )}
 
-                  {bookingData.mealType && menus[bookingData.mealType as keyof typeof menus] && (
+                  {bookingData.mealType && displayMenus[bookingData.mealType as keyof typeof displayMenus] && (
                     <div>
                       <Label className="mb-2 md:mb-3 block text-sm">{t("booking.selectPackage")}</Label>
                       <RadioGroup
@@ -1411,7 +1413,7 @@ const BookingPage = () => {
                         onValueChange={(value) => updateBookingData("menuPackage", value)}
                         className="grid gap-3 md:gap-4"
                       >
-                        {menus[bookingData.mealType as keyof typeof menus]?.map((menu) => {
+                        {displayMenus[bookingData.mealType as keyof typeof displayMenus]?.map((menu) => {
                           const variant = bookingData.menuVariant === "special" 
                             ? "special" 
                             : bookingData.menuVariant === "veg" 

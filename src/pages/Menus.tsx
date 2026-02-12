@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { menus } from "@/data/services";
+import { menusTamil } from "@/data/menusTamil";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
@@ -23,7 +24,8 @@ interface MenuPackage {
 }
 
 const MenusPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const currentMenus = menusTamil;
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<MenuPackage | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<"veg" | "nonveg" | "special">("veg");
@@ -48,9 +50,9 @@ const MenusPage = () => {
       mobileTitle: `${t("menus.pubert.title")} ${t("menus.pubert.highlight")}`,
       specialLayout: undefined as "single" | undefined,
       variants: {
-        veg: menus.pubertVeg,
-        nonveg: menus.pubertNonVeg,
-        special: menus.pubertSpecial,
+        veg: currentMenus.pubertVeg,
+        nonveg: currentMenus.pubertNonVeg,
+        special: currentMenus.pubertSpecial,
       },
     },
     {
@@ -66,9 +68,9 @@ const MenusPage = () => {
       mobileTitle: t("menus.dinner.title"),
       specialLayout: "single" as "single" | undefined,
       variants: {
-        veg: menus.dinnerVeg,
-        nonveg: menus.dinnerNonVeg,
-        special: menus.dinnerSpecial,
+        veg: currentMenus.dinnerVeg,
+        nonveg: currentMenus.dinnerNonVeg,
+        special: currentMenus.dinnerSpecial,
       },
     },
     {
@@ -84,9 +86,9 @@ const MenusPage = () => {
       mobileTitle: t("menus.wedding.title"),
       specialLayout: undefined as "single" | undefined,
       variants: {
-        veg: menus.weddingVeg,
-        nonveg: menus.weddingNonVeg,
-        special: menus.weddingSpecial,
+        veg: currentMenus.weddingVeg,
+        nonveg: currentMenus.weddingNonVeg,
+        special: currentMenus.weddingSpecial,
       },
     },
     {
@@ -102,8 +104,8 @@ const MenusPage = () => {
       mobileTitle: t("menus.registration.title"),
       specialLayout: undefined as "single" | undefined,
       variants: {
-        veg: menus.registrationVeg,
-        nonveg: menus.registrationNonVeg,
+        veg: currentMenus.registrationVeg,
+        nonveg: currentMenus.registrationNonVeg,
         special: undefined,
       },
     },
@@ -120,8 +122,8 @@ const MenusPage = () => {
       mobileTitle: t("menus.anthiyeddy.title"),
       specialLayout: undefined as "single" | undefined,
       variants: {
-        veg: menus.anthiyeddyVeg,
-        nonveg: menus.anthiyeddyNonVeg,
+        veg: currentMenus.anthiyeddyVeg,
+        nonveg: currentMenus.anthiyeddyNonVeg,
         special: undefined,
       },
     },
