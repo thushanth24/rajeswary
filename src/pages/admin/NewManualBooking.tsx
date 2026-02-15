@@ -656,7 +656,7 @@ const NewManualBooking = () => {
                     name="expected_guests"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Expected Guests</FormLabel>
+                        <FormLabel>Expected Guests (Optional)</FormLabel>
                         <FormControl>
                           <Input
                             type="number"

@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { RouteSeo } from "@/components/seo/RouteSeo";
 import ProtectedRoute from "@/components/admin/ProtectedRoute";
 
 // Public Pages
@@ -50,6 +51,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <RouteSeo />
               <ScrollToTop />
             <Routes>
               {/* Public Routes */}
