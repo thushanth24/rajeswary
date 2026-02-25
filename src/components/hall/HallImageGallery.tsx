@@ -288,7 +288,7 @@ export const HallImageGallery = ({ images, hallName, mainImage }: HallImageGalle
                   >
                     <img
                       src={image.image_url}
-                      alt=""
+                      alt={image.caption || `${hallName} venue photo ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                   </button>

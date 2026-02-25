@@ -1,16 +1,1 @@
 project_id = "kkefwggimxljvelqtcjs"
-
-[functions.create-user]
-verify_jwt = false
-
-[functions.send-contact-notification]
-verify_jwt = false
-
-[functions.send-booking-confirmation]
-verify_jwt = false
-
-[functions.send-booking-cancellation]
-verify_jwt = false
-
-[functions.mark-completed-bookings]
-verify_jwt = false

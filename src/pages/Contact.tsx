@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -216,6 +217,19 @@ const ContactPage = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "How do I book a hall for my wedding?", "acceptedAnswer": { "@type": "Answer", "text": "You can book a hall by visiting our Booking page, selecting your preferred hall and date, and filling out the booking form. Alternatively, contact us directly by phone or WhatsApp." }},
+            { "@type": "Question", "name": "What is the booking advance amount?", "acceptedAnswer": { "@type": "Answer", "text": "We require a 25% advance payment to confirm your booking. The remaining balance can be paid in installments or before the event date." }},
+            { "@type": "Question", "name": "Can I visit the halls before booking?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely! We encourage all couples to visit our mandapams before making a decision. Contact us to schedule a guided tour." }},
+            { "@type": "Question", "name": "Do you provide catering services?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, we offer comprehensive catering services with multi-cuisine options including traditional Tamil vegetarian meals and international cuisines." }},
+            { "@type": "Question", "name": "What is your cancellation policy?", "acceptedAnswer": { "@type": "Answer", "text": "Cancellations 60 days before receive a full refund minus processing fees. 30-60 days receive 50% refund. Within 30 days are non-refundable but we can help reschedule." }}
+          ]
+        })}</script>
+      </Helmet>
       {/* Hero Section with Animated Gradient */}
       <section className="relative py-24 overflow-hidden">
         {/* Animated gradient background */}

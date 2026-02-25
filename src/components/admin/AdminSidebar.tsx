@@ -29,12 +29,13 @@ import {
   BarChart3,
   Settings,
   MessageSquare,
+  Home,
 } from 'lucide-react';
 
 const AdminSidebar = () => {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
-  const { isSuperAdmin, isAdmin, isHallManager, signOut, user } = useAuth();
+  const { isSuperAdmin, isAdmin, isHallManager, isBungalowManager, signOut, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -77,6 +78,13 @@ const AdminSidebar = () => {
     { title: 'Settings', url: '/admin/settings', icon: Settings },
   ];
 
+  const bungalowManagerItems = [
+    { title: 'My Dashboard', url: '/admin', icon: LayoutDashboard },
+    { title: 'Bungalow Bookings', url: '/admin/bungalow-bookings', icon: Home },
+    { title: 'Room Management', url: '/admin/bungalow-rooms', icon: Building2 },
+    { title: 'Settings', url: '/admin/settings', icon: Settings },
+  ];
+
   let menuItems = managerItems;
   let roleLabel = 'Hall Manager';
   
@@ -86,6 +94,9 @@ const AdminSidebar = () => {
   } else if (isAdmin) {
     menuItems = adminItems;
     roleLabel = 'Admin';
+  } else if (isBungalowManager) {
+    menuItems = bungalowManagerItems;
+    roleLabel = 'Bungalow Manager';
   }
 
   return (

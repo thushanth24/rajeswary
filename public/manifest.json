@@ -1,0 +1,21 @@
+{
+  "name": "Raajeshwariy Groups",
+  "short_name": "Raajeshwariy",
+  "description": "Premium wedding halls and event venues in Jaffna, Sri Lanka",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFDF7",
+  "theme_color": "#8B1A1A",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

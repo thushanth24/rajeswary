@@ -204,8 +204,11 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Raajeshwariy Groups of Company. {t("footer.rights")}.
           </p>
           
-          <p className="text-xs text-muted-foreground font-serif italic">
-            "{t("footer.tagline")}"
+          <p className="text-xs text-muted-foreground">
+            Developed by{" "}
+            <a href="https://axzellin.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-secondary transition-colors font-medium">
+              Axzell Innovations Pvt Ltd
+            </a>
           </p>
           
           <div className="flex items-center gap-2 text-xs text-muted-foreground">

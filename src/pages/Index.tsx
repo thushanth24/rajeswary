@@ -12,6 +12,11 @@ const Index = () => {
 
   return (
     <Layout>
+      {/* SEO: Hidden name variations for search engines */}
+      <div className="sr-only" aria-hidden="true">
+        <h2>Raajeshwariy Groups Wedding Halls — Also known as Rajeswary, Raajeswary, Raajeshwary, Rajeshwari, Rajeshwariy Wedding Hall Jaffna. ராஜேஸ்வரி திருமண மண்டபம் யாழ்ப்பாணம். Best wedding halls, marriage halls, mandapams and reception venues in Jaffna, Sri Lanka. Chelva Mahal Kokuvil, Chelva Palace, Karpaka Raajeshwariy Urumpirai, Raajeshwariy Kondavil, Raajeshwariy Tellipalai.</h2>
+      </div>
+
       <HeroSection />
       <FeaturedHalls />
       <ServicesPreview />

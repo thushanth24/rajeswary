@@ -25,7 +25,7 @@ interface Profile {
 interface UserRole {
   id: string;
   user_id: string;
-  role: 'super_admin' | 'admin' | 'hall_manager';
+  role: 'super_admin' | 'admin' | 'hall_manager' | 'bungalow_manager';
 }
 
 interface UserWithRoles extends Profile {

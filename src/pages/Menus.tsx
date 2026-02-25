@@ -132,6 +132,7 @@ const MenusPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
+      {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
         <FloatingElements type="petals" density="low" />
         <RangoliPattern position="center" size="lg" opacity={0.08} />

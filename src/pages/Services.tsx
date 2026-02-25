@@ -56,6 +56,7 @@ const ServicesPage = () => {
   return (
     <Layout>
       {/* Hero Section with Parallax */}
+      {/* Hero Section with Parallax */}
       <motion.section 
         ref={heroRef}
         className="relative py-24 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden"

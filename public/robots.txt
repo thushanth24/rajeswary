@@ -12,9 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /auth
-Disallow: /reset-password
 
 # Sitemap location
 Sitemap: https://raajeshwariygroups.com/sitemap.xml

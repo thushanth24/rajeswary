@@ -42,8 +42,9 @@ interface Hall {
 }
 
 const Dashboard = () => {
-  const { isSuperAdmin, isAdmin, isHallManager, user } = useAuth();
+  const { isSuperAdmin, isAdmin, isHallManager, isBungalowManager, user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bungalowBookings, setBungalowBookings] = useState<any[]>([]);
   const [halls, setHalls] = useState<Hall[]>([]);
   const [inventoryStats, setInventoryStats] = useState({ total: 0, lowStock: 0 });
   const [loading, setLoading] = useState(true);
@@ -55,45 +56,54 @@ const Dashboard = () => {
     if (showRefreshing) setRefreshing(true);
     
     try {
-      // Fetch all bookings with hall info
-      const { data: bookingsData } = await supabase
-        .from('bookings')
-        .select('id, reference_number, customer_name, event_date, event_type, status, created_at, acknowledged_at, hall_id, halls(name)')
-        .order('created_at', { ascending: false });
+      if (isBungalowManager) {
+        // Fetch bungalow bookings only
+        const { data: bungalowData } = await (supabase as any)
+          .from('bungalow_bookings')
+          .select('*')
+          .order('created_at', { ascending: false });
+        setBungalowBookings(bungalowData || []);
+      } else {
+        // Fetch all bookings with hall info
+        const { data: bookingsData } = await supabase
+          .from('bookings')
+          .select('id, reference_number, customer_name, event_date, event_type, status, created_at, acknowledged_at, hall_id, halls(name)')
+          .order('created_at', { ascending: false });
 
-      // Fetch halls
-      const { data: hallsData } = await supabase
-        .from('halls')
-        .select('id, name');
+        // Fetch halls
+        const { data: hallsData } = await supabase
+          .from('halls')
+          .select('id, name');
 
-      // Fetch inventory
-      const { data: inventoryData } = await supabase
-        .from('inventory')
-        .select('quantity');
+        // Fetch inventory
+        const { data: inventoryData } = await supabase
+          .from('inventory')
+          .select('quantity');
 
-      // For hall managers, get their hall names
-      if (isHallManager && user) {
-        const { data: hallManagerData } = await supabase
-          .from('hall_managers')
-          .select('halls(name)')
-          .eq('user_id', user.id)
-          .eq('is_active', true);
-        
-        if (hallManagerData && hallManagerData.length > 0) {
-          const hallNames = hallManagerData
-            .filter(h => h.halls)
-            .map(h => (h.halls as any).name)
-            .join(', ');
-          setManagerHallName(hallNames);
+        // For hall managers, get their hall names
+        if (isHallManager && user) {
+          const { data: hallManagerData } = await supabase
+            .from('hall_managers')
+            .select('halls(name)')
+            .eq('user_id', user.id)
+            .eq('is_active', true);
+          
+          if (hallManagerData && hallManagerData.length > 0) {
+            const hallNames = hallManagerData
+              .filter(h => h.halls)
+              .map(h => (h.halls as any).name)
+              .join(', ');
+            setManagerHallName(hallNames);
+          }
         }
-      }
 
-      setBookings(bookingsData || []);
-      setHalls(hallsData || []);
-      setInventoryStats({
-        total: inventoryData?.length || 0,
-        lowStock: inventoryData?.filter(i => i.quantity < 10).length || 0,
-      });
+        setBookings(bookingsData || []);
+        setHalls(hallsData || []);
+        setInventoryStats({
+          total: inventoryData?.length || 0,
+          lowStock: inventoryData?.filter(i => i.quantity < 10).length || 0,
+        });
+      }
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -106,12 +116,13 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
 
-    // Set up real-time subscription for bookings
+    // Set up real-time subscription
+    const tableName = isBungalowManager ? 'bungalow_bookings' : 'bookings';
     const channel = supabase
       .channel('dashboard-bookings')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'bookings' },
+        { event: '*', schema: 'public', table: tableName },
         () => {
           fetchData();
         }
@@ -121,7 +132,7 @@ const Dashboard = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [isHallManager, user]);
+  }, [isHallManager, isBungalowManager, user]);
 
   // Calculate stats with trends
   const stats = useMemo(() => {
@@ -218,6 +229,7 @@ const Dashboard = () => {
   const getRoleTitle = () => {
     if (isSuperAdmin) return 'Super Admin Dashboard';
     if (isAdmin) return 'Admin Dashboard';
+    if (isBungalowManager) return 'Bungalow Manager Dashboard';
     return 'Manager Dashboard';
   };
 
@@ -252,73 +264,148 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Recent Bookings & Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RecentBookings bookings={bookings} />
-          
-          {/* Quick Actions */}
-          <Card className="card-traditional">
-            <CardHeader>
-              <CardTitle className="font-serif">Quick Actions</CardTitle>
-              <CardDescription>Common tasks based on your role</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {isHallManager && (
-                  <>
-                    <a href="/admin/new-booking" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+        {isBungalowManager ? (
+          <>
+            {/* Bungalow Manager Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {['pending', 'confirmed', 'checked_in', 'completed'].map(status => (
+                <Card key={status} className="card-traditional">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-2xl font-bold text-primary">
+                      {bungalowBookings.filter((b: any) => b.status === status).length}
+                    </p>
+                    <p className="text-xs text-muted-foreground capitalize">{status.replace('_', ' ')}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Recent Bungalow Bookings & Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="card-traditional">
+                <CardHeader>
+                  <CardTitle className="font-serif">Recent Bungalow Bookings</CardTitle>
+                  <CardDescription>Latest room reservations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {bungalowBookings.length === 0 ? (
+                    <p className="text-muted-foreground text-sm text-center py-8">No bookings yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {bungalowBookings.slice(0, 5).map((booking: any) => (
+                        <div key={booking.id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div>
+                            <p className="font-medium text-sm">{booking.full_name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {booking.room_type} ({booking.ac_type}) • {booking.check_in_date}
+                            </p>
+                          </div>
+                          <span className={`text-xs px-2 py-1 rounded-full capitalize ${
+                            booking.status === 'confirmed' ? 'bg-primary/10 text-primary' :
+                            booking.status === 'pending' ? 'bg-accent/10 text-accent-foreground' :
+                            booking.status === 'checked_in' ? 'bg-secondary/10 text-secondary' :
+                            'bg-muted text-muted-foreground'
+                          }`}>
+                            {booking.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="card-traditional">
+                <CardHeader>
+                  <CardTitle className="font-serif">Quick Actions</CardTitle>
+                  <CardDescription>Common tasks</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <a href="/admin/bungalow-bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
                       <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
-                      <p className="text-sm font-medium">New Manual Booking</p>
+                      <p className="text-sm font-medium">Manage Bookings</p>
                     </a>
-                    <a href="/admin/bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <Clock className="w-8 h-8 mx-auto mb-2 text-accent" />
-                      <p className="text-sm font-medium">View Pending</p>
-                    </a>
-                    <a href="/admin/inventory" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                    <a href="/admin/settings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
                       <Package className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                      <p className="text-sm font-medium">Manage Inventory</p>
+                      <p className="text-sm font-medium">Settings</p>
                     </a>
-                  </>
-                )}
-                {(isSuperAdmin || isAdmin) && (
-                  <>
-                    <a href="/admin/bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
-                      <p className="text-sm font-medium">View All Bookings</p>
-                    </a>
-                    <a href="/admin/unacknowledged" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-destructive" />
-                      <p className="text-sm font-medium">Unacknowledged</p>
-                    </a>
-                    <a href="/admin/managers" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <Users className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                      <p className="text-sm font-medium">Manager Assignments</p>
-                    </a>
-                    <a href="/admin/reports" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
-                      <p className="text-sm font-medium">View Reports</p>
-                    </a>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Recent Bookings & Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <RecentBookings bookings={bookings} />
+              
+              {/* Quick Actions */}
+              <Card className="card-traditional">
+                <CardHeader>
+                  <CardTitle className="font-serif">Quick Actions</CardTitle>
+                  <CardDescription>Common tasks based on your role</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    {isHallManager && (
+                      <>
+                        <a href="/admin/new-booking" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
+                          <p className="text-sm font-medium">New Manual Booking</p>
+                        </a>
+                        <a href="/admin/bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <Clock className="w-8 h-8 mx-auto mb-2 text-accent" />
+                          <p className="text-sm font-medium">View Pending</p>
+                        </a>
+                        <a href="/admin/inventory" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <Package className="w-8 h-8 mx-auto mb-2 text-secondary" />
+                          <p className="text-sm font-medium">Manage Inventory</p>
+                        </a>
+                      </>
+                    )}
+                    {(isSuperAdmin || isAdmin) && (
+                      <>
+                        <a href="/admin/bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
+                          <p className="text-sm font-medium">View All Bookings</p>
+                        </a>
+                        <a href="/admin/unacknowledged" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-destructive" />
+                          <p className="text-sm font-medium">Unacknowledged</p>
+                        </a>
+                        <a href="/admin/managers" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <Users className="w-8 h-8 mx-auto mb-2 text-secondary" />
+                          <p className="text-sm font-medium">Manager Assignments</p>
+                        </a>
+                        <a href="/admin/reports" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                          <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
+                          <p className="text-sm font-medium">View Reports</p>
+                        </a>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Real-time Stats Grid */}
-        <RealTimeStats stats={stats} />
+            {/* Real-time Stats Grid */}
+            <RealTimeStats stats={stats} />
 
-        {/* Charts Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BookingTrendChart bookings={bookings} days={30} />
-          <BookingStatusChart bookings={bookings} />
-        </div>
+            {/* Charts Row 1 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <BookingTrendChart bookings={bookings} days={30} />
+              <BookingStatusChart bookings={bookings} />
+            </div>
 
-        {/* Charts Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MonthlyBookingsChart bookings={bookings} months={6} />
-          <HallPerformanceChart bookings={bookings} halls={halls} />
-        </div>
+            {/* Charts Row 2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <MonthlyBookingsChart bookings={bookings} months={6} />
+              <HallPerformanceChart bookings={bookings} halls={halls} />
+            </div>
+          </>
+        )}
       </div>
     </AdminLayout>
   );

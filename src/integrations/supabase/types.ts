@@ -215,6 +215,147 @@ export type Database = {
           },
         ]
       }
+      bungalow_bookings: {
+        Row: {
+          ac_type: string
+          address: string | null
+          adults: number
+          check_in_date: string
+          check_out_date: string
+          children: number
+          created_at: string
+          created_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          id_proof_type: string | null
+          id_proof_url: string | null
+          mobile_number: string
+          package_type: string
+          purpose: string | null
+          room_type: string
+          special_requests: string | null
+          status: string
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          ac_type?: string
+          address?: string | null
+          adults?: number
+          check_in_date: string
+          check_out_date: string
+          children?: number
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          id_proof_type?: string | null
+          id_proof_url?: string | null
+          mobile_number: string
+          package_type?: string
+          purpose?: string | null
+          room_type: string
+          special_requests?: string | null
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          ac_type?: string
+          address?: string | null
+          adults?: number
+          check_in_date?: string
+          check_out_date?: string
+          children?: number
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          id_proof_type?: string | null
+          id_proof_url?: string | null
+          mobile_number?: string
+          package_type?: string
+          purpose?: string | null
+          room_type?: string
+          special_requests?: string | null
+          status?: string
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bungalow_rooms: {
+        Row: {
+          ac_type: string
+          amenities: string[] | null
+          available: boolean | null
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          images: string[] | null
+          location: string | null
+          max_adults: number
+          max_children: number
+          name: string
+          room_type: string
+          rules: string[] | null
+          tariff_bb: number
+          tariff_full_board: number
+          tariff_room_only: number
+          updated_at: string | null
+        }
+        Insert: {
+          ac_type?: string
+          amenities?: string[] | null
+          available?: boolean | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          max_adults?: number
+          max_children?: number
+          name: string
+          room_type?: string
+          rules?: string[] | null
+          tariff_bb?: number
+          tariff_full_board?: number
+          tariff_room_only?: number
+          updated_at?: string | null
+        }
+        Update: {
+          ac_type?: string
+          amenities?: string[] | null
+          available?: boolean | null
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          max_adults?: number
+          max_children?: number
+          name?: string
+          room_type?: string
+          rules?: string[] | null
+          tariff_bb?: number
+          tariff_full_board?: number
+          tariff_room_only?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -686,7 +827,7 @@ export type Database = {
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "super_admin" | "admin" | "hall_manager"
+      app_role: "super_admin" | "admin" | "hall_manager" | "bungalow_manager"
       booking_status:
         | "new"
         | "acknowledged"
@@ -821,7 +962,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["super_admin", "admin", "hall_manager"],
+      app_role: ["super_admin", "admin", "hall_manager", "bungalow_manager"],
       booking_status: [
         "new",
         "acknowledged",

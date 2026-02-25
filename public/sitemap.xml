@@ -2,91 +2,91 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://raajeshwariygroups.com/</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/halls</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://raajeshwariygroups.com/booking</loc>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/menus</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/services</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/gallery</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/contact</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/about</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://raajeshwariygroups.com/booking</loc>
-    <lastmod>2026-02-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://raajeshwariygroups.com/bungalows</loc>
-    <lastmod>2026-02-15</lastmod>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://raajeshwariygroups.com/halls/raajeshwariygroups-kondavil</loc>
-    <lastmod>2026-02-15</lastmod>
+    <loc>https://raajeshwariygroups.com/charity</loc>
+    <lastmod>2026-02-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://raajeshwariygroups.com/halls/grand-ballroom</loc>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://raajeshwariygroups.com/halls/raajeshwariygroups-tellipalai</loc>
-    <lastmod>2026-02-15</lastmod>
+    <loc>https://raajeshwariygroups.com/halls/royal-banquet</loc>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://raajeshwariygroups.com/halls/chelva-palace</loc>
-    <lastmod>2026-02-15</lastmod>
+    <loc>https://raajeshwariygroups.com/halls/crystal-palace</loc>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://raajeshwariygroups.com/halls/chelva-mahal</loc>
-    <lastmod>2026-02-15</lastmod>
+    <loc>https://raajeshwariygroups.com/halls/emerald-garden</loc>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://raajeshwariygroups.com/halls/karpaka-raajeshwariygroups</loc>
-    <lastmod>2026-02-15</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://raajeshwariygroups.com/halls/urumpirai</loc>
-    <lastmod>2026-02-15</lastmod>
+    <loc>https://raajeshwariygroups.com/halls/sunset-terrace</loc>
+    <lastmod>2026-02-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

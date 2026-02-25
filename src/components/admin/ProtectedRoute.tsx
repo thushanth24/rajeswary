@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
-type AllowedRole = 'super_admin' | 'admin' | 'hall_manager';
+type AllowedRole = 'super_admin' | 'admin' | 'hall_manager' | 'bungalow_manager';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user, loading, roles, isSuperAdmin, isAdmin, isHallManager } = useAuth();
+  const { user, loading, roles, isSuperAdmin, isAdmin, isHallManager, isBungalowManager } = useAuth();
 
   if (loading) {
     return (
@@ -34,6 +34,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     if (role === 'super_admin') return isSuperAdmin;
     if (role === 'admin') return isAdmin;
     if (role === 'hall_manager') return isHallManager;
+    if (role === 'bungalow_manager') return isBungalowManager;
     return roles.includes(role);
   });
 

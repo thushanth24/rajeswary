@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { HallCard } from "@/components/ui/HallCard";
 import { useHalls } from "@/hooks/useHalls";
@@ -10,12 +11,46 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import hallsVideo from "@/assets/halls-wedding-video.mp4";
 import { Mail } from "lucide-react";
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What wedding halls are available at Raajeshwariy Groups in Jaffna?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Raajeshwariy Groups operates 5 premium wedding halls across Jaffna: Chelva Mahal (Kokuvil), Chelva Palace (Poonary Marathadi), Raajeshwariy Wedding Hall Kondavil, Raajeshwariy Wedding Hall Tellipalai, and Karpaka Raajeshwariy (Urumpirai). All halls feature AC, parking, stage, dining, and dedicated bride & groom rooms."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I book a wedding hall at Raajeshwariy (Rajeswary) Groups?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can book online through our website's booking page, or contact us directly by phone. We require a 25% advance to confirm your booking. Visit any of our halls for a guided tour before making your decision."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the capacity of Raajeshwariy wedding halls?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our halls accommodate from 100 to 1000+ guests depending on the venue. Each hall has multiple sections that can be booked separately for intimate gatherings or combined for grand celebrations."
+      }
+    }
+  ]
+};
+
 const HallsPage = () => {
   const { halls, loading, error } = useHalls();
   const { t } = useLanguage();
 
   return (
     <Layout>
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+      </Helmet>
       {/* Hero Section */}
       <section className="halls-hero relative py-12 sm:py-16 md:py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
         <FloatingElements type="petals" density="low" />

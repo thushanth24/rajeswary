@@ -8,6 +8,7 @@ const DEFAULT_IMAGE_URL = `${SITE_URL}/logo.png`;
 type SeoMeta = {
   title: string;
   description: string;
+  keywords?: string;
   robots?: string;
   ogType?: "website" | "article";
 };
@@ -25,6 +26,7 @@ const getSeoMeta = (pathname: string): SeoMeta => {
     return {
       title: `${hallName} | Wedding Hall in Jaffna | ${SITE_NAME}`,
       description: `Explore ${hallName} wedding hall in Jaffna with venue details, facilities, gallery photos, and availability.`,
+      keywords: `${hallName}, raajeshwariy, rajeswary, raajeswary, raajeshwary, rajeshwari, wedding hall Jaffna, mandapam Jaffna`,
       ogType: "article",
     };
   }
@@ -39,34 +41,46 @@ const getSeoMeta = (pathname: string): SeoMeta => {
 
   const pageMetaByPath: Record<string, SeoMeta> = {
     "/": {
-      title: `${SITE_NAME} | Best Wedding Halls in Jaffna | Premium Event Venues`,
+      title: `${SITE_NAME} | Best Wedding Halls & Mandapams in Jaffna, Sri Lanka`,
       description:
-        "Raajeshwariy Groups offers premium wedding halls and event venues in Jaffna across Chunnakam, Nallur, Tellipalai, Kopay, and Kondavil.",
+        "Raajeshwariy Groups (Rajeswary / Raajeswary / Raajeshwary / Rajeshwari) — premium wedding halls & mandapams in Jaffna. Venues in Kondavil, Tellipalai, Kokuvil, Urumpirai. Book your dream wedding today! திருமண மண்டபம் யாழ்ப்பாணம்",
+      keywords:
+        "raajeshwariy, rajeswary, raajeswary, raajeshwary, rajeshwari, rajeshwariy, raajeshwari, rajeshwary, raajeshwariy groups, wedding halls Jaffna, marriage halls Jaffna, mandapam Jaffna, best wedding hall Jaffna, Chelva Mahal, Chelva Palace, Karpaka Raajeshwariy, Kondavil, Tellipalai, Kokuvil, Urumpirai, திருமண மண்டபம் யாழ்ப்பாணம், கல்யாண மண்டபம், ராஜேஸ்வரி",
     },
     "/halls": {
-      title: `Wedding Halls in Jaffna | ${SITE_NAME}`,
+      title: `Wedding Halls in Jaffna | ${SITE_NAME} Mandapams | Book Now`,
       description:
-        "Browse our premium wedding halls in Jaffna and choose the right venue for your wedding, reception, or family event.",
+        "Browse all Raajeshwariy (Rajeswary/Raajeswary/Raajeshwary) wedding halls in Jaffna. 5 premium mandapams in Kondavil, Tellipalai, Kokuvil, Urumpirai. AC halls, parking, catering. திருமண மண்டபம்",
+      keywords:
+        "raajeshwariy wedding halls, rajeswary halls Jaffna, wedding mandapam Jaffna, marriage hall Jaffna, Chelva Mahal, Chelva Palace, Karpaka Raajeshwariy, raajeshwary, rajeshwari, raajeswary",
     },
     "/services": {
-      title: `Wedding Venue Services in Jaffna | ${SITE_NAME}`,
+      title: `Wedding Services in Jaffna | Decoration, Catering, Photography | ${SITE_NAME}`,
       description:
-        "Discover full wedding venue services including decorations, dining support, and event arrangements in Jaffna.",
+        "Complete wedding services by Raajeshwariy (Rajeswary) Groups: decoration, catering, photography, DJ, makeup, vehicles & more. One-stop wedding solution in Jaffna.",
+      keywords:
+        "wedding services Jaffna, wedding decoration Jaffna, wedding catering Jaffna, wedding photography Jaffna, raajeshwariy services, rajeswary, raajeswary",
     },
     "/menus": {
-      title: `Wedding Catering Menus in Jaffna | ${SITE_NAME}`,
+      title: `Wedding Menus & Catering | ${SITE_NAME} Jaffna | Veg & Non-Veg`,
       description:
-        "Explore catering and food menu options for weddings and receptions hosted at Raajeshwariy Groups venues.",
+        "Explore wedding catering menus by Raajeshwariy (Rajeswary) Groups. Traditional Tamil veg & non-veg options for weddings, receptions, puberty ceremonies. Affordable packages in Jaffna.",
+      keywords:
+        "wedding catering Jaffna, wedding menu Jaffna, Tamil wedding food, raajeshwariy catering, rajeswary menu, marriage food Jaffna",
     },
     "/about": {
-      title: `About Us | ${SITE_NAME}`,
+      title: `About ${SITE_NAME} | 15+ Years of Wedding Excellence in Jaffna`,
       description:
-        "Learn about Raajeshwariy Groups, our wedding hall legacy, values, and service commitment in Jaffna.",
+        "Learn about Raajeshwariy (Rajeswary / Rajeshwari) Groups — Jaffna's leading wedding hall company with 15+ years of experience, 5 premium venues, and 500+ successful celebrations.",
+      keywords:
+        "about raajeshwariy, rajeswary groups history, wedding company Jaffna, raajeswary, raajeshwary, rajeshwari",
     },
     "/contact": {
-      title: `Contact | ${SITE_NAME}`,
+      title: `Contact ${SITE_NAME} | Wedding Hall Enquiry Jaffna | Phone & Location`,
       description:
-        "Contact Raajeshwariy Groups for wedding hall bookings, venue inquiries, and service details in Jaffna.",
+        "Contact Raajeshwariy (Rajeswary) Groups for wedding hall bookings in Jaffna. Phone numbers, addresses, and locations for all 5 venues. Get in touch today!",
+      keywords:
+        "contact raajeshwariy, rajeswary phone number, wedding hall booking Jaffna, raajeswary contact, raajeshwary address",
     },
     "/booking": {
       title: `Book A Wedding Hall | ${SITE_NAME}`,
@@ -79,9 +93,18 @@ const getSeoMeta = (pathname: string): SeoMeta => {
         "View bungalow options and amenities available through Raajeshwariy Groups in Jaffna.",
     },
     "/gallery": {
-      title: `Photo Gallery | ${SITE_NAME}`,
+      title: `Wedding Photo Gallery | ${SITE_NAME} Jaffna | Event Photos`,
       description:
-        "See photos of wedding ceremonies, decorations, dining setups, and venues from Raajeshwariy Groups.",
+        "Browse wedding photos and event gallery from Raajeshwariy (Rajeswary) Groups venues in Jaffna. See past celebrations at Chelva Mahal, Chelva Palace, and more.",
+      keywords:
+        "wedding gallery Jaffna, wedding photos Jaffna, raajeshwariy photos, rajeswary gallery, event photos Jaffna",
+    },
+    "/charity": {
+      title: `Charity Works | ${SITE_NAME} | Community Service Jaffna`,
+      description:
+        "Discover the charitable initiatives and community service works of Raajeshwariy (Rajeswary) Groups – giving back to society through food, education, and community support in Jaffna.",
+      keywords:
+        "raajeshwariy charity, rajeswary community service, charity Jaffna, social work Jaffna, raajeswary, raajeshwary",
     },
     "/auth": {
       title: `Sign In | ${SITE_NAME}`,
@@ -117,6 +140,7 @@ export const RouteSeo = () => {
       <title>{meta.title}</title>
       <meta name="description" content={meta.description} />
       <meta name="robots" content={robots} />
+      {meta.keywords && <meta name="keywords" content={meta.keywords} />}
       <link rel="canonical" href={canonicalUrl} />
 
       <meta property="og:type" content={ogType} />

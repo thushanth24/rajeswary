@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { useHall, hallContactNumbers, hallAddresses } from "@/hooks/useHalls";
@@ -84,8 +85,35 @@ const HallDetailPage = () => {
     { name: t("hallDetail.facility.groomRoom"), available: hall.facilities.groomRoom, icon: User },
   ];
 
+  const hallAddress = hallAddresses[hall.slug];
+  const venueSchema = {
+    "@context": "https://schema.org",
+    "@type": "EventVenue",
+    "name": hall.name,
+    "alternateName": hall.name.replace("Raajeshwariy", "Rajeswary"),
+    "description": hall.description,
+    "url": `https://raajeshwariygroups.com/halls/${hall.slug}`,
+    "image": hall.image,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": hallAddress?.street || "",
+      "addressLocality": hallAddress?.area || "Jaffna",
+      "addressRegion": "Northern Province",
+      "addressCountry": "LK"
+    },
+    "maximumAttendeeCapacity": hall.capacity.max,
+    "amenityFeature": facilities.filter(f => f.available).map(f => ({
+      "@type": "LocationFeatureSpecification",
+      "name": f.name
+    })),
+    "telephone": primaryNumber
+  };
+
   return (
     <Layout>
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(venueSchema)}</script>
+      </Helmet>
       {/* Hero Section */}
       <section className="relative h-[50vh] sm:h-[55vh] md:h-[65vh] flex items-end overflow-hidden">
         <div className="absolute inset-0 z-0">

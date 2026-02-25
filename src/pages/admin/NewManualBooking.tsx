@@ -16,10 +16,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, Eye, AlertTriangle, UtensilsCrossed } from 'lucide-react';
+import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, AlertTriangle, UtensilsCrossed } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { menus } from '@/data/services';
-import { MenuQuickViewModal } from '@/components/menu/MenuQuickViewModal';
 import { useSectionAwareAvailability } from '@/hooks/useSectionAwareAvailability';
 const timeSlots = [
   { id: 'morning', label: 'Morning (09:00 - 14:00)', start: '09:00', end: '14:00' },
@@ -42,14 +40,6 @@ const addOnServices = [
 const menuSections = [
   { id: 'pubert', label: 'Lunch', icon: '☀️' },
   { id: 'dinner', label: 'Dinner', icon: '🌙' },
-  { id: 'wedding', label: 'Standard', icon: '💒' },
-  { id: 'registration', label: 'Supreme', icon: '📝' },
-];
-
-const menuVariants = [
-  { id: 'veg', label: 'Veg', fullLabel: 'Vegetarian', icon: '🥬', activeClass: 'border-green-500 bg-green-500/10 text-green-700', hoverClass: 'hover:border-green-500/50' },
-  { id: 'nonveg', label: 'Non-Veg', fullLabel: 'Non-Vegetarian', icon: '🍗', activeClass: 'border-orange-500 bg-orange-500/10 text-orange-700', hoverClass: 'hover:border-orange-500/50' },
-  { id: 'special', label: 'Special', fullLabel: 'Special', icon: '✨', activeClass: 'border-primary bg-primary/10 text-primary', hoverClass: 'hover:border-primary/50' },
 ];
 
 const bookingSchema = z.object({
@@ -108,11 +98,7 @@ const NewManualBooking = () => {
   
   // Menu selection state
   const [menuSection, setMenuSection] = useState('');
-  const [menuVariant, setMenuVariant] = useState('');
-  const [mealType, setMealType] = useState('');
-  const [menuPackage, setMenuPackage] = useState('');
   const [menuNotes, setMenuNotes] = useState('');
-  const [previewMenu, setPreviewMenu] = useState<{ menu: any; variant: 'veg' | 'nonveg' | 'special' } | null>(null);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -342,12 +328,10 @@ const NewManualBooking = () => {
       let specialRequests = values.special_requests || '';
       
       // Add menu selection info
-      if (menuPackage) {
-        const selectedMenu = menus[mealType as keyof typeof menus]?.find((m: any) => m.id === menuPackage);
-        if (selectedMenu) {
-          const menuText = `Menu Selection: ${selectedMenu.name} (${selectedMenu.price})`;
-          specialRequests = specialRequests ? `${specialRequests}\n\n${menuText}` : menuText;
-        }
+      if (menuSection) {
+        const menuLabel = menuSections.find(s => s.id === menuSection)?.label || menuSection;
+        const menuText = `Menu Selection: ${menuLabel}`;
+        specialRequests = specialRequests ? `${specialRequests}\n\n${menuText}` : menuText;
       }
       if (menuNotes) {
         const menuNotesText = `Menu Notes: ${menuNotes}`;
@@ -427,9 +411,6 @@ const NewManualBooking = () => {
     sectionsData: sections.map(s => ({ id: s.id, name: s.name, nameType: typeof s.name })),
     selectedServices,
     menuSection,
-    menuVariant,
-    mealType,
-    menuPackage,
   });
 
   if (loading) {
@@ -701,12 +682,7 @@ const NewManualBooking = () => {
                   <Label className="mb-2 block text-sm">Meal Type</Label>
                   <RadioGroup
                     value={menuSection}
-                    onValueChange={(value) => {
-                      setMenuSection(value);
-                      setMenuVariant('');
-                      setMealType('');
-                      setMenuPackage('');
-                    }}
+                    onValueChange={setMenuSection}
                     className="grid grid-cols-2 gap-2 sm:grid-cols-4"
                   >
                     {menuSections.map((section) => (
@@ -727,116 +703,6 @@ const NewManualBooking = () => {
                     ))}
                   </RadioGroup>
                 </div>
-
-                {/* Variant Selection */}
-                {menuSection && (
-                  <div>
-                    <Label className="mb-2 block text-sm">Variant</Label>
-                    {(() => {
-                      const hasSpecial = ['pubert', 'dinner', 'wedding'].includes(menuSection);
-                      const variants = hasSpecial ? menuVariants : menuVariants.filter(v => v.id !== 'special');
-                      return (
-                        <RadioGroup
-                          value={menuVariant}
-                          onValueChange={(value) => {
-                            setMenuVariant(value);
-                            let mealTypeKey = '';
-                            if (value === 'veg') {
-                              mealTypeKey = `${menuSection}Veg`;
-                            } else if (value === 'nonveg') {
-                              mealTypeKey = `${menuSection}NonVeg`;
-                            } else if (value === 'special') {
-                              mealTypeKey = `${menuSection}Special`;
-                            }
-                            setMealType(mealTypeKey);
-                            setMenuPackage('');
-                          }}
-                          className={cn("grid gap-2", hasSpecial ? "grid-cols-3" : "grid-cols-2", "max-w-md")}
-                        >
-                          {variants.map((variant) => (
-                            <div key={variant.id}>
-                              <RadioGroupItem value={variant.id} id={`variant-${variant.id}`} className="peer sr-only" />
-                              <Label
-                                htmlFor={`variant-${variant.id}`}
-                                className={cn(
-                                  "flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all",
-                                  menuVariant === variant.id
-                                    ? variant.activeClass
-                                    : `border-border ${variant.hoverClass}`
-                                )}
-                              >
-                                <span className="text-lg">{variant.icon}</span>
-                                <span className="font-medium text-sm">{variant.fullLabel}</span>
-                              </Label>
-                            </div>
-                          ))}
-                        </RadioGroup>
-                      );
-                    })()}
-                  </div>
-                )}
-
-                {/* Package Selection */}
-                {mealType && menus[mealType as keyof typeof menus] && (
-                  <div>
-                    <Label className="mb-2 block text-sm">Select Package</Label>
-                    <RadioGroup
-                      value={menuPackage}
-                      onValueChange={setMenuPackage}
-                      className="grid gap-3"
-                    >
-                      {menus[mealType as keyof typeof menus]?.map((menu: any) => {
-                        const variant = menuVariant === 'special' 
-                          ? 'special' 
-                          : menuVariant === 'veg' 
-                            ? 'veg' 
-                            : 'nonveg';
-                        return (
-                          <div key={menu.id} className="relative">
-                            <RadioGroupItem value={menu.id} id={menu.id} className="peer sr-only" />
-                            <Label
-                              htmlFor={menu.id}
-                              className={cn(
-                                "flex flex-col sm:flex-row sm:justify-between sm:items-start p-3 rounded-lg border cursor-pointer transition-all pr-12",
-                                menuPackage === menu.id
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border hover:border-primary/50"
-                              )}
-                            >
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center justify-between sm:justify-start gap-2">
-                                  <h3 className="font-semibold text-foreground text-sm">{menu.name}</h3>
-                                  <span className="text-primary font-semibold text-sm sm:hidden">
-                                    {menu.price}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                  {menu.items.slice(0, 2).join(' • ')}
-                                  {menu.items.length > 2 && ' ...'}
-                                </p>
-                              </div>
-                              <span className="text-primary font-semibold shrink-0 ml-4 hidden sm:block">
-                                {menu.price}
-                              </span>
-                            </Label>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setPreviewMenu({ menu, variant: variant as 'veg' | 'nonveg' | 'special' });
-                              }}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-secondary/20 hover:bg-secondary/40 flex items-center justify-center transition-colors"
-                              title="Preview menu"
-                            >
-                              <Eye className="h-4 w-4 text-secondary" />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </RadioGroup>
-                  </div>
-                )}
 
                 {/* Menu Notes */}
                 <div>
@@ -990,13 +856,6 @@ const NewManualBooking = () => {
             </form>
           </Form>
           
-          {/* Menu Preview Modal */}
-          <MenuQuickViewModal
-            open={!!previewMenu}
-            onOpenChange={(open) => !open && setPreviewMenu(null)}
-            menu={previewMenu?.menu || null}
-            variant={previewMenu?.variant || 'veg'}
-          />
         </CardContent>
       </Card>
     </AdminLayout>

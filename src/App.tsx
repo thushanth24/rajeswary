@@ -21,6 +21,7 @@ import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
 import Bungalows from "./pages/Bungalows";
 import Gallery from "./pages/Gallery";
+import Charity from "./pages/Charity";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -39,6 +40,8 @@ import Reports from "./pages/admin/Reports";
 import AdminCalendar from "./pages/admin/Calendar";
 import ContactMessages from "./pages/admin/ContactMessages";
 import Settings from "./pages/admin/Settings";
+import BungalowBookings from "./pages/admin/BungalowBookings";
+import BungalowRoomManagement from "./pages/admin/BungalowRoomManagement";
 
 const queryClient = new QueryClient();
 
@@ -51,8 +54,8 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <RouteSeo />
               <ScrollToTop />
+              <RouteSeo />
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
@@ -65,6 +68,7 @@ const App = () => (
               <Route path="/booking" element={<Booking />} />
               <Route path="/bungalows" element={<Bungalows />} />
               <Route path="/gallery" element={<Gallery />} />
+              <Route path="/charity" element={<Charity />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
@@ -173,7 +177,22 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
-
+              <Route
+                path="/admin/bungalow-bookings"
+                element={
+                  <ProtectedRoute allowedRoles={['bungalow_manager', 'super_admin', 'admin']}>
+                    <BungalowBookings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/bungalow-rooms"
+                element={
+                  <ProtectedRoute allowedRoles={['bungalow_manager', 'super_admin', 'admin']}>
+                    <BungalowRoomManagement />
+                  </ProtectedRoute>
+                }
+              />
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
               </Routes>
