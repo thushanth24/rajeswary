@@ -15,11 +15,11 @@ const routes = [
   { path: "/about", changefreq: "monthly", priority: "0.6" },
   { path: "/bungalows", changefreq: "monthly", priority: "0.6" },
   { path: "/charity", changefreq: "monthly", priority: "0.5" },
-  { path: "/halls/grand-ballroom", changefreq: "weekly", priority: "0.8" },
-  { path: "/halls/royal-banquet", changefreq: "weekly", priority: "0.8" },
-  { path: "/halls/crystal-palace", changefreq: "weekly", priority: "0.8" },
-  { path: "/halls/emerald-garden", changefreq: "weekly", priority: "0.8" },
-  { path: "/halls/sunset-terrace", changefreq: "weekly", priority: "0.8" },
+  { path: "/halls/chelva-mahal", changefreq: "weekly", priority: "0.8" },
+  { path: "/halls/chelva-palace", changefreq: "weekly", priority: "0.8" },
+  { path: "/halls/raajeshwariy-kondavil", changefreq: "weekly", priority: "0.8" },
+  { path: "/halls/karpaka-raajeshwariy-urumpirai", changefreq: "weekly", priority: "0.8" },
+  { path: "/halls/raajeshwariy-tellipalai", changefreq: "weekly", priority: "0.8" },
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>

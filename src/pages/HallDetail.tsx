@@ -72,7 +72,7 @@ const HallDetailPage = () => {
   const primaryNumber = hallContact?.primary || "+94 21 222 3456";
   const landlineNumber = hallContact?.landline;
   const toTelHref = (value: string) => value.replace(/\s+/g, "");
-  const hasLift = !["grand-ballroom", "sunset-terrace"].includes(hall.slug);
+  const hasLift = !["chelva-mahal", "raajeshwariy-tellipalai"].includes(hall.slug);
 
   const facilities = [
     { name: t("hallDetail.facility.ac"), available: hall.facilities.ac, icon: Snowflake },

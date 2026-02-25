@@ -29,9 +29,9 @@ export interface Hall {
 
 export const halls: Hall[] = [
   {
-    id: "grand-ballroom",
+    id: "chelva-mahal",
     name: "Chelva Mahal",
-    slug: "grand-ballroom",
+    slug: "chelva-mahal",
     image: chelvaMahalCover,
     capacity: { min: 300, max: 800 },
     description: "Our flagship venue, Chelva Mahal offers unparalleled elegance with soaring ceilings, crystal chandeliers, and a spacious dance floor. Perfect for grand weddings and large receptions that demand sophistication and style.",
@@ -51,9 +51,9 @@ export const halls: Hall[] = [
     priceRange: "₹2,50,000 - ₹5,00,000",
   },
   {
-    id: "royal-banquet",
+    id: "chelva-palace",
     name: "Chelva Palace",
-    slug: "royal-banquet",
+    slug: "chelva-palace",
     image: chelvaPalaceCover,
     capacity: { min: 200, max: 500 },
     description: "Experience royalty at Chelva Palace. Featuring ornate gold accents, plush seating, and exceptional lighting, this venue creates an atmosphere of timeless luxury for your special day.",
@@ -73,9 +73,9 @@ export const halls: Hall[] = [
     priceRange: "₹1,75,000 - ₹3,50,000",
   },
   {
-    id: "crystal-palace",
+    id: "raajeshwariy-kondavil",
     name: "Raajeshwariy Wedding Hall Kondavil",
-    slug: "crystal-palace",
+    slug: "raajeshwariy-kondavil",
     image: kondavilCover,
     capacity: { min: 100, max: 300 },
     description: "Raajeshwariy Wedding Hall Kondavil combines intimate elegance with modern amenities. Its warm wooden accents and crystal decorations create a cozy yet sophisticated atmosphere ideal for medium-sized celebrations.",
@@ -95,9 +95,9 @@ export const halls: Hall[] = [
     priceRange: "₹1,00,000 - ₹2,00,000",
   },
   {
-    id: "emerald-garden",
+    id: "karpaka-raajeshwariy-urumpirai",
     name: "Karpaka Raajeshwariy Wedding Hall Urumpirai",
-    slug: "emerald-garden",
+    slug: "karpaka-raajeshwariy-urumpirai",
     image: urumpiraiCover,
     capacity: { min: 250, max: 600 },
     description: "A modern masterpiece featuring contemporary design elements, floor-to-ceiling windows, and state-of-the-art amenities. Karpaka Raajeshwariy Wedding Hall brings natural light and elegance together beautifully.",
@@ -117,9 +117,9 @@ export const halls: Hall[] = [
     priceRange: "₹2,00,000 - ₹4,00,000",
   },
   {
-    id: "sunset-terrace",
+    id: "raajeshwariy-tellipalai",
     name: "Raajeshwariy Wedding Hall Tellipalai",
-    slug: "sunset-terrace",
+    slug: "raajeshwariy-tellipalai",
     image: tellipalaiCover,
     capacity: { min: 150, max: 400 },
     description: "An enchanting venue surrounded by lush greenery and twinkling lights. Raajeshwariy Wedding Hall Tellipalai offers a magical wedding experience with a beautiful pavilion.",
