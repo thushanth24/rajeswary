@@ -172,8 +172,8 @@ export function Footer() {
             </ul>
           </CollapsibleSection>
 
-          {/* Hours - Collapsible on mobile */}
-          <CollapsibleSection title="Operating Hours">
+          {/* Hours & Policies - Collapsible on mobile */}
+          <CollapsibleSection title="Info & Policies">
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-3 justify-center md:justify-start">
                 <Clock className="h-5 w-5 text-secondary shrink-0" />
@@ -183,6 +183,23 @@ export function Footer() {
                 <span className="w-5" />
                 Daily: 9 AM - 6 PM
               </li>
+            </ul>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {[
+                { name: "Refund Policy", href: "/refund-policy" },
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Terms & Conditions", href: "/terms-and-conditions" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground hover:text-primary transition-all duration-300 inline-flex items-center gap-2 group"
+                  >
+                    <span className="text-secondary/60 group-hover:text-secondary transition-colors">›</span>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </CollapsibleSection>
         </div>

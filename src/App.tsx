@@ -25,6 +25,9 @@ import Charity from "./pages/Charity";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import RefundPolicy from "./pages/RefundPolicy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 // Admin Pages
 import Dashboard from "./pages/admin/Dashboard";
@@ -71,6 +74,9 @@ const App = () => (
               <Route path="/charity" element={<Charity />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
               {/* Admin Routes - Protected */}
               <Route
