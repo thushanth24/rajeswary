@@ -84,6 +84,7 @@ const DEFAULT_FORM: FormState = {
 };
 
 const ROOM_TYPES: RoomType[] = ["Double Room", "Triple Room", "Family Room"];
+const ROOM_BOOKING_PAYMENT_AMOUNT = 50;
 
 const ID_PROOF_TYPES = [
   { value: "nic", label: "National Identity Card (NIC)" },
@@ -430,6 +431,7 @@ const BungalowsPage = () => {
     : 0;
 
   const totalPrice = perNight * Math.max(nights, 0);
+  const paymentAmount = ROOM_BOOKING_PAYMENT_AMOUNT;
 
   const currentTypeGroup = typeGroups.find(g => g.type === form.roomType);
 
@@ -535,7 +537,7 @@ const BungalowsPage = () => {
         {
           body: {
             orderId: bookingId,
-            amount: totalPrice.toFixed(2),
+            amount: paymentAmount.toFixed(2),
             firstName: nameParts[0],
             lastName: nameParts.slice(1).join(" ") || "",
             email: form.email || "",
@@ -1114,7 +1116,7 @@ const BungalowsPage = () => {
                     Redirecting to payment...
                   </>
                 ) : (
-                  <>🪷 Proceed to Payment{totalPrice > 0 ? ` — Rs ${totalPrice.toLocaleString()}` : ""}</>
+                  <>🪷 Proceed to Payment{totalPrice > 0 ? ` — Rs ${paymentAmount.toLocaleString()}` : ""}</>
                 )}
               </Button>
             </div>

@@ -103,6 +103,7 @@ const getTimeSlots = (t: (key: string) => string) => [
 ];
 
 const BOOKING_REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const MIN_ADVANCE_AMOUNT = 50;
 
 function generateBookingReference() {
   const year = new Date().getFullYear();
@@ -148,7 +149,7 @@ const BookingPage = () => {
   const [isDetailsPreviewOpen, setIsDetailsPreviewOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [advanceAmount, setAdvanceAmount] = useState("10000");
+  const [advanceAmount, setAdvanceAmount] = useState(String(MIN_ADVANCE_AMOUNT));
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -335,10 +336,10 @@ const BookingPage = () => {
 
   const handlePayAdvance = async () => {
     const amount = parseFloat(advanceAmount);
-    if (isNaN(amount) || amount < 5000) {
+    if (isNaN(amount) || amount < MIN_ADVANCE_AMOUNT) {
       toast({
         title: "Invalid Amount",
-        description: "Minimum advance payment is LKR 5,000.",
+        description: `Minimum advance payment is LKR ${MIN_ADVANCE_AMOUNT}.`,
         variant: "destructive",
       });
       return;
@@ -935,7 +936,7 @@ const BookingPage = () => {
                       </h3>
                     </div>
                     <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                      Secure your booking date by paying an advance. Bookings with advance payment are confirmed with priority. Minimum advance: <strong>LKR 5,000</strong>.
+                      Secure your booking date by paying an advance. Bookings with advance payment are confirmed with priority. Minimum advance: <strong>LKR {MIN_ADVANCE_AMOUNT}</strong>.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 items-end">
                       <div className="flex-1">
@@ -945,12 +946,12 @@ const BookingPage = () => {
                         <Input
                           id="advanceAmount"
                           type="number"
-                          min={5000}
-                          step={1000}
+                          min={MIN_ADVANCE_AMOUNT}
+                          step={50}
                           value={advanceAmount}
                           onChange={(e) => setAdvanceAmount(e.target.value)}
                           className="text-sm"
-                          placeholder="10000"
+                          placeholder={String(MIN_ADVANCE_AMOUNT)}
                         />
                       </div>
                       <Button
