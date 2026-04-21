@@ -113,6 +113,28 @@ function getTariff(bungalows: Bungalow[], type: string, acPref: AcPref) {
   return bungalows.find(b => b.type === type && b.acType === acPref)?.tariff ?? null;
 }
 
+async function getFunctionErrorMessage(error: unknown) {
+  const fallback = error instanceof Error ? error.message : "Failed to initiate payment";
+  const response = (error as { context?: unknown })?.context;
+
+  if (response instanceof Response) {
+    try {
+      const body = await response.clone().json();
+      if (typeof body?.error === "string") return body.error;
+      if (typeof body?.message === "string") return body.message;
+    } catch {
+      try {
+        const text = await response.clone().text();
+        if (text) return text;
+      } catch {
+        return fallback;
+      }
+    }
+  }
+
+  return fallback;
+}
+
 /** Find an available physical room to assign.
  *  - AC pref → only AC rooms
  *  - Non-AC pref → prefer Non-AC, fall back to AC (business rule: AC can serve as Non-AC) */
@@ -552,12 +574,16 @@ const BungalowsPage = () => {
       );
 
       if (payError || !payData) {
+        const paymentErrorMessage = payError
+          ? await getFunctionErrorMessage(payError)
+          : "Failed to initiate payment";
+
         // Roll back: cancel the pending booking so the room is released
         await (supabase as any)
           .from("bungalow_bookings")
-          .update({ status: "cancelled" })
+          .update({ status: "cancelled", payment_status: "failed" })
           .eq("id", bookingId);
-        throw new Error(payError?.message || "Failed to initiate payment");
+        throw new Error(paymentErrorMessage);
       }
 
       // 5. Auto-submit hidden form to PayHere hosted checkout

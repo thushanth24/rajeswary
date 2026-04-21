@@ -115,6 +115,28 @@ function generateBookingReference() {
   return `CH-${year}-${suffix}`;
 }
 
+async function getFunctionErrorMessage(error: unknown) {
+  const fallback = error instanceof Error ? error.message : "Failed to initiate payment";
+  const response = (error as { context?: unknown })?.context;
+
+  if (response instanceof Response) {
+    try {
+      const body = await response.clone().json();
+      if (typeof body?.error === "string") return body.error;
+      if (typeof body?.message === "string") return body.message;
+    } catch {
+      try {
+        const text = await response.clone().text();
+        if (text) return text;
+      } catch {
+        return fallback;
+      }
+    }
+  }
+
+  return fallback;
+}
+
 const getAddOnServices = (t: (key: string) => string) => [
   { id: "photography", label: t("booking.service.photography"), icon: Camera },
   { id: "vehicles", label: t("booking.service.vehicles"), icon: Car },
@@ -364,7 +386,7 @@ const BookingPage = () => {
       });
 
       if (error || !data) {
-        throw new Error(error?.message || "Failed to initiate payment");
+        throw new Error(error ? await getFunctionErrorMessage(error) : "Failed to initiate payment");
       }
 
       await supabase
