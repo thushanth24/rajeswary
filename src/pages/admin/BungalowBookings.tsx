@@ -45,6 +45,11 @@ interface BungalowBooking {
   purpose: string | null;
   special_requests: string | null;
   total_amount: number | null;
+  payment_status: string | null;
+  paid_amount: number | null;
+  payment_paid_at: string | null;
+  payment_provider: string | null;
+  payment_reference: string | null;
   status: string;
   created_at: string;
 }
@@ -93,11 +98,21 @@ const pricing: Record<string, Record<string, Record<string, number>>> = {
 
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30',
+  pending_payment: 'bg-amber-500/20 text-amber-700 border-amber-500/30',
   confirmed: 'bg-green-500/20 text-green-700 border-green-500/30',
   cancelled: 'bg-red-500/20 text-red-700 border-red-500/30',
   completed: 'bg-blue-500/20 text-blue-700 border-blue-500/30',
   checked_in: 'bg-purple-500/20 text-purple-700 border-purple-500/30',
 };
+
+const paymentColors: Record<string, string> = {
+  unpaid: 'bg-muted text-muted-foreground border-border',
+  pending: 'bg-amber-500/20 text-amber-700 border-amber-500/30',
+  paid: 'bg-green-500/20 text-green-700 border-green-500/30',
+  failed: 'bg-red-500/20 text-red-700 border-red-500/30',
+};
+
+const getPaymentStatus = (booking: BungalowBooking) => booking.payment_status || 'unpaid';
 
 const BungalowBookingsManagement = () => {
   const { user } = useAuth();
@@ -178,6 +193,8 @@ const BungalowBookingsManagement = () => {
       purpose: formData.purpose || null,
       special_requests: formData.special_requests || null,
       total_amount: amount,
+      payment_status: 'unpaid',
+      paid_amount: 0,
       status: 'confirmed',
       created_by: user?.id,
     } as any);
@@ -247,8 +264,8 @@ const BungalowBookingsManagement = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {['pending', 'confirmed', 'checked_in', 'completed', 'cancelled'].map(status => (
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+          {['pending_payment', 'pending', 'confirmed', 'checked_in', 'completed', 'cancelled'].map(status => (
             <Card key={status} className="card-traditional">
               <CardContent className="p-4 text-center">
                 <p className="text-2xl font-bold text-primary">
@@ -277,6 +294,7 @@ const BungalowBookingsManagement = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pending_payment">Pending Payment</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
               <SelectItem value="checked_in">Checked In</SelectItem>
@@ -298,6 +316,7 @@ const BungalowBookingsManagement = () => {
                   <TableHead>Check-in</TableHead>
                   <TableHead>Check-out</TableHead>
                   <TableHead>Amount</TableHead>
+                  <TableHead>Payment</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -305,13 +324,13 @@ const BungalowBookingsManagement = () => {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                       Loading...
                     </TableCell>
                   </TableRow>
                 ) : filteredBookings.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                       No bookings found
                     </TableCell>
                   </TableRow>
@@ -335,6 +354,18 @@ const BungalowBookingsManagement = () => {
                       <TableCell className="text-sm">{booking.check_out_date}</TableCell>
                       <TableCell className="text-sm font-medium">
                         Rs {booking.total_amount?.toLocaleString() || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <Badge className={cn('capitalize', paymentColors[getPaymentStatus(booking)] || '')}>
+                            {getPaymentStatus(booking).replace('_', ' ')}
+                          </Badge>
+                          {getPaymentStatus(booking) === 'paid' && (
+                            <p className="text-xs text-muted-foreground">
+                              Rs {booking.paid_amount?.toLocaleString() || '0'}
+                            </p>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Badge className={cn('capitalize', statusColors[booking.status] || '')}>
@@ -381,7 +412,7 @@ const BungalowBookingsManagement = () => {
                               <CheckCircle className="h-4 w-4 text-accent-foreground" />
                             </Button>
                           )}
-                          {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                          {(booking.status === 'pending' || booking.status === 'pending_payment' || booking.status === 'confirmed') && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -565,8 +596,16 @@ const BungalowBookingsManagement = () => {
                   <div><span className="text-muted-foreground">Check-out:</span> <p className="font-medium">{selectedBooking.check_out_date}</p></div>
                   <div><span className="text-muted-foreground">Guests:</span> <p className="font-medium">{selectedBooking.adults} Adults, {selectedBooking.children} Children</p></div>
                   <div><span className="text-muted-foreground">Amount:</span> <p className="font-medium text-primary">Rs {selectedBooking.total_amount?.toLocaleString() || '-'}</p></div>
+                  <div><span className="text-muted-foreground">Payment:</span> <Badge className={cn('capitalize', paymentColors[getPaymentStatus(selectedBooking)])}>{getPaymentStatus(selectedBooking).replace('_', ' ')}</Badge></div>
+                  <div><span className="text-muted-foreground">Paid Amount:</span> <p className="font-medium text-primary">Rs {selectedBooking.paid_amount?.toLocaleString() || '0'}</p></div>
                   <div><span className="text-muted-foreground">Status:</span> <Badge className={cn('capitalize', statusColors[selectedBooking.status])}>{selectedBooking.status.replace('_', ' ')}</Badge></div>
                   <div><span className="text-muted-foreground">Created:</span> <p className="font-medium">{format(new Date(selectedBooking.created_at), 'PPp')}</p></div>
+                  {selectedBooking.payment_paid_at && (
+                    <div><span className="text-muted-foreground">Paid At:</span> <p className="font-medium">{format(new Date(selectedBooking.payment_paid_at), 'PPp')}</p></div>
+                  )}
+                  {selectedBooking.payment_reference && (
+                    <div><span className="text-muted-foreground">Payment Ref:</span> <p className="font-medium">{selectedBooking.payment_reference}</p></div>
+                  )}
                 </div>
                 {selectedBooking.address && (
                   <div className="text-sm"><span className="text-muted-foreground">Address:</span> <p>{selectedBooking.address}</p></div>

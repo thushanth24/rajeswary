@@ -117,6 +117,7 @@ export type Database = {
         Row: {
           acknowledged_at: string | null
           acknowledged_by: string | null
+          advance_paid_amount: number | null
           cancellation_reason: string | null
           cancelled_at: string | null
           cancelled_by: string | null
@@ -136,6 +137,10 @@ export type Database = {
           id: string
           internal_notes: string | null
           is_manual_booking: boolean
+          payment_paid_at: string | null
+          payment_provider: string | null
+          payment_reference: string | null
+          payment_status: string
           reference_number: string | null
           section_id: string | null
           special_requests: string | null
@@ -145,6 +150,7 @@ export type Database = {
         Insert: {
           acknowledged_at?: string | null
           acknowledged_by?: string | null
+          advance_paid_amount?: number | null
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
@@ -164,6 +170,10 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           is_manual_booking?: boolean
+          payment_paid_at?: string | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           reference_number?: string | null
           section_id?: string | null
           special_requests?: string | null
@@ -173,6 +183,7 @@ export type Database = {
         Update: {
           acknowledged_at?: string | null
           acknowledged_by?: string | null
+          advance_paid_amount?: number | null
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
@@ -192,6 +203,10 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           is_manual_booking?: boolean
+          payment_paid_at?: string | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           reference_number?: string | null
           section_id?: string | null
           special_requests?: string | null
@@ -232,6 +247,11 @@ export type Database = {
           id_proof_url: string | null
           mobile_number: string
           package_type: string
+          paid_amount: number | null
+          payment_paid_at: string | null
+          payment_provider: string | null
+          payment_reference: string | null
+          payment_status: string
           purpose: string | null
           room_type: string
           special_requests: string | null
@@ -255,6 +275,11 @@ export type Database = {
           id_proof_url?: string | null
           mobile_number: string
           package_type?: string
+          paid_amount?: number | null
+          payment_paid_at?: string | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           purpose?: string | null
           room_type: string
           special_requests?: string | null
@@ -278,6 +303,11 @@ export type Database = {
           id_proof_url?: string | null
           mobile_number?: string
           package_type?: string
+          paid_amount?: number | null
+          payment_paid_at?: string | null
+          payment_provider?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           purpose?: string | null
           room_type?: string
           special_requests?: string | null

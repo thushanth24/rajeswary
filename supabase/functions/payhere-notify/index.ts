@@ -29,7 +29,7 @@ Deno.serve(async (req: Request) => {
       data[key] = value.toString();
     }
 
-    const { merchant_id, order_id, payhere_amount, payhere_currency, status_code, md5sig } = data;
+    const { merchant_id, order_id, payhere_amount, payhere_currency, status_code, md5sig, payment_id } = data;
 
     // Verify signature: MD5(merchant_id + order_id + amount + currency + status_code + MD5(secret).UPPER()).UPPER()
     const secretHash = md5(merchantSecret);
@@ -52,7 +52,14 @@ Deno.serve(async (req: Request) => {
         // Payment successful → confirm the booking
         const { error } = await (supabase as any)
           .from("bungalow_bookings")
-          .update({ status: "confirmed" })
+          .update({
+            status: "confirmed",
+            payment_status: "paid",
+            paid_amount: Number.parseFloat(payhere_amount),
+            payment_paid_at: new Date().toISOString(),
+            payment_provider: "PayHere",
+            payment_reference: payment_id ?? null,
+          })
           .eq("id", order_id)
           .eq("status", "pending_payment"); // safety: only confirm if still pending
 
@@ -65,7 +72,7 @@ Deno.serve(async (req: Request) => {
         // Cancelled / failed / chargedback → release the room hold
         const { error } = await (supabase as any)
           .from("bungalow_bookings")
-          .update({ status: "cancelled" })
+          .update({ status: "cancelled", payment_status: "failed" })
           .eq("id", order_id)
           .eq("status", "pending_payment");
 
@@ -94,7 +101,14 @@ Deno.serve(async (req: Request) => {
 
           const { error } = await supabase
             .from("bookings")
-            .update({ internal_notes: updatedNotes })
+            .update({
+              internal_notes: updatedNotes,
+              payment_status: "paid",
+              advance_paid_amount: Number.parseFloat(payhere_amount),
+              payment_paid_at: new Date().toISOString(),
+              payment_provider: "PayHere",
+              payment_reference: payment_id ?? null,
+            })
             .eq("reference_number", order_id);
 
           if (error) {
@@ -104,6 +118,15 @@ Deno.serve(async (req: Request) => {
           }
         } else {
           console.warn(`Hall booking not found for reference: ${order_id}`);
+        }
+      } else if (status_code === "-1" || status_code === "-2" || status_code === "-3") {
+        const { error } = await supabase
+          .from("bookings")
+          .update({ payment_status: "failed" })
+          .eq("reference_number", order_id);
+
+        if (error) {
+          console.error(`Failed to mark hall booking ${order_id} payment failed:`, error.message);
         }
       }
     }

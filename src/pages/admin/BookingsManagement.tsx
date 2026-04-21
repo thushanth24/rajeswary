@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Calendar, CheckCircle, XCircle, Clock, Eye, AlertTriangle, Search, Download, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { format, differenceInHours, isPast, startOfDay } from 'date-fns';
 import { menus } from '@/data/services';
+import { cn } from '@/lib/utils';
 
 interface Booking {
   id: string;
@@ -35,6 +36,11 @@ interface Booking {
   created_at: string;
   special_requests: string | null;
   internal_notes: string | null;
+  payment_status: string | null;
+  advance_paid_amount: number | null;
+  payment_paid_at: string | null;
+  payment_provider: string | null;
+  payment_reference: string | null;
   reference_number: string | null;
   expected_guests: number | null;
   halls?: { name: string };
@@ -53,6 +59,15 @@ interface HallSectionOption {
 }
 
 const ITEMS_PER_PAGE = 10;
+
+const paymentColors: Record<string, string> = {
+  unpaid: 'bg-muted text-muted-foreground border-border',
+  pending: 'bg-amber-500/20 text-amber-700 border-amber-500/30',
+  paid: 'bg-green-500/20 text-green-700 border-green-500/30',
+  failed: 'bg-red-500/20 text-red-700 border-red-500/30',
+};
+
+const getPaymentStatus = (booking: Pick<Booking, 'payment_status'>) => booking.payment_status || 'unpaid';
 
 const eventTypeOptions = [
   'Wedding',
@@ -480,6 +495,10 @@ const BookingsManagement = () => {
         'Event Date',
         'Expected Guests',
         'Status',
+        'Payment Status',
+        'Advance Paid Amount',
+        'Payment Paid At',
+        'Payment Reference',
         'Booking Type',
         'Created At',
         'Special Requests'
@@ -495,6 +514,10 @@ const BookingsManagement = () => {
         format(new Date(booking.event_date), 'yyyy-MM-dd'),
         booking.expected_guests?.toString() || '',
         booking.status,
+        getPaymentStatus(booking),
+        booking.advance_paid_amount?.toString() || '0',
+        booking.payment_paid_at ? format(new Date(booking.payment_paid_at), 'yyyy-MM-dd HH:mm') : '',
+        booking.payment_reference || '',
         booking.is_manual_booking ? 'Manual' : 'Online',
         format(new Date(booking.created_at), 'yyyy-MM-dd HH:mm'),
         (booking.special_requests || '').replace(/"/g, '""').replace(/\n/g, ' ')
@@ -1121,6 +1144,7 @@ const BookingsManagement = () => {
                     <TableHead>Event</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Advance</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -1150,6 +1174,18 @@ const BookingsManagement = () => {
                       <TableCell>{booking.event_type}</TableCell>
                       <TableCell>{format(new Date(booking.event_date), 'PPP')}</TableCell>
                       <TableCell>{getStatusBadge(booking)}</TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <Badge className={cn('capitalize', paymentColors[getPaymentStatus(booking)] || '')}>
+                            {getPaymentStatus(booking).replace('_', ' ')}
+                          </Badge>
+                          {getPaymentStatus(booking) === 'paid' && (
+                            <p className="text-xs text-muted-foreground">
+                              LKR {booking.advance_paid_amount?.toLocaleString() || '0'}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {booking.is_manual_booking ? (
                           <Badge variant="outline">Manual</Badge>
@@ -1182,7 +1218,7 @@ const BookingsManagement = () => {
                   ))}
                   {bookings.length === 0 && !loading && (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                         {debouncedSearch ? `No bookings found matching "${debouncedSearch}"` : 'No bookings found'}
                       </TableCell>
                     </TableRow>
@@ -1480,6 +1516,31 @@ const BookingsManagement = () => {
                       getStatusBadge(selectedBooking)
                     )}
                   </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Advance Payment</p>
+                    <div className="space-y-1">
+                      <Badge className={cn('capitalize', paymentColors[getPaymentStatus(selectedBooking)] || '')}>
+                        {getPaymentStatus(selectedBooking).replace('_', ' ')}
+                      </Badge>
+                      {getPaymentStatus(selectedBooking) === 'paid' && (
+                        <p className="font-medium">
+                          LKR {selectedBooking.advance_paid_amount?.toLocaleString() || '0'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {selectedBooking.payment_paid_at && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Payment Paid At</p>
+                      <p className="font-medium">{format(new Date(selectedBooking.payment_paid_at), 'PPP p')}</p>
+                    </div>
+                  )}
+                  {selectedBooking.payment_reference && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Payment Reference</p>
+                      <p className="font-medium">{selectedBooking.payment_reference}</p>
+                    </div>
+                  )}
                   <div>
                     <p className="text-sm text-muted-foreground">Created</p>
                     <p className="font-medium">{format(new Date(selectedBooking.created_at), 'PPP p')}</p>

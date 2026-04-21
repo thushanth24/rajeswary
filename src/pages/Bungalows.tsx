@@ -522,6 +522,8 @@ const BungalowsPage = () => {
           purpose: form.purpose.trim() || null,
           special_requests: form.specialRequests.trim() || null,
           total_amount: totalPrice,
+          payment_status: "pending",
+          paid_amount: 0,
           status: "pending_payment",
         })
         .select("id")

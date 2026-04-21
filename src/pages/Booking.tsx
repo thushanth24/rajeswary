@@ -367,6 +367,11 @@ const BookingPage = () => {
         throw new Error(error?.message || "Failed to initiate payment");
       }
 
+      await supabase
+        .from("bookings")
+        .update({ payment_status: "pending" })
+        .eq("reference_number", bookingReference);
+
       // Build and auto-submit a hidden form to PayHere's hosted checkout
       const form = document.createElement("form");
       form.method = "POST";
@@ -709,6 +714,8 @@ const BookingPage = () => {
           expected_guests: guestCount,
           special_requests: specialRequests || null,
           status: 'new',
+          payment_status: 'unpaid',
+          advance_paid_amount: 0,
           is_manual_booking: false,
           reference_number: referenceNumber,
         });
@@ -936,7 +943,7 @@ const BookingPage = () => {
                       </h3>
                     </div>
                     <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                      Secure your booking date by paying an advance. Bookings with advance payment are confirmed with priority. Minimum advance: <strong>LKR {MIN_ADVANCE_AMOUNT}</strong>.
+                      Secure your booking date by paying an advance. Bookings with advance payment are confirmed with priority. Minimum advance: <strong>LKR {MIN_ADVANCE_AMOUNT.toLocaleString()}</strong>.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 items-end">
                       <div className="flex-1">
