@@ -48,6 +48,7 @@ import {
   Headphones,
   Gem,
   UtensilsCrossed,
+  CreditCard,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -146,6 +147,9 @@ const BookingPage = () => {
   const [previewMenu, setPreviewMenu] = useState<{ menu: any; variant: "veg" | "nonveg" | "special" } | null>(null);
   const [isDetailsPreviewOpen, setIsDetailsPreviewOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [advanceAmount, setAdvanceAmount] = useState("10000");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const [bookingData, setBookingData] = useState<BookingData>({
     eventType: "",
@@ -326,6 +330,65 @@ const BookingPage = () => {
         return !!(bookingData.name && bookingData.phone);
       default:
         return false;
+    }
+  };
+
+  const handlePayAdvance = async () => {
+    const amount = parseFloat(advanceAmount);
+    if (isNaN(amount) || amount < 5000) {
+      toast({
+        title: "Invalid Amount",
+        description: "Minimum advance payment is LKR 5,000.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      const nameParts = bookingData.name.trim().split(" ");
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      const { data, error } = await supabase.functions.invoke("payhere-checkout", {
+        body: {
+          orderId: bookingReference,
+          amount: amount.toFixed(2),
+          firstName,
+          lastName,
+          email: bookingData.email || "",
+          phone: bookingData.phone,
+          hallName: selectedHall?.name ?? "Wedding Hall",
+        },
+      });
+
+      if (error || !data) {
+        throw new Error(error?.message || "Failed to initiate payment");
+      }
+
+      // Build and auto-submit a hidden form to PayHere's hosted checkout
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.checkoutUrl;
+
+      Object.entries(data.fields as Record<string, string>).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to initiate payment. Please try again.";
+      toast({
+        title: "Payment Error",
+        description: message,
+        variant: "destructive",
+      });
+      setIsProcessingPayment(false);
     }
   };
 
@@ -833,22 +896,87 @@ const BookingPage = () => {
                 </div>
                 
                 {/* Priority Booking Notice */}
-                <div className="mb-8 p-4 rounded-lg border-2 border-amber-500/50 bg-gradient-to-r from-amber-500/15 to-yellow-500/10">
+                <div className="mb-4 p-4 rounded-lg border-2 border-amber-500/50 bg-gradient-to-r from-amber-500/15 to-yellow-500/10">
                   <div className="flex items-start gap-3 text-left">
                     <AlertTriangle className="h-6 w-6 text-amber-500 shrink-0 mt-0.5" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-semibold text-amber-600 dark:text-amber-400 mb-2">
                         ⚠️ {t("booking.paymentNotice.successTitle")}
                       </p>
                       <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                         {t("booking.paymentNotice.successMessage")}
                       </p>
-                      <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white">
-                        <a href="/contact">{t("booking.paymentNotice.contactButton")}</a>
-                      </Button>
+                      <div className="flex flex-wrap gap-2">
+                        <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white">
+                          <a href="/contact">{t("booking.paymentNotice.contactButton")}</a>
+                        </Button>
+                        {bookingReference && (
+                          <Button
+                            size="sm"
+                            onClick={() => setShowPaymentForm((prev) => !prev)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          >
+                            <CreditCard className="mr-1.5 h-4 w-4" />
+                            Pay Advance Online
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Inline Advance Payment Form */}
+                {showPaymentForm && bookingReference && (
+                  <div className="mb-8 p-5 rounded-lg border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/10 to-green-500/5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CreditCard className="h-5 w-5 text-emerald-600" />
+                      <h3 className="font-semibold text-emerald-700 dark:text-emerald-400">
+                        Advance Payment
+                      </h3>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                      Secure your booking date by paying an advance. Bookings with advance payment are confirmed with priority. Minimum advance: <strong>LKR 5,000</strong>.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 items-end">
+                      <div className="flex-1">
+                        <Label htmlFor="advanceAmount" className="text-sm mb-1 block">
+                          Advance Amount (LKR)
+                        </Label>
+                        <Input
+                          id="advanceAmount"
+                          type="number"
+                          min={5000}
+                          step={1000}
+                          value={advanceAmount}
+                          onChange={(e) => setAdvanceAmount(e.target.value)}
+                          className="text-sm"
+                          placeholder="10000"
+                        />
+                      </div>
+                      <Button
+                        onClick={handlePayAdvance}
+                        disabled={isProcessingPayment}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0 w-full sm:w-auto"
+                      >
+                        {isProcessingPayment ? (
+                          <>
+                            <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent inline-block" />
+                            Redirecting...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="mr-1.5 h-4 w-4" />
+                            Pay Now
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
+                      <Lock className="h-3 w-3 shrink-0" />
+                      Secured by PayHere — Sri Lanka&apos;s trusted payment gateway
+                    </p>
+                  </div>
+                )}
                 
                 <Button asChild variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/5">
                   <a href="/">{t("booking.submitted.returnHome")}</a>

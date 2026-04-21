@@ -1,19 +1,19 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { getBungalowById, Bungalow } from "@/data/bungalows";
+import { Bungalow } from "@/data/bungalows";
 import { useBungalowRooms } from "@/hooks/useBungalowRooms";
 import { format, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -22,14 +22,11 @@ import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
 import { CTASection } from "@/components/home/CTASection";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   CalendarIcon,
   Users,
-  MapPin,
-  Wifi,
-  Car,
   Snowflake,
+  Car,
   Tv,
   UtensilsCrossed,
   ShowerHead,
@@ -38,655 +35,563 @@ import {
   Home,
   Check,
   X,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  IndianRupee,
-  User,
   Baby,
-  Phone,
-  Mail,
-  FileText,
   Upload,
   Info,
+  Wifi,
 } from "lucide-react";
 
-interface BookingFormData {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type RoomType = "Double Room" | "Triple Room" | "Family Room";
+type AcPref = "AC" | "Non-AC";
+type PkgType = "roomOnly" | "bbWithRoom" | "fullBoard";
+
+interface FormState {
+  roomType: RoomType;
+  acPreference: AcPref;
+  packageType: PkgType;
+  checkInDate: Date | undefined;
+  checkOutDate: Date | undefined;
+  adults: string;
+  children: string;
   fullName: string;
   mobileNumber: string;
   email: string;
   address: string;
   idProofType: string;
   idProofFile: File | null;
-  bungalowId: string;
-  packageType: string;
-  acPreference: "AC" | "Non-AC";
-  checkInDate: Date | undefined;
-  checkOutDate: Date | undefined;
-  adults: string;
-  children: string;
   purpose: string;
   specialRequests: string;
 }
 
-const idProofTypes = [
-  { value: "aadhar", label: "Aadhar Card" },
-  { value: "pan", label: "PAN Card" },
-  { value: "passport", label: "Passport" },
-  { value: "voter", label: "Voter ID" },
-  { value: "driving", label: "Driving License" },
-];
-
-const amenityIcons: Record<string, React.ReactNode> = {
-  "Air Conditioner": <Snowflake className="h-4 w-4" />,
-  "Fan": <Snowflake className="h-4 w-4" />,
-  "Attached Bathroom": <ShowerHead className="h-4 w-4" />,
-  "Hot Water": <ShowerHead className="h-4 w-4" />,
-  "TV": <Tv className="h-4 w-4" />,
-  "Wi-Fi": <Wifi className="h-4 w-4" />,
-  "Kitchen Facility": <UtensilsCrossed className="h-4 w-4" />,
-  "Refrigerator": <Home className="h-4 w-4" />,
-  "Parking": <Car className="h-4 w-4" />,
-  "Housekeeping": <Home className="h-4 w-4" />,
-  "Power Backup": <Zap className="h-4 w-4" />,
-  "Security": <Shield className="h-4 w-4" />,
-  "Living Room": <Home className="h-4 w-4" />,
-  "Dining Area": <UtensilsCrossed className="h-4 w-4" />,
-  "Balcony": <Home className="h-4 w-4" />,
+const DEFAULT_FORM: FormState = {
+  roomType: "Double Room",
+  acPreference: "AC",
+  packageType: "roomOnly",
+  checkInDate: undefined,
+  checkOutDate: undefined,
+  adults: "1",
+  children: "0",
+  fullName: "",
+  mobileNumber: "",
+  email: "",
+  address: "",
+  idProofType: "",
+  idProofFile: null,
+  purpose: "",
+  specialRequests: "",
 };
 
-// Group bungalows by type+acType for display
-interface RoomGroup {
-  key: string;
-  type: Bungalow['type'];
-  acType: Bungalow['acType'];
-  representative: Bungalow;
-  totalCount: number;
-  availableCount: number;
+const ROOM_TYPES: RoomType[] = ["Double Room", "Triple Room", "Family Room"];
+
+const ID_PROOF_TYPES = [
+  { value: "nic", label: "National Identity Card (NIC)" },
+  { value: "passport", label: "Passport" },
+  { value: "driving_licence", label: "Driving Licence" },
+  { value: "business_registration", label: "Business Registration" },
+];
+
+const AMENITY_ICONS: Record<string, React.ReactNode> = {
+  "Air Conditioner": <Snowflake className="h-3 w-3" />,
+  "Fan": <Snowflake className="h-3 w-3" />,
+  "Attached Bathroom": <ShowerHead className="h-3 w-3" />,
+  "Hot Water": <ShowerHead className="h-3 w-3" />,
+  "TV": <Tv className="h-3 w-3" />,
+  "Wi-Fi": <Wifi className="h-3 w-3" />,
+  "Kitchen Facility": <UtensilsCrossed className="h-3 w-3" />,
+  "Parking": <Car className="h-3 w-3" />,
+  "Housekeeping": <Home className="h-3 w-3" />,
+  "Power Backup": <Zap className="h-3 w-3" />,
+  "Security": <Shield className="h-3 w-3" />,
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getTariff(bungalows: Bungalow[], type: string, acPref: AcPref) {
+  return bungalows.find(b => b.type === type && b.acType === acPref)?.tariff ?? null;
 }
 
-function groupBungalows(list: Bungalow[], bookedRoomNames?: Set<string>): RoomGroup[] {
-  const map = new Map<string, RoomGroup>();
-  for (const b of list) {
-    const key = `${b.type}-${b.acType}`;
-    const isBookedForDates = bookedRoomNames ? bookedRoomNames.has(b.id) : false;
-    const effectivelyAvailable = b.available && !isBookedForDates;
-    const existing = map.get(key);
-    if (existing) {
-      existing.totalCount++;
-      if (effectivelyAvailable) existing.availableCount++;
-    } else {
-      map.set(key, {
-        key,
-        type: b.type,
-        acType: b.acType,
-        representative: b,
-        totalCount: 1,
-        availableCount: effectivelyAvailable ? 1 : 0,
-      });
-    }
+/** Find an available physical room to assign.
+ *  - AC pref → only AC rooms
+ *  - Non-AC pref → prefer Non-AC, fall back to AC (business rule: AC can serve as Non-AC) */
+async function findAvailableRoom(
+  bungalows: Bungalow[],
+  type: string,
+  acPref: AcPref,
+  checkIn: string,
+  checkOut: string
+): Promise<Bungalow | null> {
+  const { data } = await (supabase as any)
+    .from("bungalow_bookings")
+    .select("room_type")
+    .in("status", ["confirmed", "pending", "pending_payment"])
+    .lt("check_in_date", checkOut)
+    .gt("check_out_date", checkIn);
+
+  const bookedNames = new Set<string>((data ?? []).map((b: any) => b.room_type as string));
+  const pool = bungalows.filter(b => b.type === type && b.available && !bookedNames.has(b.name));
+
+  if (acPref === "AC") {
+    return pool.find(b => b.acType === "AC") ?? null;
   }
-  return Array.from(map.values());
+  // Non-AC pref: prefer actual Non-AC, then fall back to AC
+  return pool.find(b => b.acType === "Non-AC") ?? pool.find(b => b.acType === "AC") ?? null;
 }
 
-const RoomGroupCard = ({ group, onViewDetails, onBookNow }: { 
-  group: RoomGroup; 
-  onViewDetails: () => void;
-  onBookNow: () => void;
+// ─── Room Type Card ───────────────────────────────────────────────────────────
+
+interface TypeGroup {
+  type: RoomType;
+  acCount: number;
+  nonAcCount: number;
+  acTariff: Bungalow["tariff"] | null;
+  nonAcTariff: Bungalow["tariff"] | null;
+  maxOccupancy: { adults: number; children: number };
+  image: string;
+  amenities: string[];
+  // set only when listing filter dates are active
+  availableAc: number | null;
+  availableNonAc: number | null;
+}
+
+function buildTypeGroups(bungalows: Bungalow[], bookedNames: Set<string> | null): TypeGroup[] {
+  return ROOM_TYPES.map(type => {
+    const acRooms = bungalows.filter(b => b.type === type && b.acType === "AC");
+    const nonAcRooms = bungalows.filter(b => b.type === type && b.acType === "Non-AC");
+    const rep = acRooms[0] ?? nonAcRooms[0];
+    return {
+      type,
+      acCount: acRooms.length,
+      nonAcCount: nonAcRooms.length,
+      acTariff: acRooms[0]?.tariff ?? null,
+      nonAcTariff: nonAcRooms[0]?.tariff ?? null,
+      maxOccupancy: rep?.maxOccupancy ?? { adults: 2, children: 1 },
+      image: rep?.images[0] ?? "",
+      amenities: rep?.amenities ?? [],
+      availableAc: bookedNames
+        ? acRooms.filter(b => b.available && !bookedNames.has(b.name)).length
+        : null,
+      availableNonAc: bookedNames
+        ? nonAcRooms.filter(b => b.available && !bookedNames.has(b.name)).length
+        : null,
+    };
+  });
+}
+
+const RoomTypeCard = ({
+  group,
+  datesActive,
+  onBook,
+}: {
+  group: TypeGroup;
+  datesActive: boolean;
+  onBook: (type: RoomType) => void;
 }) => {
-  const { representative: bungalow, totalCount, availableCount } = group;
+  // When Non-AC is requested, AC rooms can serve as Non-AC too
+  const totalAvailableForNonAc =
+    group.availableNonAc !== null && group.availableAc !== null
+      ? group.availableNonAc + group.availableAc
+      : null;
+  const totalAvailable =
+    group.availableAc !== null ? group.availableAc + (group.availableNonAc ?? 0) : null;
+  const fullyBooked = datesActive && totalAvailable === 0;
+
+  const typeShort = group.type.replace(" Room", "");
+
   return (
     <Card className="card-traditional overflow-hidden group">
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-52 overflow-hidden">
         <img
-          src={bungalow.images[0]}
-          alt={`${bungalow.type} ${bungalow.acType}`}
+          src={group.image}
+          alt={group.type}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <Badge className={cn(
-            "font-medium",
-            bungalow.type === "Family Room" && "bg-gradient-to-r from-primary to-secondary text-primary-foreground",
-            bungalow.type === "Triple Room" && "bg-secondary text-secondary-foreground",
-            bungalow.type === "Double Room" && "bg-primary text-primary-foreground",
-          )}>
-            {bungalow.type}
-          </Badge>
-          <Badge variant="outline" className="bg-background/80 text-foreground font-medium">
-            {bungalow.acType}
-          </Badge>
-        </div>
-        <div className="absolute top-3 right-3">
-          <Badge variant={availableCount > 0 ? "default" : "destructive"} className="font-medium">
-            {availableCount > 0 ? `${availableCount} Available` : "Fully Booked"}
-          </Badge>
-        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
+
+        <div className="absolute top-3 left-3">
+          <Badge className="bg-primary text-primary-foreground font-semibold px-3">
+            {typeShort}
+          </Badge>
+        </div>
+
+        {datesActive && totalAvailable !== null && (
+          <div className="absolute top-3 right-3">
+            <Badge
+              variant={fullyBooked ? "destructive" : "default"}
+              className="font-medium"
+            >
+              {fullyBooked ? "Fully Booked" : `${totalAvailable} Available`}
+            </Badge>
+          </div>
+        )}
+
         <div className="absolute bottom-3 left-3 right-3">
-          <h3 className="font-serif text-xl font-bold text-card">{bungalow.type} — {bungalow.acType}</h3>
-          <div className="flex items-center gap-2 text-card/80 text-sm">
-            <Home className="h-3 w-3" />
-            {totalCount} rooms total
+          <h3 className="font-serif text-xl font-bold text-card">{group.type}</h3>
+          <div className="flex items-center gap-1.5 text-card/80 text-sm mt-0.5">
+            <Users className="h-3.5 w-3.5" />
+            <span>Up to {group.maxOccupancy.adults} adults</span>
+            <span>·</span>
+            <Baby className="h-3.5 w-3.5" />
+            <span>1 child</span>
           </div>
         </div>
       </div>
-      <CardContent className="p-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <User className="h-4 w-4" />
-              {bungalow.maxOccupancy.adults} Adults
-            </span>
-            <span className="flex items-center gap-1">
-              <Baby className="h-4 w-4" />
-              {bungalow.maxOccupancy.children} Child (under 6)
-            </span>
-          </div>
-        </div>
-        
-        {group.acType === "AC" && (
-          <div className="bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15 border border-primary/30 rounded-lg px-3 py-2.5 text-center">
-            <span className="text-sm font-semibold text-primary flex items-center justify-center gap-2">
-              <Snowflake className="h-4 w-4" />
-              Also available without AC at lower rates
-              <Snowflake className="h-4 w-4" />
-            </span>
-          </div>
-        )}
-        
-        <div className="flex flex-wrap gap-2">
-          {bungalow.amenities.slice(0, 5).map((amenity) => (
-            <span key={amenity} className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-              {amenityIcons[amenity] || <Check className="h-3 w-3" />}
-              {amenity}
-            </span>
-          ))}
-          {bungalow.amenities.length > 5 && (
-            <span className="text-xs text-primary font-medium px-2 py-1">
-              +{bungalow.amenities.length - 5} more
+
+      <CardContent className="p-5 space-y-4">
+        {/* Room inventory */}
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Home className="h-4 w-4 shrink-0" />
+          <span>{group.acCount + group.nonAcCount} rooms</span>
+          {group.acCount > 0 && group.nonAcCount > 0 && (
+            <span className="text-xs">
+              ({group.acCount} AC · {group.nonAcCount} Non-AC)
             </span>
           )}
         </div>
-        
-        <div className="flex items-center justify-between pt-2 border-t border-border">
-          <div>
-            <span className="text-xs text-muted-foreground">From</span>
-            <div className="flex items-center text-xl font-bold text-primary">
-              Rs {bungalow.tariff.roomOnly.toLocaleString()}
-              <span className="text-xs font-normal text-muted-foreground ml-1">/night</span>
+
+        {/* Pricing */}
+        <div className="space-y-1.5">
+          {group.acTariff && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="flex items-center gap-1 text-muted-foreground">
+                <Snowflake className="h-3.5 w-3.5 text-primary" /> With AC
+                {datesActive && group.availableAc !== null && (
+                  <span className={cn(
+                    "text-xs ml-1 font-medium",
+                    group.availableAc > 0 ? "text-green-600" : "text-destructive"
+                  )}>
+                    ({group.availableAc > 0 ? `${group.availableAc} avail.` : "none"})
+                  </span>
+                )}
+              </span>
+              <span className="font-bold text-primary">
+                Rs {group.acTariff.roomOnly.toLocaleString()}
+                <span className="text-xs font-normal text-muted-foreground">/night</span>
+              </span>
             </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={onViewDetails}>
-              View Details
-            </Button>
-            <Button 
-              size="sm" 
-              onClick={onBookNow}
-              disabled={availableCount === 0}
-              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-traditional transition-all duration-300 hover:shadow-gold-glow"
-            >
-              🪷 Book Now
-            </Button>
-          </div>
+          )}
+          {group.nonAcTariff && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="flex items-center gap-1 text-muted-foreground">
+                Without AC
+                {datesActive && totalAvailableForNonAc !== null && (
+                  <span className={cn(
+                    "text-xs ml-1 font-medium",
+                    totalAvailableForNonAc > 0 ? "text-green-600" : "text-destructive"
+                  )}>
+                    ({totalAvailableForNonAc > 0 ? `${totalAvailableForNonAc} avail.` : "none"})
+                  </span>
+                )}
+              </span>
+              <span className="font-semibold text-foreground">
+                Rs {group.nonAcTariff.roomOnly.toLocaleString()}
+                <span className="text-xs font-normal text-muted-foreground">/night</span>
+              </span>
+            </div>
+          )}
         </div>
+
+        {/* Top amenities */}
+        <div className="flex flex-wrap gap-1.5">
+          {group.amenities.slice(0, 5).map(a => (
+            <span key={a} className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              {AMENITY_ICONS[a] ?? <Check className="h-3 w-3" />}
+              {a}
+            </span>
+          ))}
+        </div>
+
+        <Button
+          className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-traditional hover:shadow-gold-glow transition-all duration-300"
+          onClick={() => onBook(group.type)}
+          disabled={fullyBooked}
+        >
+          {fullyBooked ? "Fully Booked for Selected Dates" : "🪷 Book Now"}
+        </Button>
       </CardContent>
     </Card>
   );
 };
 
-const BungalowDetailModal = ({ bungalow, onBookNow, allBungalows }: { bungalow: Bungalow; onBookNow: () => void; allBungalows: Bungalow[] }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  // Find matching Non-AC tariff for AC rooms
-  const nonAcTariff = bungalow.acType === "AC"
-    ? allBungalows.find(b => b.type === bungalow.type && b.acType === "Non-AC")?.tariff
-    : null;
-
-  return (
-    <div className="space-y-6 max-h-[80vh] overflow-y-auto">
-      {/* Image Gallery */}
-      <div className="relative rounded-lg overflow-hidden">
-        <img
-          src={bungalow.images[currentImageIndex]}
-          alt={bungalow.name}
-          className="w-full h-64 object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-        
-        {bungalow.images.length > 1 && (
-          <>
-            <button
-              onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? bungalow.images.length - 1 : prev - 1))}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => setCurrentImageIndex((prev) => (prev === bungalow.images.length - 1 ? 0 : prev + 1))}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 hover:bg-background transition-colors"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </>
-        )}
-        
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
-          {bungalow.images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={cn(
-                "w-2 h-2 rounded-full transition-colors",
-                index === currentImageIndex ? "bg-primary" : "bg-primary/40"
-              )}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Badge className={cn(
-              "font-medium",
-              bungalow.type === "Family Room" && "bg-gradient-to-r from-primary to-secondary",
-              bungalow.type === "Triple Room" && "bg-secondary",
-              bungalow.type === "Double Room" && "bg-primary",
-            )}>
-              {bungalow.type}
-            </Badge>
-            <Badge variant={bungalow.available ? "default" : "destructive"}>
-              {bungalow.available ? "Available" : "Booked"}
-            </Badge>
-          </div>
-          <h2 className="font-serif text-2xl font-bold text-foreground">{bungalow.name}</h2>
-          <p className="flex items-center gap-1 text-muted-foreground text-sm mt-1">
-            <MapPin className="h-4 w-4" />
-            {bungalow.location}
-          </p>
-        </div>
-        <div className="text-right">
-          <span className="text-sm text-muted-foreground">Room Only from</span>
-          <div className="flex items-center text-2xl font-bold text-primary">
-            Rs {bungalow.tariff.roomOnly.toLocaleString()}
-          </div>
-        </div>
-      </div>
-
-      {/* Description */}
-      <p className="text-muted-foreground">{bungalow.description}</p>
-
-      {/* Occupancy & Timing */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card p-3 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <User className="h-4 w-4" />
-            Adults
-          </div>
-          <span className="font-semibold text-foreground">{bungalow.maxOccupancy.adults}</span>
-        </div>
-        <div className="bg-card p-3 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <Baby className="h-4 w-4" />
-            Children
-          </div>
-          <span className="font-semibold text-foreground">{bungalow.maxOccupancy.children}</span>
-        </div>
-        <div className="bg-card p-3 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <Clock className="h-4 w-4" />
-            Check-in
-          </div>
-          <span className="font-semibold text-foreground">{bungalow.checkInTime}</span>
-        </div>
-        <div className="bg-card p-3 rounded-lg border border-border">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <Clock className="h-4 w-4" />
-            Check-out
-          </div>
-          <span className="font-semibold text-foreground">{bungalow.checkOutTime}</span>
-        </div>
-      </div>
-
-      {/* Tariff Details */}
-      <div className="bg-gradient-to-r from-secondary/10 to-primary/10 p-4 rounded-lg border border-secondary/30">
-        <h3 className="font-serif font-semibold text-foreground mb-3 flex items-center gap-2">
-          <span className="text-secondary">💰</span>
-          Tariff Details {bungalow.acType === "AC" && <Badge variant="outline" className="text-xs ml-auto">AC Rate</Badge>}
-        </h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <span className="text-sm text-muted-foreground block">Room Only</span>
-            <span className="font-bold text-lg text-primary">
-              Rs {bungalow.tariff.roomOnly.toLocaleString()}
-            </span>
-          </div>
-          <div>
-            <span className="text-sm text-muted-foreground block">BB with Room</span>
-            <span className="font-bold text-lg text-primary">
-              Rs {bungalow.tariff.bbWithRoom.toLocaleString()}
-            </span>
-          </div>
-          <div>
-            <span className="text-sm text-muted-foreground block">Full Board</span>
-            <span className="font-bold text-lg text-primary">
-              Rs {bungalow.tariff.fullBoard.toLocaleString()}
-            </span>
-          </div>
-        </div>
-        {bungalow.acType === "AC" && nonAcTariff && (
-          <div className="mt-3 pt-3 border-t border-secondary/30">
-            <p className="text-xs text-primary font-medium mb-2 flex items-center gap-1">
-              <Info className="h-3 w-3" /> Book without AC at reduced rates:
-            </p>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <span className="text-xs text-muted-foreground block">Room Only</span>
-                <span className="font-semibold text-sm text-foreground">
-                  Rs {nonAcTariff.roomOnly.toLocaleString()}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-muted-foreground block">BB with Room</span>
-                <span className="font-semibold text-sm text-foreground">
-                  Rs {nonAcTariff.bbWithRoom.toLocaleString()}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-muted-foreground block">Full Board</span>
-                <span className="font-semibold text-sm text-foreground">
-                  Rs {nonAcTariff.fullBoard.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Amenities */}
-      <div>
-        <h3 className="font-serif font-semibold text-foreground mb-3 flex items-center gap-2">
-          <span className="text-secondary">✨</span>
-          Features & Amenities
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {bungalow.amenities.map((amenity) => (
-            <div key={amenity} className="flex items-center gap-2 text-sm bg-card p-2 rounded-lg border border-border">
-              <span className="text-primary">{amenityIcons[amenity] || <Check className="h-4 w-4" />}</span>
-              {amenity}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Rules */}
-      <div>
-        <h3 className="font-serif font-semibold text-foreground mb-3 flex items-center gap-2">
-          <span className="text-secondary">📋</span>
-          Rules & Policies
-        </h3>
-        <ul className="space-y-2">
-          {bungalow.rules.map((rule, index) => (
-            <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-              <span className="text-secondary mt-0.5">•</span>
-              {rule}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Book Button */}
-      <Button 
-        onClick={onBookNow} 
-        disabled={!bungalow.available}
-        className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-traditional transition-all duration-300 hover:shadow-gold-glow"
-        size="lg"
-      >
-        {bungalow.available ? (
-          <>
-            <span className="mr-2">🪷</span>
-            Book This Bungalow
-          </>
-        ) : (
-          <>
-            <X className="mr-2 h-4 w-4" />
-            Currently Not Available
-          </>
-        )}
-      </Button>
-    </div>
-  );
-};
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 const BungalowsPage = () => {
   const { t } = useLanguage();
-  const { bungalowsList: bungalows } = useBungalowRooms();
-  const [selectedBungalow, setSelectedBungalow] = useState<Bungalow | null>(null);
-  const [showBookingForm, setShowBookingForm] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [filterType, setFilterType] = useState<string>("all");
-  const [filterCheckIn, setFilterCheckIn] = useState<Date | undefined>(undefined);
-  const [filterCheckOut, setFilterCheckOut] = useState<Date | undefined>(undefined);
-  const [bookedRoomNames, setBookedRoomNames] = useState<Set<string>>(new Set());
+  const { bungalowsList } = useBungalowRooms();
+  const [searchParams] = useSearchParams();
+
+  // Listing-page date filter
+  const [filterCheckIn, setFilterCheckIn] = useState<Date | undefined>();
+  const [filterCheckOut, setFilterCheckOut] = useState<Date | undefined>();
+  const [listingBookedNames, setListingBookedNames] = useState<Set<string>>(new Set());
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
 
-  // Fetch confirmed bookings that overlap the selected date range
+  // Booking dialog
+  const [showDialog, setShowDialog] = useState(false);
+  const [form, setForm] = useState<FormState>({ ...DEFAULT_FORM });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Live availability inside the dialog (checked when dates + roomType change)
+  const [dialogAvail, setDialogAvail] = useState<{ ac: number; nonAc: number } | null>(null);
+
+  // ── PayHere redirect toast ───────────────────────────────────────────────
+
+  useEffect(() => {
+    const payment = searchParams.get("payment");
+    if (payment === "success") {
+      toast({
+        title: "Payment Successful!",
+        description: "Your room booking is confirmed. We look forward to welcoming you.",
+      });
+    } else if (payment === "cancelled") {
+      toast({
+        title: "Payment Cancelled",
+        description: "Your payment was cancelled. The room hold has been released.",
+        variant: "destructive",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Listing page availability fetch ────────────────────────────────────────
+
   useEffect(() => {
     if (!filterCheckIn || !filterCheckOut) {
-      setBookedRoomNames(new Set());
+      setListingBookedNames(new Set());
       return;
     }
-
-    const fetchBookedRooms = async () => {
-      setAvailabilityLoading(true);
-      try {
-        const checkIn = format(filterCheckIn, 'yyyy-MM-dd');
-        const checkOut = format(filterCheckOut, 'yyyy-MM-dd');
-
-        const { data, error } = await (supabase as any)
-          .from('bungalow_bookings')
-          .select('room_type')
-          .eq('status', 'confirmed')
-          .lt('check_in_date', checkOut)
-          .gt('check_out_date', checkIn);
-
-        if (error) throw error;
-
-        const names = new Set<string>((data || []).map((b: any) => b.room_type));
-        setBookedRoomNames(names);
-      } catch (err) {
-        console.error('Failed to check availability:', err);
-        setBookedRoomNames(new Set());
-      } finally {
+    const checkIn = format(filterCheckIn, "yyyy-MM-dd");
+    const checkOut = format(filterCheckOut, "yyyy-MM-dd");
+    setAvailabilityLoading(true);
+    (supabase as any)
+      .from("bungalow_bookings")
+      .select("room_type")
+      .in("status", ["confirmed", "pending", "pending_payment"])
+      .lt("check_in_date", checkOut)
+      .gt("check_out_date", checkIn)
+      .then(({ data, error }: any) => {
+        if (!error) {
+          setListingBookedNames(new Set((data ?? []).map((b: any) => b.room_type as string)));
+        }
         setAvailabilityLoading(false);
-      }
-    };
-
-    fetchBookedRooms();
+      });
   }, [filterCheckIn, filterCheckOut]);
 
-  const [formData, setFormData] = useState<BookingFormData>({
-    fullName: "",
-    mobileNumber: "",
-    email: "",
-    address: "",
-    idProofType: "",
-    idProofFile: null,
-    bungalowId: "",
-    packageType: "roomOnly",
-    acPreference: "AC",
-    checkInDate: undefined,
-    checkOutDate: undefined,
-    adults: "1",
-    children: "0",
-    purpose: "",
-    specialRequests: "",
-  });
+  // ── Dialog availability fetch ───────────────────────────────────────────────
 
-  const filteredBungalows = filterType === "all" 
-    ? bungalows 
-    : bungalows.filter(b => b.type === filterType);
+  useEffect(() => {
+    if (!form.checkInDate || !form.checkOutDate) {
+      setDialogAvail(null);
+      return;
+    }
+    const checkIn = format(form.checkInDate, "yyyy-MM-dd");
+    const checkOut = format(form.checkOutDate, "yyyy-MM-dd");
+    (supabase as any)
+      .from("bungalow_bookings")
+      .select("room_type")
+      .in("status", ["confirmed", "pending", "pending_payment"])
+      .lt("check_in_date", checkOut)
+      .gt("check_out_date", checkIn)
+      .then(({ data, error }: any) => {
+        if (error) return;
+        const booked = new Set<string>((data ?? []).map((b: any) => b.room_type as string));
+        const pool = bungalowsList.filter(b => b.type === form.roomType && b.available);
+        setDialogAvail({
+          ac: pool.filter(b => b.acType === "AC" && !booked.has(b.name)).length,
+          nonAc: pool.filter(b => b.acType === "Non-AC" && !booked.has(b.name)).length,
+        });
+      });
+  }, [form.checkInDate, form.checkOutDate, form.roomType, bungalowsList]);
 
-  const roomGroups = groupBungalows(filteredBungalows, filterCheckIn && filterCheckOut ? bookedRoomNames : undefined);
+  // ── Computed values ─────────────────────────────────────────────────────────
 
-  const handleViewDetails = (bungalow: Bungalow) => {
-    setSelectedBungalow(bungalow);
+  const datesActive = !!(filterCheckIn && filterCheckOut);
+  const typeGroups = useMemo(
+    () => buildTypeGroups(bungalowsList, datesActive ? listingBookedNames : null),
+    [bungalowsList, listingBookedNames, datesActive]
+  );
+
+  const effectiveTariff = useMemo(
+    () => getTariff(bungalowsList, form.roomType, form.acPreference),
+    [bungalowsList, form.roomType, form.acPreference]
+  );
+
+  const nights =
+    form.checkInDate && form.checkOutDate
+      ? differenceInDays(form.checkOutDate, form.checkInDate)
+      : 0;
+
+  const perNight = effectiveTariff
+    ? form.packageType === "bbWithRoom"
+      ? effectiveTariff.bbWithRoom
+      : form.packageType === "fullBoard"
+      ? effectiveTariff.fullBoard
+      : effectiveTariff.roomOnly
+    : 0;
+
+  const totalPrice = perNight * Math.max(nights, 0);
+
+  const currentTypeGroup = typeGroups.find(g => g.type === form.roomType);
+
+  // Non-AC pref can use AC rooms as fallback
+  const dialogAvailForNonAc =
+    dialogAvail ? dialogAvail.nonAc + dialogAvail.ac : null;
+  const dialogAvailForAc = dialogAvail?.ac ?? null;
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
+
+  const handleOpenBooking = (type: RoomType) => {
+    setForm({ ...DEFAULT_FORM, roomType: type });
+    setDialogAvail(null);
+    setShowDialog(true);
   };
 
-  const handleBookNow = (bungalow: Bungalow) => {
-    setFormData(prev => ({ ...prev, bungalowId: bungalow.id, acPreference: "AC" }));
-    setSelectedBungalow(null);
-    setShowBookingForm(true);
-  };
-
-  const updateFormData = (field: keyof BookingFormData, value: string | Date | undefined) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const setField = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+    setForm(prev => ({ ...prev, [key]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.fullName || !formData.mobileNumber || !formData.bungalowId || !formData.checkInDate || !formData.checkOutDate) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
+
+    if (!form.fullName.trim() || !form.mobileNumber.trim()) {
+      toast({ title: "Missing fields", description: "Full name and mobile number are required.", variant: "destructive" });
       return;
     }
-
-    if (numberOfNights <= 0) {
-      toast({
-        title: "Invalid Dates",
-        description: "Check-out date must be after check-in date.",
-        variant: "destructive",
-      });
+    if (!form.checkInDate || !form.checkOutDate) {
+      toast({ title: "Missing dates", description: "Please select check-in and check-out dates.", variant: "destructive" });
+      return;
+    }
+    if (nights <= 0) {
+      toast({ title: "Invalid dates", description: "Check-out must be after check-in.", variant: "destructive" });
+      return;
+    }
+    if (totalPrice <= 0) {
+      toast({ title: "Invalid amount", description: "Please select a valid package and dates.", variant: "destructive" });
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      // Upload ID proof if provided
-      let idProofUrl: string | null = null;
-      if (formData.idProofFile) {
-        const fileExt = formData.idProofFile.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('id-proofs')
-          .upload(fileName, formData.idProofFile);
-        if (uploadError) throw new Error(`ID proof upload failed: ${uploadError.message}`);
-        idProofUrl = uploadData.path;
+      const checkIn = format(form.checkInDate, "yyyy-MM-dd");
+      const checkOut = format(form.checkOutDate, "yyyy-MM-dd");
+
+      // 1. Find an available physical room
+      const assignedRoom = await findAvailableRoom(
+        bungalowsList, form.roomType, form.acPreference, checkIn, checkOut
+      );
+      if (!assignedRoom) {
+        toast({
+          title: "No rooms available",
+          description: "All rooms of this type are booked for the selected dates. Please choose different dates.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
       }
 
-      const selectedRoom = getBungalowById(formData.bungalowId);
-      const { error } = await (supabase as any)
-        .from('bungalow_bookings')
+      // 2. Upload ID proof if provided
+      let idProofUrl: string | null = null;
+      if (form.idProofFile) {
+        const ext = form.idProofFile.name.split(".").pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { data: up, error: upErr } = await supabase.storage
+          .from("id-proofs")
+          .upload(fileName, form.idProofFile);
+        if (upErr) throw new Error(`ID upload failed: ${upErr.message}`);
+        idProofUrl = up.path;
+      }
+
+      // 3. Create booking as pending_payment — holds the room while customer pays
+      const { data: newBooking, error: bookingError } = await (supabase as any)
+        .from("bungalow_bookings")
         .insert({
-          full_name: formData.fullName.trim(),
-          mobile_number: formData.mobileNumber.trim(),
-          email: formData.email.trim() || null,
-          address: formData.address.trim() || null,
-          id_proof_type: formData.idProofType || null,
+          full_name: form.fullName.trim(),
+          mobile_number: form.mobileNumber.trim(),
+          email: form.email.trim() || null,
+          address: form.address.trim() || null,
+          id_proof_type: form.idProofType || null,
           id_proof_url: idProofUrl,
-          room_type: selectedRoom?.name || formData.bungalowId,
-          ac_type: selectedRoom?.acType === 'AC' ? formData.acPreference : (selectedRoom?.acType || 'Non-AC'),
-          package_type: formData.packageType,
-          check_in_date: format(formData.checkInDate!, 'yyyy-MM-dd'),
-          check_out_date: format(formData.checkOutDate!, 'yyyy-MM-dd'),
-          adults: parseInt(formData.adults) || 1,
-          children: parseInt(formData.children) || 0,
-          purpose: formData.purpose.trim() || null,
-          special_requests: formData.specialRequests.trim() || null,
-          total_amount: totalPrice > 0 ? totalPrice : null,
-          status: 'confirmed',
-        });
+          room_type: assignedRoom.name,  // physical room — admin tracking
+          ac_type: form.acPreference,    // customer preference — for tariff
+          package_type: form.packageType,
+          check_in_date: checkIn,
+          check_out_date: checkOut,
+          adults: parseInt(form.adults) || 1,
+          children: parseInt(form.children) || 0,
+          purpose: form.purpose.trim() || null,
+          special_requests: form.specialRequests.trim() || null,
+          total_amount: totalPrice,
+          status: "pending_payment",
+        })
+        .select("id")
+        .single();
 
-      if (error) throw error;
+      if (bookingError) throw bookingError;
+      const bookingId: string = newBooking.id;
 
-      toast({
-        title: "Booking Confirmed!",
-        description: "Your booking has been confirmed! We look forward to welcoming you.",
+      // 4. Get PayHere checkout form data (hash generated server-side)
+      const nameParts = form.fullName.trim().split(" ");
+      const { data: payData, error: payError } = await supabase.functions.invoke(
+        "payhere-checkout",
+        {
+          body: {
+            orderId: bookingId,
+            amount: totalPrice.toFixed(2),
+            firstName: nameParts[0],
+            lastName: nameParts.slice(1).join(" ") || "",
+            email: form.email || "",
+            phone: form.mobileNumber,
+            hallName: `${form.roomType} — ${form.acPreference === "AC" ? "With AC" : "Without AC"}`,
+            returnUrl: "https://raajeshwariygroups.com/bungalows?payment=success",
+            cancelUrl: `https://raajeshwariygroups.com/bungalows?payment=cancelled`,
+          },
+        }
+      );
+
+      if (payError || !payData) {
+        // Roll back: cancel the pending booking so the room is released
+        await (supabase as any)
+          .from("bungalow_bookings")
+          .update({ status: "cancelled" })
+          .eq("id", bookingId);
+        throw new Error(payError?.message || "Failed to initiate payment");
+      }
+
+      // 5. Auto-submit hidden form to PayHere hosted checkout
+      const payForm = document.createElement("form");
+      payForm.method = "POST";
+      payForm.action = payData.checkoutUrl;
+
+      Object.entries(payData.fields as Record<string, string>).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        payForm.appendChild(input);
       });
 
-      setShowBookingForm(false);
-      setFormData({
-        fullName: "",
-        mobileNumber: "",
-        email: "",
-        address: "",
-        idProofType: "",
-        idProofFile: null,
-        bungalowId: "",
-        packageType: "roomOnly",
-        acPreference: "AC",
-        checkInDate: undefined,
-        checkOutDate: undefined,
-        adults: "1",
-        children: "0",
-        purpose: "",
-        specialRequests: "",
-      });
-    } catch (error: any) {
-      console.error('Booking error:', error);
-      toast({
-        title: "Booking Failed",
-        description: error.message || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+      document.body.appendChild(payForm);
+      payForm.submit();
+      // Note: don't reset form/isSubmitting here — page navigates away
+    } catch (err: any) {
+      toast({ title: "Booking Failed", description: err.message || "Please try again.", variant: "destructive" });
       setIsSubmitting(false);
     }
   };
 
-  const selectedBungalowForBooking = formData.bungalowId ? bungalows.find(b => b.id === formData.bungalowId) || getBungalowById(formData.bungalowId) : undefined;
-
-  // Price calculation
-  const numberOfNights = formData.checkInDate && formData.checkOutDate
-    ? differenceInDays(formData.checkOutDate, formData.checkInDate)
-    : 0;
-
-  // Find matching Non-AC tariff when user picks "Without AC" on an AC room
-  const getEffectiveTariff = () => {
-    if (!selectedBungalowForBooking) return null;
-    if (selectedBungalowForBooking.acType === "AC" && formData.acPreference === "Non-AC") {
-      const nonAcMatch = bungalows.find(b => b.type === selectedBungalowForBooking.type && b.acType === "Non-AC");
-      return nonAcMatch?.tariff || selectedBungalowForBooking.tariff;
-    }
-    return selectedBungalowForBooking.tariff;
-  };
-
-  const effectiveTariff = getEffectiveTariff();
-
-  const getPerNightRate = (): number => {
-    if (!effectiveTariff) return 0;
-    switch (formData.packageType) {
-      case "bbWithRoom": return effectiveTariff.bbWithRoom;
-      case "fullBoard": return effectiveTariff.fullBoard;
-      default: return effectiveTariff.roomOnly;
-    }
-  };
-
-  const perNightRate = getPerNightRate();
-  const totalPrice = perNightRate * (numberOfNights > 0 ? numberOfNights : 0);
+  // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <Layout>
-      {/* Hero Section */}
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative py-20 bg-gradient-to-b from-secondary/20 via-card to-background overflow-hidden">
         <FloatingElements type="petals" density="low" />
         <RangoliPattern position="center" size="lg" opacity={0.08} />
-        
         <div className="container relative z-10 mx-auto px-4 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-secondary" />
             <span className="text-secondary text-2xl">🏠</span>
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-secondary" />
           </div>
-          
           <span className="text-secondary font-medium tracking-wider uppercase text-sm animate-fade-in">
             ✦ {t("bungalows.subtitle")} ✦
           </span>
@@ -696,84 +601,46 @@ const BungalowsPage = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             {t("bungalows.description")}
           </p>
-          
           <div className="divider-ornate mt-8" />
         </div>
       </section>
 
-      {/* Room Availability Overview */}
+      {/* Policy bar + Date filter */}
       <section className="relative py-8 bg-card border-b border-secondary/20">
         <DecorativeBorder position="top" />
-        <div className="container mx-auto px-4 lg:px-8">
-          {/* Room counts summary */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {(() => {
-              const doubleAC = bungalows.filter(b => b.type === "Double Room" && b.acType === "AC").length;
-              const doubleNonAC = bungalows.filter(b => b.type === "Double Room" && b.acType === "Non-AC").length;
-              const tripleAC = bungalows.filter(b => b.type === "Triple Room" && b.acType === "AC").length;
-              const tripleNonAC = bungalows.filter(b => b.type === "Triple Room" && b.acType === "Non-AC").length;
-              const familyAC = bungalows.filter(b => b.type === "Family Room" && b.acType === "AC").length;
-              const familyNonAC = bungalows.filter(b => b.type === "Family Room" && b.acType === "Non-AC").length;
-              return [
-                { label: "Double Rooms", total: doubleAC + doubleNonAC, ac: doubleAC, nonAc: doubleNonAC, icon: "🛏️", adults: 2 },
-                { label: "Triple Rooms", total: tripleAC + tripleNonAC, ac: tripleAC, nonAc: tripleNonAC, icon: "🛏️", adults: 3 },
-                { label: "Family Rooms", total: familyAC + familyNonAC, ac: familyAC, nonAc: familyNonAC, icon: "🏠", adults: 4 },
-              ].map((cat) => (
-                <div key={cat.label} className="bg-gradient-to-r from-secondary/10 to-primary/10 p-4 rounded-lg border border-secondary/30 text-center">
-                  <span className="text-2xl">{cat.icon}</span>
-                  <h3 className="font-serif font-semibold text-foreground mt-1">{cat.label}</h3>
-                  <p className="text-2xl font-bold text-primary">{cat.total} <span className="text-sm font-normal text-muted-foreground">rooms</span></p>
-                  <div className="flex justify-center gap-3 mt-1 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Snowflake className="h-3 w-3" /> {cat.ac} AC</span>
-                    <span>|</span>
-                    <span>{cat.nonAc} Non-AC</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">Max {cat.adults} adults per room</p>
-                </div>
-              ));
-            })()}
-          </div>
+        <div className="container mx-auto px-4 lg:px-8 space-y-6">
 
-          {/* AC flexibility info banner */}
-          <div className="mb-6 bg-gradient-to-r from-secondary/15 via-primary/10 to-secondary/15 border border-secondary/30 rounded-xl px-6 py-4 text-center">
-            <p className="text-base font-semibold text-foreground flex items-center justify-center gap-3">
-              <Snowflake className="h-5 w-5 text-primary" />
-              AC rooms can also be booked without AC at Non-AC rates
-              <Snowflake className="h-5 w-5 text-primary" />
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">Choose your preference during booking</p>
-          </div>
-
-          {/* Child policy & rules */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 text-sm">
-            <Badge variant="outline" className="border-secondary/50 text-foreground px-3 py-1">
-              <Baby className="h-3 w-3 mr-1" /> 1 child under 6 years allowed per room
+          {/* Policy badges */}
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
+            <Badge variant="outline" className="border-secondary/50 px-3 py-1">
+              <Snowflake className="h-3 w-3 mr-1.5 text-primary" />
+              AC rooms available at Non-AC rates on request
             </Badge>
-            <Badge variant="outline" className="border-secondary/50 text-foreground px-3 py-1">
-              <Shield className="h-3 w-3 mr-1" /> ID proof mandatory
+            <Badge variant="outline" className="border-secondary/50 px-3 py-1">
+              <Baby className="h-3 w-3 mr-1.5" />1 child under 6 per room
             </Badge>
-            <Badge variant="outline" className="border-secondary/50 text-foreground px-3 py-1">
-              <X className="h-3 w-3 mr-1" /> No pets · No smoking
+            <Badge variant="outline" className="border-secondary/50 px-3 py-1">
+              <Shield className="h-3 w-3 mr-1.5" />ID proof mandatory
+            </Badge>
+            <Badge variant="outline" className="border-secondary/50 px-3 py-1">
+              <X className="h-3 w-3 mr-1.5" />No pets · No smoking
             </Badge>
           </div>
 
-          {/* Date Range Availability Filter */}
-          <div className="mb-6 bg-gradient-to-r from-primary/5 to-secondary/5 border border-secondary/30 rounded-xl p-5">
+          {/* Date availability checker */}
+          <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-secondary/30 rounded-xl p-5">
             <h3 className="font-serif font-semibold text-foreground text-center mb-4 flex items-center justify-center gap-2">
               <CalendarIcon className="h-5 w-5 text-secondary" />
-              Check Room Availability
+              Check Availability
             </h3>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <div className="w-full sm:w-auto">
-                <Label className="text-xs text-muted-foreground mb-1 block text-center">Check-in Date</Label>
+                <Label className="text-xs text-muted-foreground mb-1 block text-center">Check-in</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={cn(
-                        "w-full sm:w-[200px] justify-start text-left font-normal",
-                        !filterCheckIn && "text-muted-foreground"
-                      )}
+                      className={cn("w-full sm:w-[190px] justify-start text-left font-normal", !filterCheckIn && "text-muted-foreground")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {filterCheckIn ? format(filterCheckIn, "PPP") : "Select date"}
@@ -783,30 +650,27 @@ const BungalowsPage = () => {
                     <Calendar
                       mode="single"
                       selected={filterCheckIn}
-                      onSelect={(date) => {
+                      onSelect={date => {
                         setFilterCheckIn(date);
-                        if (filterCheckOut && date && date >= filterCheckOut) {
-                          setFilterCheckOut(undefined);
-                        }
+                        if (filterCheckOut && date && date >= filterCheckOut) setFilterCheckOut(undefined);
                       }}
-                      disabled={(date) => date < new Date()}
+                      disabled={date => date < new Date()}
                       initialFocus
                       className="p-3 pointer-events-auto"
                     />
                   </PopoverContent>
                 </Popover>
               </div>
-              <span className="hidden sm:block text-muted-foreground font-medium">→</span>
+
+              <span className="hidden sm:block text-muted-foreground">→</span>
+
               <div className="w-full sm:w-auto">
-                <Label className="text-xs text-muted-foreground mb-1 block text-center">Check-out Date</Label>
+                <Label className="text-xs text-muted-foreground mb-1 block text-center">Check-out</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={cn(
-                        "w-full sm:w-[200px] justify-start text-left font-normal",
-                        !filterCheckOut && "text-muted-foreground"
-                      )}
+                      className={cn("w-full sm:w-[190px] justify-start text-left font-normal", !filterCheckOut && "text-muted-foreground")}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {filterCheckOut ? format(filterCheckOut, "PPP") : "Select date"}
@@ -816,14 +680,15 @@ const BungalowsPage = () => {
                     <Calendar
                       mode="single"
                       selected={filterCheckOut}
-                      onSelect={setFilterCheckOut}
-                      disabled={(date) => date <= (filterCheckIn || new Date())}
+                      onSelect={date => setFilterCheckOut(date)}
+                      disabled={date => date <= (filterCheckIn ?? new Date())}
                       initialFocus
                       className="p-3 pointer-events-auto"
                     />
                   </PopoverContent>
                 </Popover>
               </div>
+
               {(filterCheckIn || filterCheckOut) && (
                 <Button
                   variant="ghost"
@@ -835,453 +700,421 @@ const BungalowsPage = () => {
                 </Button>
               )}
             </div>
+
             {filterCheckIn && filterCheckOut && (
               <p className="text-center text-sm mt-3 text-muted-foreground">
-                {availabilityLoading ? (
-                  <span className="animate-pulse">Checking availability...</span>
-                ) : (
-                  <>Showing availability for <span className="font-medium text-foreground">{format(filterCheckIn, "dd MMM yyyy")}</span> — <span className="font-medium text-foreground">{format(filterCheckOut, "dd MMM yyyy")}</span></>
-                )}
+                {availabilityLoading
+                  ? <span className="animate-pulse">Checking availability...</span>
+                  : <>Showing availability for <span className="font-medium text-foreground">{format(filterCheckIn, "dd MMM yyyy")}</span> — <span className="font-medium text-foreground">{format(filterCheckOut, "dd MMM yyyy")}</span></>
+                }
               </p>
             )}
-          </div>
-
-          {/* Filter buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <span className="text-sm text-muted-foreground mr-2">{t("common.filter")}:</span>
-            {["all", "Double Room", "Triple Room", "Family Room"].map((type) => (
-              <Button
-                key={type}
-                variant={filterType === type ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFilterType(type)}
-                className={cn(
-                  filterType === type
-                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-traditional hover:shadow-gold-glow"
-                    : "border-primary/30 text-foreground hover:bg-primary/10"
-                )}
-              >
-                {type === "all" ? t("common.all") : type}
-              </Button>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* Bungalow Listing */}
+      {/* Room type cards */}
       <section className="relative py-16 bg-background overflow-hidden">
         <div className="absolute inset-0 paisley-bg opacity-20" />
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {roomGroups.map((group) => (
-              <RoomGroupCard
-                key={group.key}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {typeGroups.map(group => (
+              <RoomTypeCard
+                key={group.type}
                 group={group}
-                onViewDetails={() => handleViewDetails(group.representative)}
-                onBookNow={() => handleBookNow(group.representative)}
+                datesActive={datesActive}
+                onBook={handleOpenBooking}
               />
             ))}
           </div>
-          
-          {roomGroups.length === 0 && (
-            <div className="text-center py-12">
-              <span className="text-4xl mb-4 block">🏠</span>
-              <p className="text-muted-foreground">No rooms found for the selected filter.</p>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* View Details Modal */}
-      <Dialog open={!!selectedBungalow} onOpenChange={(open) => !open && setSelectedBungalow(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="sr-only">Bungalow Details</DialogTitle>
-          </DialogHeader>
-          {selectedBungalow && (
-            <BungalowDetailModal 
-              bungalow={selectedBungalow} 
-              onBookNow={() => handleBookNow(selectedBungalow)}
-              allBungalows={bungalows}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Booking Form Modal */}
-      <Dialog open={showBookingForm} onOpenChange={setShowBookingForm}>
+      {/* Booking Dialog */}
+      <Dialog open={showDialog} onOpenChange={open => { if (!open) setShowDialog(false); }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2">
               <span className="text-secondary text-xl">🪔</span>
               <DialogTitle className="font-serif text-2xl text-gradient-gold">Room Reservation</DialogTitle>
             </div>
-            {selectedBungalowForBooking && (
-              <p className="text-muted-foreground text-sm">
-                Booking: <span className="font-medium text-foreground">{selectedBungalowForBooking.name}</span> ({selectedBungalowForBooking.type})
-              </p>
-            )}
           </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Details */}
+
+          <form onSubmit={handleSubmit} className="space-y-6 mt-1">
+
+            {/* ── Section 1: Room & Dates ── */}
             <div className="space-y-4">
-              <h3 className="font-serif font-semibold text-foreground flex items-center gap-2">
-                <User className="h-4 w-4 text-secondary" />
-                Personal Details
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Room & Stay</p>
+
+              {/* Room type selector */}
+              <div>
+                <Label className="text-sm mb-2 block">Room Type</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {ROOM_TYPES.map(type => {
+                    const g = typeGroups.find(g => g.type === type);
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setField("roomType", type)}
+                        className={cn(
+                          "p-3 rounded-lg border text-center transition-all",
+                          form.roomType === type
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <div className="font-semibold text-sm">{type.replace(" Room", "")}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Max {g?.maxOccupancy.adults ?? "—"} adults
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Label className="text-sm mb-1 block">Check-in *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn("w-full justify-start text-left font-normal text-sm", !form.checkInDate && "text-muted-foreground")}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {form.checkInDate ? format(form.checkInDate, "dd MMM yyyy") : "Select"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={form.checkInDate}
+                        onSelect={date => {
+                          setField("checkInDate", date);
+                          if (form.checkOutDate && date && date >= form.checkOutDate)
+                            setField("checkOutDate", undefined);
+                        }}
+                        disabled={date => date < new Date()}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div>
+                  <Label className="text-sm mb-1 block">Check-out *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn("w-full justify-start text-left font-normal text-sm", !form.checkOutDate && "text-muted-foreground")}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {form.checkOutDate ? format(form.checkOutDate, "dd MMM yyyy") : "Select"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={form.checkOutDate}
+                        onSelect={date => setField("checkOutDate", date)}
+                        disabled={date => date <= (form.checkInDate ?? new Date())}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              {nights > 0 && (
+                <p className="text-sm text-center text-muted-foreground">
+                  {nights} night{nights > 1 ? "s" : ""}
+                </p>
+              )}
+
+              {/* AC Preference */}
+              <div>
+                <Label className="text-sm mb-2 block">AC Preference</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(["AC", "Non-AC"] as AcPref[]).map(pref => {
+                    const tariff = getTariff(bungalowsList, form.roomType, pref);
+                    const avail = pref === "AC" ? dialogAvailForAc : dialogAvailForNonAc;
+                    const isActive = form.acPreference === pref;
+                    return (
+                      <button
+                        key={pref}
+                        type="button"
+                        onClick={() => setField("acPreference", pref)}
+                        className={cn(
+                          "p-4 rounded-lg border text-center transition-all",
+                          isActive ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        {pref === "AC" && <Snowflake className={cn("h-5 w-5 mx-auto mb-1", isActive ? "text-primary" : "text-muted-foreground")} />}
+                        <div className={cn("font-semibold text-sm", isActive ? "text-primary" : "text-foreground")}>
+                          {pref === "AC" ? "With AC" : "Without AC"}
+                        </div>
+                        {tariff && (
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            Rs {tariff.roomOnly.toLocaleString()}/night
+                          </div>
+                        )}
+                        {avail !== null && (
+                          <div className={cn(
+                            "text-xs mt-1 font-medium",
+                            avail > 0 ? "text-green-600" : "text-destructive"
+                          )}>
+                            {avail > 0 ? `${avail} available` : "None available"}
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                {form.acPreference === "Non-AC" && (
+                  <p className="text-xs text-muted-foreground mt-2 flex items-start gap-1">
+                    <Info className="h-3 w-3 shrink-0 mt-0.5" />
+                    An AC room may be assigned at Non-AC rates if Non-AC rooms are unavailable.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-border" />
+
+            {/* ── Section 2: Package & Guests ── */}
+            <div className="space-y-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Package & Guests</p>
+
+              {/* Package type */}
+              <div>
+                <Label className="text-sm mb-2 block">Meal Package</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(
+                    [
+                      { id: "roomOnly" as PkgType, label: "Room Only", price: effectiveTariff?.roomOnly },
+                      { id: "bbWithRoom" as PkgType, label: "Bed & Breakfast", price: effectiveTariff?.bbWithRoom },
+                      { id: "fullBoard" as PkgType, label: "Full Board", price: effectiveTariff?.fullBoard },
+                    ] as const
+                  ).map(pkg => (
+                    <button
+                      key={pkg.id}
+                      type="button"
+                      onClick={() => setField("packageType", pkg.id)}
+                      className={cn(
+                        "p-3 rounded-lg border text-center transition-all",
+                        form.packageType === pkg.id
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <div className="text-sm font-medium">{pkg.label}</div>
+                      {pkg.price && (
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Rs {pkg.price.toLocaleString()}/night
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Guest count */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm">Adults *</Label>
                   <Input
-                    id="fullName"
-                    value={formData.fullName}
-                    onChange={(e) => updateFormData("fullName", e.target.value)}
-                    placeholder="Enter your full name"
+                    type="number"
+                    min="1"
+                    max={currentTypeGroup?.maxOccupancy.adults ?? 4}
+                    value={form.adults}
+                    onChange={e => setField("adults", e.target.value)}
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Max {currentTypeGroup?.maxOccupancy.adults ?? "—"}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm">Children</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="1"
+                    value={form.children}
+                    onChange={e => setField("children", e.target.value)}
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-0.5">Under 6 years · max 1</p>
+                </div>
+              </div>
+
+              {/* Price summary */}
+              {effectiveTariff && (
+                <div className="bg-gradient-to-r from-secondary/10 to-primary/10 p-4 rounded-lg border border-secondary/30">
+                  <div className="space-y-1.5 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Per night</span>
+                      <span className="font-medium">Rs {perNight.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Nights</span>
+                      <span className="font-medium">{nights > 0 ? nights : "—"}</span>
+                    </div>
+                    <div className="border-t border-secondary/30 pt-2 flex justify-between">
+                      <span className="font-semibold">Total</span>
+                      <span className="font-bold text-lg text-primary">
+                        {totalPrice > 0 ? `Rs ${totalPrice.toLocaleString()}` : "Select dates"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-border" />
+
+            {/* ── Section 3: Personal Details ── */}
+            <div className="space-y-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Your Details</p>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm">Full Name *</Label>
+                  <Input
+                    value={form.fullName}
+                    onChange={e => setField("fullName", e.target.value)}
+                    placeholder="Your full name"
                     className="mt-1"
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="mobileNumber">Mobile Number *</Label>
+                  <Label className="text-sm">Mobile Number *</Label>
                   <Input
-                    id="mobileNumber"
                     type="tel"
-                    value={formData.mobileNumber}
-                    onChange={(e) => updateFormData("mobileNumber", e.target.value)}
-                    placeholder="+91 98765 43210"
+                    value={form.mobileNumber}
+                    onChange={e => setField("mobileNumber", e.target.value)}
+                    placeholder="+94 77 123 4567"
                     className="mt-1"
                     required
                   />
                 </div>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div>
+                <Label className="text-sm">Email</Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={e => setField("email", e.target.value)}
+                  placeholder="your@email.com"
+                  className="mt-1"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateFormData("email", e.target.value)}
-                    placeholder="your@email.com"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="idProofType">ID Proof Type *</Label>
-                  <Select
-                    value={formData.idProofType}
-                    onValueChange={(value) => updateFormData("idProofType", value)}
-                  >
+                  <Label className="text-sm">ID Proof Type</Label>
+                  <Select value={form.idProofType} onValueChange={v => setField("idProofType", v)}>
                     <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select ID proof" />
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      {idProofTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
+                      {ID_PROOF_TYPES.map(t => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
+                <div>
+                  <Label className="text-sm">Upload ID Proof</Label>
+                  <div className="mt-1">
+                    <label
+                      htmlFor="dlg-idProof"
+                      className="flex items-center gap-2 px-3 py-2 border border-dashed border-primary/40 rounded-lg cursor-pointer hover:bg-primary/5 text-xs text-muted-foreground h-10"
+                    >
+                      <Upload className="h-3 w-3 shrink-0" />
+                      <span className="truncate">
+                        {form.idProofFile ? form.idProofFile.name : "PDF / JPG / PNG (max 5MB)"}
+                      </span>
+                    </label>
+                    <input
+                      id="dlg-idProof"
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.webp"
+                      className="hidden"
+                      onChange={e => {
+                        const file = e.target.files?.[0] ?? null;
+                        if (file && file.size > 5 * 1024 * 1024) {
+                          toast({ title: "File too large", description: "Max 5MB.", variant: "destructive" });
+                          return;
+                        }
+                        setField("idProofFile", file);
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* ID Proof Upload */}
               <div>
-                <Label htmlFor="idProofFile">Upload ID Proof Document</Label>
-                <div className="mt-1 flex items-center gap-3">
-                  <label
-                    htmlFor="idProofFile"
-                    className="flex items-center gap-2 px-4 py-2 border border-dashed border-primary/40 rounded-lg cursor-pointer hover:bg-primary/5 transition-colors text-sm text-muted-foreground"
-                  >
-                    <Upload className="h-4 w-4 text-primary" />
-                    {formData.idProofFile ? formData.idProofFile.name : "Choose file (PDF, JPG, PNG)"}
-                  </label>
-                  <input
-                    id="idProofFile"
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.webp"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
-                      if (file && file.size > 5 * 1024 * 1024) {
-                        toast({ title: "File too large", description: "Maximum file size is 5MB.", variant: "destructive" });
-                        return;
-                      }
-                      setFormData(prev => ({ ...prev, idProofFile: file }));
-                    }}
-                  />
-                  {formData.idProofFile && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setFormData(prev => ({ ...prev, idProofFile: null }))}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Max 5MB · PDF, JPG, PNG accepted</p>
-              </div>
-              
-              <div>
-                <Label htmlFor="address">Address</Label>
+                <Label className="text-sm">Address</Label>
                 <Textarea
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => updateFormData("address", e.target.value)}
-                  placeholder="Enter your full address"
+                  value={form.address}
+                  onChange={e => setField("address", e.target.value)}
+                  placeholder="Your address"
+                  className="mt-1"
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm">Purpose of Stay</Label>
+                <Input
+                  value={form.purpose}
+                  onChange={e => setField("purpose", e.target.value)}
+                  placeholder="e.g., Attending wedding ceremony"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm">Special Requests</Label>
+                <Textarea
+                  value={form.specialRequests}
+                  onChange={e => setField("specialRequests", e.target.value)}
+                  placeholder="Any special requirements..."
                   className="mt-1"
                   rows={2}
                 />
               </div>
             </div>
 
-            {/* Stay Details */}
-            <div className="space-y-4 pt-4 border-t border-border">
-              <h3 className="font-serif font-semibold text-foreground flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-secondary" />
-                Stay Details
-              </h3>
-              
-              <div>
-                <Label>Select Bungalow/Room *</Label>
-                <Select
-                  value={formData.bungalowId}
-                  onValueChange={(value) => updateFormData("bungalowId", value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select room" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {bungalows.filter(b => b.available).map((bungalow) => (
-                      <SelectItem key={bungalow.id} value={bungalow.id}>
-                        {bungalow.name} - Rs {bungalow.tariff.roomOnly.toLocaleString()}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* AC Preference - only for AC rooms */}
-              {selectedBungalowForBooking?.acType === "AC" && (
-                <div className="flex items-start space-x-3 p-3 rounded-lg border bg-muted/30">
-                  <Checkbox
-                    id="useAc"
-                    checked={formData.acPreference === "AC"}
-                    onCheckedChange={(checked) =>
-                      updateFormData("acPreference", checked ? "AC" : "Non-AC")
-                    }
-                  />
-                  <div className="grid gap-1 leading-none">
-                    <Label htmlFor="useAc" className="cursor-pointer font-medium">
-                      Use Air Conditioning
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      Untick to get Non-AC rate
-                    </p>
-                    {formData.acPreference === "Non-AC" && (
-                      <p className="text-xs text-primary flex items-center gap-1">
-                        <Info className="h-3 w-3" /> Non-AC tariff will be applied
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Package Type Selection */}
-              <div>
-                <Label>Package Type *</Label>
-                <Select
-                  value={formData.packageType}
-                  onValueChange={(value) => updateFormData("packageType", value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select package" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="roomOnly">
-                      Room Only {effectiveTariff ? `- Rs ${effectiveTariff.roomOnly.toLocaleString()}/night` : ""}
-                    </SelectItem>
-                    <SelectItem value="bbWithRoom">
-                      Bed & Breakfast {effectiveTariff ? `- Rs ${effectiveTariff.bbWithRoom.toLocaleString()}/night` : ""}
-                    </SelectItem>
-                    <SelectItem value="fullBoard">
-                      Full Board {effectiveTariff ? `- Rs ${effectiveTariff.fullBoard.toLocaleString()}/night` : ""}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Check-in Date *</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal mt-1",
-                          !formData.checkInDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.checkInDate ? format(formData.checkInDate, "PPP") : "Select date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formData.checkInDate}
-                        onSelect={(date) => updateFormData("checkInDate", date)}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div>
-                  <Label>Check-out Date *</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal mt-1",
-                          !formData.checkOutDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.checkOutDate ? format(formData.checkOutDate, "PPP") : "Select date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formData.checkOutDate}
-                        onSelect={(date) => updateFormData("checkOutDate", date)}
-                        disabled={(date) => date < (formData.checkInDate || new Date())}
-                        initialFocus
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="adults">Number of Adults *</Label>
-                  <Input
-                    id="adults"
-                    type="number"
-                    min="1"
-                    max={selectedBungalowForBooking?.maxOccupancy.adults || 10}
-                    value={formData.adults}
-                    onChange={(e) => updateFormData("adults", e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="children">Number of Children</Label>
-                  <Input
-                    id="children"
-                    type="number"
-                    min="0"
-                    max={selectedBungalowForBooking?.maxOccupancy.children || 5}
-                    value={formData.children}
-                    onChange={(e) => updateFormData("children", e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="purpose">Purpose of Stay</Label>
-                <Input
-                  id="purpose"
-                  value={formData.purpose}
-                  onChange={(e) => updateFormData("purpose", e.target.value)}
-                  placeholder="e.g., Attending wedding ceremony"
-                  className="mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="specialRequests">Special Requests</Label>
-                <Textarea
-                  id="specialRequests"
-                  value={formData.specialRequests}
-                  onChange={(e) => updateFormData("specialRequests", e.target.value)}
-                  placeholder="Any special requirements or requests..."
-                  className="mt-1"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            {/* Price Summary */}
-            {selectedBungalowForBooking && (
-              <div className="bg-gradient-to-r from-secondary/10 to-primary/10 p-4 rounded-lg border border-secondary/30 space-y-3">
-                <h3 className="font-serif font-semibold text-foreground flex items-center gap-2">
-                  <IndianRupee className="h-4 w-4 text-secondary" />
-                  Price Summary
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Package</span>
-                    <span className="font-medium text-foreground">
-                      {formData.packageType === "roomOnly" ? "Room Only" : formData.packageType === "bbWithRoom" ? "Bed & Breakfast" : "Full Board"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Rate per night</span>
-                    <span className="font-medium text-foreground">Rs {perNightRate.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Number of nights</span>
-                    <span className="font-medium text-foreground">{numberOfNights > 0 ? numberOfNights : "—"}</span>
-                  </div>
-                  <div className="border-t border-secondary/30 pt-2 flex justify-between">
-                    <span className="font-semibold text-foreground">Total Amount</span>
-                    <span className="font-bold text-xl text-primary">
-                      {totalPrice > 0 ? `Rs ${totalPrice.toLocaleString()}` : "Select dates"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="flex gap-4 pt-4">
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setShowBookingForm(false)}
+                onClick={() => setShowDialog(false)}
                 className="flex-1"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-traditional transition-all duration-300 hover:shadow-gold-glow"
+                disabled={isSubmitting || totalPrice <= 0}
+                className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-traditional hover:shadow-gold-glow transition-all duration-300"
               >
                 {isSubmitting ? (
                   <>
-                    <span className="animate-spin mr-2">⏳</span>
-                    Submitting...
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent inline-block" />
+                    Redirecting to payment...
                   </>
                 ) : (
-                  <>
-                    <span className="mr-2">🪷</span>
-                    Submit Reservation
-                  </>
+                  <>🪷 Proceed to Payment{totalPrice > 0 ? ` — Rs ${totalPrice.toLocaleString()}` : ""}</>
                 )}
               </Button>
             </div>
@@ -1289,11 +1122,10 @@ const BungalowsPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* CTA Section */}
-      <CTASection 
+      <CTASection
         title="Need"
-        highlight="Assistance"
-        description="Our team is available to help you find the perfect accommodation for your stay. Contact us for special requirements or group bookings."
+        highlight="Assistance?"
+        description="Our team is available to help you find the perfect accommodation. Contact us for special requirements or group bookings."
         primaryButtonText="Contact Us"
         primaryButtonLink="/contact"
       />

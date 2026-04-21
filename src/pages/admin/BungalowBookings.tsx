@@ -66,6 +66,16 @@ const packageTypes = [
   { value: 'full_board', label: 'Full Board' },
 ];
 
+const idProofTypes = [
+  { value: 'nic', label: 'National Identity Card (NIC)' },
+  { value: 'passport', label: 'Passport' },
+  { value: 'driving_licence', label: 'Driving Licence' },
+  { value: 'business_registration', label: 'Business Registration Certificate' },
+];
+
+const getIdProofLabel = (value: string | null) =>
+  idProofTypes.find(type => type.value === value)?.label || value?.replace(/_/g, ' ') || '-';
+
 const pricing: Record<string, Record<string, Record<string, number>>> = {
   'Double Room': {
     'AC': { room_only: 6000, bb_with_room: 8000, full_board: 12000 },
@@ -419,10 +429,9 @@ const BungalowBookingsManagement = () => {
                     <Select value={formData.id_proof_type} onValueChange={(v) => setFormData(p => ({ ...p, id_proof_type: v }))}>
                       <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="aadhar">Aadhar Card</SelectItem>
-                        <SelectItem value="passport">Passport</SelectItem>
-                        <SelectItem value="driving">Driving License</SelectItem>
-                        <SelectItem value="voter">Voter ID</SelectItem>
+                        {idProofTypes.map(type => (
+                          <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -549,7 +558,7 @@ const BungalowBookingsManagement = () => {
                   <div><span className="text-muted-foreground">Guest:</span> <p className="font-medium">{selectedBooking.full_name}</p></div>
                   <div><span className="text-muted-foreground">Mobile:</span> <p className="font-medium">{selectedBooking.mobile_number}</p></div>
                   <div><span className="text-muted-foreground">Email:</span> <p className="font-medium">{selectedBooking.email || '-'}</p></div>
-                  <div><span className="text-muted-foreground">ID Proof:</span> <p className="font-medium capitalize">{selectedBooking.id_proof_type || '-'}</p></div>
+                  <div><span className="text-muted-foreground">ID Proof:</span> <p className="font-medium">{getIdProofLabel(selectedBooking.id_proof_type)}</p></div>
                   <div><span className="text-muted-foreground">Room:</span> <p className="font-medium">{selectedBooking.room_type} ({selectedBooking.ac_type})</p></div>
                   <div><span className="text-muted-foreground">Package:</span> <p className="font-medium capitalize">{selectedBooking.package_type.replace(/_/g, ' ')}</p></div>
                   <div><span className="text-muted-foreground">Check-in:</span> <p className="font-medium">{selectedBooking.check_in_date}</p></div>

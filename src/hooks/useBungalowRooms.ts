@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { bungalows as staticBungalows, Bungalow } from '@/data/bungalows';
+import bungalowDouble1 from "@/assets/bungalow-double-1.jpeg";
+import bungalowDouble2 from "@/assets/bungalow-double-2.jpeg";
+import bungalowDouble3 from "@/assets/bungalow-double-3.jpeg";
+import bungalowDouble4 from "@/assets/bungalow-double-4.jpeg";
 
 export interface BungalowRoom {
   id: string;
@@ -23,6 +27,24 @@ export interface BungalowRoom {
   display_order: number;
 }
 
+const localBungalowImages = [
+  bungalowDouble1,
+  bungalowDouble2,
+  bungalowDouble3,
+  bungalowDouble4,
+];
+
+function getDisplayImages(images?: string[] | null): string[] {
+  const validImages = images?.filter(Boolean) ?? [];
+  const hasExternalPlaceholder = validImages.some((image) =>
+    image.includes('images.unsplash.com') || image.includes('source.unsplash.com')
+  );
+
+  return validImages.length > 0 && !hasExternalPlaceholder
+    ? validImages
+    : localBungalowImages;
+}
+
 // Convert DB room to Bungalow interface for backward compatibility
 export function dbRoomToBungalow(room: BungalowRoom): Bungalow {
   return {
@@ -33,9 +55,7 @@ export function dbRoomToBungalow(room: BungalowRoom): Bungalow {
     acType: room.ac_type as Bungalow['acType'],
     maxOccupancy: { adults: room.max_adults, children: room.max_children },
     tariff: { roomOnly: room.tariff_room_only, bbWithRoom: room.tariff_bb, fullBoard: room.tariff_full_board },
-    images: room.images.length > 0 ? room.images : [
-      'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800',
-    ],
+    images: getDisplayImages(room.images),
     amenities: room.amenities,
     description: room.description,
     rules: room.rules,
