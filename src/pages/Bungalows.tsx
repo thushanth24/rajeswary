@@ -84,7 +84,6 @@ const DEFAULT_FORM: FormState = {
 };
 
 const ROOM_TYPES: RoomType[] = ["Double Room", "Triple Room", "Family Room"];
-const ROOM_BOOKING_PAYMENT_AMOUNT = 50;
 
 const ID_PROOF_TYPES = [
   { value: "nic", label: "National Identity Card (NIC)" },
@@ -453,7 +452,7 @@ const BungalowsPage = () => {
     : 0;
 
   const totalPrice = perNight * Math.max(nights, 0);
-  const paymentAmount = ROOM_BOOKING_PAYMENT_AMOUNT;
+  const paymentAmount = totalPrice;
 
   const currentTypeGroup = typeGroups.find(g => g.type === form.roomType);
 

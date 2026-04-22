@@ -103,7 +103,7 @@ const getTimeSlots = (t: (key: string) => string) => [
 ];
 
 const BOOKING_REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const MIN_ADVANCE_AMOUNT = 50;
+const MIN_ADVANCE_AMOUNT = 5000;
 
 function generateBookingReference() {
   const year = new Date().getFullYear();
@@ -171,7 +171,7 @@ const BookingPage = () => {
   const [isDetailsPreviewOpen, setIsDetailsPreviewOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [advanceAmount, setAdvanceAmount] = useState(String(MIN_ADVANCE_AMOUNT));
+  const [advanceAmount, setAdvanceAmount] = useState("10000");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const [bookingData, setBookingData] = useState<BookingData>({
@@ -976,11 +976,11 @@ const BookingPage = () => {
                           id="advanceAmount"
                           type="number"
                           min={MIN_ADVANCE_AMOUNT}
-                          step={50}
+                          step={1000}
                           value={advanceAmount}
                           onChange={(e) => setAdvanceAmount(e.target.value)}
                           className="text-sm"
-                          placeholder={String(MIN_ADVANCE_AMOUNT)}
+                          placeholder="10000"
                         />
                       </div>
                       <Button
