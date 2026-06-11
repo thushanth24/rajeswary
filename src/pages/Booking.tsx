@@ -51,7 +51,7 @@ import {
   CreditCard,
 } from "lucide-react";
 
-type BookingStep = 1 | 2 | 3 | 4 | 5;
+type BookingStep = 1 | 2 | 3;
 
 interface HallSection {
   id: string;
@@ -346,10 +346,6 @@ const BookingPage = () => {
           (bookingData.eventType !== "other" || bookingData.eventTypeOther.trim())
         );
       case 3:
-        return !!(bookingData.mealType && bookingData.menuPackage);
-      case 4:
-        return true;
-      case 5:
         return !!(bookingData.name && bookingData.phone);
       default:
         return false;
@@ -421,11 +417,7 @@ const BookingPage = () => {
   };
 
   const handleNext = () => {
-    if (step < 5) {
-      if (step === 4) {
-        setIsDetailsPreviewOpen(true);
-        return;
-      }
+    if (step < 3) {
       setStep((prev) => (prev + 1) as BookingStep);
     }
   };
@@ -1057,9 +1049,7 @@ const BookingPage = () => {
             {[
               { num: 1, label: t("booking.step.hall"), icon: "🏛️" },
               { num: 2, label: t("booking.step.event"), icon: "📅" },
-              { num: 3, label: t("booking.step.menu"), icon: "🍽️" },
-              { num: 4, label: t("booking.step.services"), icon: "✨" },
-              { num: 5, label: t("booking.step.details"), icon: "📝" },
+              { num: 3, label: t("booking.step.details"), icon: "📝" },
             ].map((s, index) => (
               <div key={s.num} className="flex flex-col items-center flex-1">
                 <div
@@ -1443,8 +1433,8 @@ const BookingPage = () => {
                 </div>
               )}
 
-              {/* Step 3: Menu Selection */}
-              {step === 3 && (
+              {/* Menu selection is intentionally hidden; fields remain optional for existing backend data. */}
+              {false && (
                 <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
@@ -1636,8 +1626,8 @@ const BookingPage = () => {
                 </div>
               )}
 
-              {/* Step 4: Add-on Services */}
-              {step === 4 && (
+              {/* Add-on services are intentionally hidden; fields remain optional for existing backend data. */}
+              {false && (
                 <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
@@ -1696,8 +1686,8 @@ const BookingPage = () => {
                 </div>
               )}
 
-              {/* Step 5: Customer Details */}
-              {step === 5 && (
+              {/* Step 3: Customer Details */}
+              {step === 3 && (
                 <div className="space-y-4 md:space-y-6">
                   {/* Hall Summary */}
                   {selectedHall && (
@@ -1799,7 +1789,7 @@ const BookingPage = () => {
                   <span className="hidden sm:inline">{t("booking.back")}</span>
                 </Button>
 
-                {step < 5 ? (
+                {step < 3 ? (
                   <Button 
                     variant="outline" 
                     onClick={handleNext} 
@@ -1896,7 +1886,7 @@ const BookingPage = () => {
             <Button
               onClick={() => {
                 setIsDetailsPreviewOpen(false);
-                setStep(5);
+                setStep(3);
               }}
               className="border-secondary/30 hover:bg-secondary/10"
               variant="outline"

@@ -123,6 +123,7 @@ const BookingsManagement = () => {
   const [allHalls, setAllHalls] = useState<Hall[]>([]);
   const [editSections, setEditSections] = useState<HallSectionOption[]>([]);
   const [managerHallIds, setManagerHallIds] = useState<string[]>([]);
+  const [managerHallsLoaded, setManagerHallsLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
@@ -186,7 +187,12 @@ const BookingsManagement = () => {
 
   useEffect(() => {
     const fetchManagerHalls = async () => {
-      if (!isHallManager || !user?.id) return;
+      if (!isHallManager) {
+        setManagerHallsLoaded(true);
+        return;
+      }
+
+      if (!user?.id) return;
 
       const { data, error } = await supabase
         .from('hall_managers')
@@ -196,6 +202,7 @@ const BookingsManagement = () => {
 
       if (error) {
         console.error('Error fetching hall manager assignments:', error);
+        setManagerHallsLoaded(true);
         return;
       }
 
@@ -209,6 +216,7 @@ const BookingsManagement = () => {
 
       setManagerHallIds(hallIds);
       setHalls(hallRows);
+      setManagerHallsLoaded(true);
     };
 
     fetchManagerHalls();
@@ -239,8 +247,16 @@ const BookingsManagement = () => {
   }, [isAdmin]);
 
   const fetchBookings = useCallback(async () => {
+    if (isHallManager && !managerHallsLoaded) return;
+
     setLoading(true);
     try {
+      if (isHallManager && managerHallIds.length === 0) {
+        setBookings([]);
+        setTotalCount(0);
+        return;
+      }
+
       const from = (currentPage - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
@@ -288,7 +304,7 @@ const BookingsManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, statusFilter, hallFilter, debouncedSearch, isHallManager, managerHallIds, toast]);
+  }, [currentPage, statusFilter, hallFilter, debouncedSearch, isHallManager, managerHallIds, managerHallsLoaded, toast]);
 
   useEffect(() => {
     fetchBookings();
@@ -456,6 +472,14 @@ const BookingsManagement = () => {
   const exportToCSV = async () => {
     setIsExporting(true);
     try {
+      if (isHallManager && managerHallIds.length === 0) {
+        toast({
+          title: 'Export Complete',
+          description: 'No assigned hall bookings to export',
+        });
+        return;
+      }
+
       // Fetch ALL bookings matching current filters for export (no pagination)
       let query = supabase
         .from('bookings')

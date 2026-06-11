@@ -18,6 +18,7 @@ const en: Record<string, string> = {
   "nav.bungalows": "Bungalows",
   "nav.services": "Services",
   "nav.menus": "Menus",
+  "nav.gallery": "Gallery",
   "nav.about": "About",
   "nav.contact": "Contact",
   "nav.bookNow": "Book Now",
@@ -448,6 +449,7 @@ const en: Record<string, string> = {
 // Tamil translations
 const ta: Record<string, string> = {
   // Navigation - keeping English for nav items as per original commented code
+  "nav.gallery": "Gallery",
 
   // Hero Section
   "hero.title": "திருமண பந்தம், மங்களகரமான தொடக்கம்",

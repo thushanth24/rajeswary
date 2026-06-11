@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Trash2, Shield, UserCog, Building2 } from 'lucide-react';
+import { KeyRound, UserPlus, Shield } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -43,6 +43,11 @@ const UserManagement = () => {
   const [newUserFullName, setNewUserFullName] = useState('');
   const [newUserRole, setNewUserRole] = useState<'admin' | 'hall_manager'>('admin');
   const [creating, setCreating] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [targetUser, setTargetUser] = useState<UserWithRoles | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [updatingPassword, setUpdatingPassword] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -169,6 +174,78 @@ const UserManagement = () => {
         title: 'Error',
         description: error.message,
       });
+    }
+  };
+
+  const openPasswordDialog = (userItem: UserWithRoles) => {
+    setTargetUser(userItem);
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setIsPasswordDialogOpen(true);
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!targetUser) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No user selected',
+      });
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      toast({
+        variant: 'destructive',
+        title: 'Validation Error',
+        description: 'Passwords do not match',
+      });
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast({
+        variant: 'destructive',
+        title: 'Validation Error',
+        description: 'Password must be at least 8 characters',
+      });
+      return;
+    }
+
+    setUpdatingPassword(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('clever-handler', {
+        body: {
+          user_id: targetUser.id,
+          password: newPassword,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      toast({
+        title: 'Success',
+        description: data?.message || `Password updated for ${targetUser.email}`,
+      });
+
+      setIsPasswordDialogOpen(false);
+      setTargetUser(null);
+      setNewPassword('');
+      setConfirmNewPassword('');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Failed to update password',
+      });
+    } finally {
+      setUpdatingPassword(false);
     }
   };
 
@@ -352,6 +429,15 @@ const UserManagement = () => {
                             <SelectItem value="hall_manager">Hall Manager</SelectItem>
                           </SelectContent>
                         </Select>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openPasswordDialog(userItem)}
+                          disabled={userItem.id === user?.id}
+                        >
+                          <KeyRound className="w-4 h-4 mr-2" />
+                          {userItem.id === user?.id ? 'Current user' : 'Reset password'}
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -360,6 +446,49 @@ const UserManagement = () => {
             </Table>
           </CardContent>
         </Card>
+
+        <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Reset user password</DialogTitle>
+              <DialogDescription>
+                Set a new password for {targetUser?.full_name || targetUser?.email || 'this user'}.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input value={targetUser?.email || ''} disabled />
+              </div>
+              <div className="space-y-2">
+                <Label>New Password</Label>
+                <Input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Confirm New Password</Label>
+                <Input
+                  type="password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdatePassword} disabled={updatingPassword}>
+                {updatingPassword ? 'Updating...' : 'Update password'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

@@ -17,8 +17,7 @@ export function Header() {
     { name: t("nav.halls"), href: "/halls" },
     { name: t("nav.bungalows"), href: "/bungalows" },
     { name: t("nav.services"), href: "/services" },
-    { name: t("nav.menus"), href: "/menus" },
-    // { name: "Gallery", href: "/gallery" },
+    { name: t("nav.gallery"), href: "/gallery" },
     { name: t("nav.about"), href: "/about" },
     { name: t("nav.contact"), href: "/contact" },
   ];

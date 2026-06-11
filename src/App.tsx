@@ -45,6 +45,7 @@ import ContactMessages from "./pages/admin/ContactMessages";
 import Settings from "./pages/admin/Settings";
 import BungalowBookings from "./pages/admin/BungalowBookings";
 import BungalowRoomManagement from "./pages/admin/BungalowRoomManagement";
+import GalleryAlbums from "./pages/admin/GalleryAlbums";
 
 const queryClient = new QueryClient();
 
@@ -122,7 +123,7 @@ const App = () => (
               <Route
                 path="/admin/managers"
                 element={
-                  <ProtectedRoute allowedRoles={['super_admin', 'admin']}>
+                  <ProtectedRoute allowedRoles={['super_admin']}>
                     <ManagerAssignments />
                   </ProtectedRoute>
                 }
@@ -180,6 +181,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/gallery"
+                element={
+                  <ProtectedRoute allowedRoles={['hall_manager', 'super_admin', 'admin']}>
+                    <GalleryAlbums />
                   </ProtectedRoute>
                 }
               />

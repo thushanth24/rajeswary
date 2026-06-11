@@ -11,12 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Plus, Camera, Car, Palette, Music, UserCheck, Headphones, Sparkles, Gem, AlertTriangle, UtensilsCrossed } from 'lucide-react';
+import { Calendar, Plus, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSectionAwareAvailability } from '@/hooks/useSectionAwareAvailability';
 const timeSlots = [
@@ -25,28 +22,9 @@ const timeSlots = [
   { id: 'fullday', label: 'Full Day (09:00 - 18:00)', start: '09:00', end: '18:00' },
 ];
 
-const addOnServices = [
-  { id: 'photography', label: 'Photography', icon: Camera },
-  { id: 'vehicles', label: 'Vehicles', icon: Car },
-  { id: 'decoration', label: 'Decoration', icon: Palette },
-  { id: 'sound-lighting', label: 'Sound & Lighting', icon: Music },
-  { id: 'live-kitchen', label: 'Live Kitchen', icon: UtensilsCrossed },
-  { id: 'coordination', label: 'Coordination', icon: UserCheck },
-  { id: 'dj-music', label: 'DJ & Music', icon: Headphones },
-  { id: 'makeup', label: 'Makeup', icon: Sparkles },
-  { id: 'jewellery', label: 'Jewellery', icon: Gem },
-];
-
-const menuSections = [
-  { id: 'pubert', label: 'Lunch', icon: '☀️' },
-  { id: 'dinner', label: 'Dinner', icon: '🌙' },
-];
-
 const bookingSchema = z.object({
   customer_name: z.string().min(2, 'Name must be at least 2 characters'),
   customer_phone: z.string().min(10, 'Please enter a valid phone number'),
-  customer_email: z.string().email().optional().or(z.literal('')),
-  customer_address: z.string().optional(),
   event_type: z.string().min(1, 'Please select an event type'),
   event_type_other: z.string().optional(),
   event_date: z.string().min(1, 'Please select a date'),
@@ -92,21 +70,14 @@ const NewManualBooking = () => {
   const [sections, setSections] = useState<HallSection[]>([]);
   const [selectedHall, setSelectedHall] = useState('');
   const [selectedSection, setSelectedSection] = useState('');
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  
-  // Menu selection state
-  const [menuSection, setMenuSection] = useState('');
-  const [menuNotes, setMenuNotes] = useState('');
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       customer_name: '',
       customer_phone: '',
-      customer_email: '',
-      customer_address: '',
       event_type: '',
       event_type_other: '',
       event_date: '',
@@ -175,14 +146,6 @@ const NewManualBooking = () => {
     }
     return false;
   }, [eventDate, timeSlot, isClosed, isSlotAvailable, hasMultipleSections, selectedSection, availableSectionsForSlot]);
-
-  const toggleService = (serviceId: string) => {
-    setSelectedServices(prev => 
-      prev.includes(serviceId) 
-        ? prev.filter(s => s !== serviceId)
-        : [...prev, serviceId]
-    );
-  };
 
   // Track previous time slot to reset section only on actual change
   const prevTimeSlotRef = useRef<string | undefined>(undefined);
@@ -324,30 +287,7 @@ const NewManualBooking = () => {
       // Get time slot details
       const selectedTimeSlot = timeSlots.find(ts => ts.id === values.time_slot);
       
-      // Build special requests with menu and services
-      let specialRequests = values.special_requests || '';
-      
-      // Add menu selection info
-      if (menuSection) {
-        const menuLabel = menuSections.find(s => s.id === menuSection)?.label || menuSection;
-        const menuText = `Menu Selection: ${menuLabel}`;
-        specialRequests = specialRequests ? `${specialRequests}\n\n${menuText}` : menuText;
-      }
-      if (menuNotes) {
-        const menuNotesText = `Menu Notes: ${menuNotes}`;
-        specialRequests = specialRequests ? `${specialRequests}\n${menuNotesText}` : menuNotesText;
-      }
-      
-      // Add services
-      if (selectedServices.length > 0) {
-        const serviceLabels = selectedServices.map(id => 
-          addOnServices.find(s => s.id === id)?.label
-        ).filter(Boolean);
-        const servicesText = `Additional Services: ${serviceLabels.join(', ')}`;
-        specialRequests = specialRequests 
-          ? `${specialRequests}\n\n${servicesText}` 
-          : servicesText;
-      }
+      const specialRequests = values.special_requests?.trim() || '';
 
       const { error } = await supabase
         .from('bookings')
@@ -356,8 +296,8 @@ const NewManualBooking = () => {
           section_id: sections.length > 0 ? selectedSection || null : null,
           customer_name: values.customer_name,
           customer_phone: values.customer_phone,
-          customer_email: values.customer_email || null,
-          customer_address: values.customer_address || null,
+          customer_email: null,
+          customer_address: null,
           event_type: eventTypeLabel.substring(0, 100),
           event_date: values.event_date,
           event_start_time: selectedTimeSlot?.start || null,
@@ -409,8 +349,6 @@ const NewManualBooking = () => {
     hallsData: halls.map(h => ({ id: h.id, name: h.name, nameType: typeof h.name })),
     sectionsCount: sections.length,
     sectionsData: sections.map(s => ({ id: s.id, name: s.name, nameType: typeof s.name })),
-    selectedServices,
-    menuSection,
   });
 
   if (loading) {
@@ -477,34 +415,6 @@ const NewManualBooking = () => {
                         <FormLabel>Phone Number *</FormLabel>
                         <FormControl>
                           <Input placeholder="Phone number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="customer_email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="Email (optional)" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="customer_address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Address (optional)" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -668,87 +578,6 @@ const NewManualBooking = () => {
                     </FormItem>
                   )}
                 />
-              </div>
-
-              {/* Menu Selection */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-lg flex items-center gap-2">
-                  <span>🍽️</span> Menu Selection
-                </h3>
-                <p className="text-sm text-muted-foreground">Select a catering package for this booking (optional)</p>
-                
-                {/* Meal Type */}
-                <div>
-                  <Label className="mb-2 block text-sm">Meal Type</Label>
-                  <RadioGroup
-                    value={menuSection}
-                    onValueChange={setMenuSection}
-                    className="grid grid-cols-2 gap-2 sm:grid-cols-4"
-                  >
-                    {menuSections.map((section) => (
-                      <div key={section.id}>
-                        <RadioGroupItem value={section.id} id={`section-${section.id}`} className="peer sr-only" />
-                        <Label
-                          htmlFor={`section-${section.id}`}
-                          className={cn(
-                            "flex flex-col items-center justify-center p-3 rounded-lg border cursor-pointer transition-all text-center min-h-[70px]",
-                            menuSection === section.id
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-border hover:border-primary/50"
-                          )}
-                        >
-                          <span className="text-xs font-medium leading-tight">{section.label}</span>
-                        </Label>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </div>
-
-                {/* Menu Notes */}
-                <div>
-                  <Label htmlFor="menuNotes" className="text-sm">Menu Notes</Label>
-                  <Textarea
-                    id="menuNotes"
-                    value={menuNotes}
-                    onChange={(e) => setMenuNotes(e.target.value)}
-                    placeholder="Any dietary requirements or special menu requests"
-                    rows={2}
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
-              {/* Additional Services */}
-              <div className="space-y-4">
-                <h3 className="font-medium text-lg">Additional Services</h3>
-                <p className="text-sm text-muted-foreground">Select any additional services the customer requires</p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {addOnServices.map((service) => {
-                    const isSelected = selectedServices.includes(service.id);
-                    const IconComponent = service.icon;
-                    return (
-                      <label
-                        key={service.id}
-                        htmlFor={`service-${service.id}`}
-                        className={cn(
-                          "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
-                          isSelected
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
-                        )}
-                      >
-                        <Checkbox
-                          id={`service-${service.id}`}
-                          checked={isSelected}
-                          onCheckedChange={() => toggleService(service.id)}
-                          className="h-4 w-4"
-                        />
-                        <IconComponent className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground text-sm">{service.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
               </div>
 
               {halls.length > 1 ? (

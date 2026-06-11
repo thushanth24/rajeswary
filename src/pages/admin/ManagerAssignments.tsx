@@ -124,12 +124,11 @@ const ManagerAssignments = () => {
     }
 
     try {
-      // Check if this exact assignment already exists
-      const existingAssignment = assignments.find(
-        a => a.hall_id === selectedHall && a.user_id === selectedManager && a.is_active
+      const existingHallAssignment = assignments.find(
+        a => a.hall_id === selectedHall && a.is_active
       );
       
-      if (existingAssignment) {
+      if (existingHallAssignment?.user_id === selectedManager) {
         toast({
           variant: 'destructive',
           title: 'Already Assigned',
@@ -138,20 +137,30 @@ const ManagerAssignments = () => {
         return;
       }
 
-      // Create new assignment (manager can have multiple halls)
-      const { error } = await supabase
-        .from('hall_managers')
-        .insert({
-          hall_id: selectedHall,
-          user_id: selectedManager,
-          assigned_by: user?.id,
-        });
+      const assignmentPayload = {
+        hall_id: selectedHall,
+        user_id: selectedManager,
+        assigned_by: user?.id,
+        assigned_at: new Date().toISOString(),
+        is_active: true,
+      };
+
+      const { error } = existingHallAssignment
+        ? await supabase
+            .from('hall_managers')
+            .update(assignmentPayload)
+            .eq('id', existingHallAssignment.id)
+        : await supabase
+            .from('hall_managers')
+            .insert(assignmentPayload);
 
       if (error) throw error;
 
       toast({
         title: 'Success',
-        description: 'Manager assigned successfully',
+        description: existingHallAssignment
+          ? 'Hall manager updated successfully'
+          : 'Manager assigned successfully',
       });
 
       setSelectedHall('');
@@ -189,11 +198,6 @@ const ManagerAssignments = () => {
         description: error.message,
       });
     }
-  };
-
-  // Get manager's assigned halls count for display
-  const getManagerHallCount = (managerId: string) => {
-    return assignments.filter(a => a.user_id === managerId && a.is_active).length;
   };
 
   if (loading) {

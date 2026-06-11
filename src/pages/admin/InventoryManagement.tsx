@@ -83,12 +83,18 @@ const InventoryManagement = () => {
     quantity: 1,
   });
 
-  const fetchInventory = useCallback(async () => {
+  const fetchInventory = useCallback(async (hallIds?: string[]) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('inventory')
         .select('*, halls(name)')
         .order('item_name');
+
+      if (hallIds?.length) {
+        query = query.in('hall_id', hallIds);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setInventory(data || []);
@@ -111,18 +117,24 @@ const InventoryManagement = () => {
     }
   }, []);
 
-  const fetchUpcomingBookings = useCallback(async () => {
+  const fetchUpcomingBookings = useCallback(async (hallIds?: string[]) => {
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
       const nextWeek = format(addDays(new Date(), 7), 'yyyy-MM-dd');
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('bookings')
         .select('id, reference_number, customer_name, event_date, event_type, hall_id, status, halls(name)')
         .in('status', ['confirmed', 'acknowledged'])
         .gte('event_date', today)
         .lte('event_date', nextWeek)
         .order('event_date', { ascending: true });
+
+      if (hallIds?.length) {
+        query = query.in('hall_id', hallIds);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setUpcomingBookings(data || []);
@@ -131,12 +143,18 @@ const InventoryManagement = () => {
     }
   }, []);
 
-  const fetchBookingInventory = useCallback(async () => {
+  const fetchBookingInventory = useCallback(async (hallIds?: string[]) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('booking_inventory')
-        .select('*, inventory(*), bookings(id, reference_number, customer_name, event_date, event_type, hall_id, status, halls(name))')
+        .select('*, inventory(*), bookings!inner(id, reference_number, customer_name, event_date, event_type, hall_id, status, halls(name))')
         .order('created_at', { ascending: false });
+
+      if (hallIds?.length) {
+        query = (query as any).in('bookings.hall_id', hallIds);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setBookingInventory(data || []);
@@ -148,11 +166,49 @@ const InventoryManagement = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchInventory(), fetchHalls(), fetchUpcomingBookings(), fetchBookingInventory()]);
+      if (isHallManager && user?.id) {
+        const { data, error } = await supabase
+          .from('hall_managers')
+          .select('hall_id, halls(id, name)')
+          .eq('user_id', user.id)
+          .eq('is_active', true);
+
+        if (error) {
+          console.error('Error fetching manager halls:', error);
+          setLoading(false);
+          return;
+        }
+
+        const managerHalls = (data || [])
+          .map((row: any) => ({
+            id: String(row.hall_id || ''),
+            name: String(row.halls?.name || 'Hall'),
+          }))
+          .filter((hall: Hall) => hall.id);
+        const managerHallIds = managerHalls.map((hall) => hall.id);
+
+        setHalls(managerHalls);
+
+        if (managerHallIds.length === 0) {
+          setInventory([]);
+          setUpcomingBookings([]);
+          setBookingInventory([]);
+          setLoading(false);
+          return;
+        }
+
+        await Promise.all([
+          fetchInventory(managerHallIds),
+          fetchUpcomingBookings(managerHallIds),
+          fetchBookingInventory(managerHallIds),
+        ]);
+      } else {
+        await Promise.all([fetchInventory(), fetchHalls(), fetchUpcomingBookings(), fetchBookingInventory()]);
+      }
       setLoading(false);
     };
     loadData();
-  }, [fetchInventory, fetchHalls, fetchUpcomingBookings, fetchBookingInventory]);
+  }, [fetchInventory, fetchHalls, fetchUpcomingBookings, fetchBookingInventory, isHallManager, user?.id]);
 
   const resetForm = () => {
     setFormData({
@@ -211,7 +267,7 @@ const InventoryManagement = () => {
 
       setIsAddDialogOpen(false);
       resetForm();
-      fetchInventory();
+      fetchInventory(isHallManager ? halls.map((hall) => hall.id) : undefined);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -245,7 +301,7 @@ const InventoryManagement = () => {
 
       if (error) throw error;
       toast({ title: 'Deleted', description: 'Item removed successfully' });
-      fetchInventory();
+      fetchInventory(isHallManager ? halls.map((hall) => hall.id) : undefined);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -718,7 +774,13 @@ const InventoryManagement = () => {
                       <SelectValue placeholder="Choose inventory item" />
                     </SelectTrigger>
                     <SelectContent>
-                      {inventory.filter(i => i.status === 'available' && i.quantity > 0).map((item) => (
+                      {inventory
+                        .filter(i =>
+                          i.status === 'available' &&
+                          i.quantity > 0 &&
+                          (!selectedBooking || i.hall_id === selectedBooking.hall_id)
+                        )
+                        .map((item) => (
                         <SelectItem key={item.id} value={item.id}>
                           {item.item_name} ({item.quantity} available)
                         </SelectItem>

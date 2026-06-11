@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { FloatingElements } from "@/components/animations/FloatingElements";
 import { RangoliPattern } from "@/components/animations/RangoliPattern";
 import { DecorativeBorder } from "@/components/animations/DecorativeBorder";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, X, Camera, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Import event images
@@ -40,15 +40,6 @@ import kondavil03 from "@/assets/Raajeshwariy Weeding hall Kondavil 03.webp";
 import kondavil04 from "@/assets/Raajeshwariy Weeding hall Kondavil 04.webp";
 import kondavil05 from "@/assets/Raajeshwariy Weeding hall Kondavil 05.webp";
 
-// Import service images
-import serviceDecoration from "@/assets/service-decoration.jpg";
-import servicePhotography from "@/assets/service-photography.jpg";
-import serviceDjMusic from "@/assets/service-dj-music.jpg";
-import serviceMakeup from "@/assets/service-makeup.jpg";
-import serviceJewellery from "@/assets/service-jewellery.jpg";
-import serviceVehicle from "@/assets/service-vehicle.jpg";
-import cateringBuffet from "@/assets/catering-buffet.jpg";
-
 interface GalleryImage {
   src: string;
   alt: string;
@@ -62,11 +53,67 @@ interface GalleryCategory {
   images: GalleryImage[];
 }
 
+interface UploadedGalleryPhoto {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  display_order: number;
+  is_active: boolean;
+}
+
+interface UploadedGalleryAlbum {
+  id: string;
+  title: string;
+  description: string | null;
+  event_date: string | null;
+  halls?: { name: string } | null;
+  hall_gallery_photos?: UploadedGalleryPhoto[];
+}
+
 const GalleryPage = () => {
   const { t } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentCategory, setCurrentCategory] = useState<GalleryImage[]>([]);
+  const [uploadedEventCategories, setUploadedEventCategories] = useState<GalleryCategory[]>([]);
+
+  useEffect(() => {
+    const fetchUploadedAlbums = async () => {
+      const { data, error } = await (supabase as any)
+        .from("hall_gallery_albums")
+        .select("id, title, description, event_date, halls(name), hall_gallery_photos(*)")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching gallery albums:", error);
+        return;
+      }
+
+      const categories = (data || [])
+        .map((album: UploadedGalleryAlbum) => {
+          const photos = (album.hall_gallery_photos || [])
+            .filter((photo) => photo.is_active)
+            .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+          return {
+            id: album.id,
+            title: album.halls?.name ? `${album.title} - ${album.halls.name}` : album.title,
+            description: album.description || (album.event_date ? `Event date: ${album.event_date}` : "Uploaded event album"),
+            images: photos.map((photo) => ({
+              src: photo.image_url,
+              alt: photo.caption || album.title,
+              caption: photo.caption || album.title,
+            })),
+          };
+        })
+        .filter((category: GalleryCategory) => category.images.length > 0);
+
+      setUploadedEventCategories(categories);
+    };
+
+    fetchUploadedAlbums();
+  }, []);
 
   const eventCategories: GalleryCategory[] = [
     {
@@ -131,6 +178,7 @@ const GalleryPage = () => {
     },
   ];
 
+  /*
   const serviceCategories: GalleryCategory[] = [
     {
       id: "decoration",
@@ -205,6 +253,9 @@ const GalleryPage = () => {
       ],
     },
   ];
+  */
+
+  const allEventCategories = [...uploadedEventCategories, ...eventCategories];
 
   const openLightbox = (images: GalleryImage[], index: number) => {
     setCurrentCategory(images);
@@ -291,52 +342,19 @@ const GalleryPage = () => {
         <div className="absolute inset-0 paisley-bg opacity-20" />
 
         <div className="container relative z-10 mx-auto px-4 lg:px-8">
-          <Tabs defaultValue="events" className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-12 bg-card border border-border">
-              <TabsTrigger
-                value="events"
-                className="font-serif data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Past Events
-              </TabsTrigger>
-              <TabsTrigger
-                value="services"
-                className="font-serif data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <Camera className="h-4 w-4 mr-2" />
-                Our Services
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="events" className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-2">
-                  Past <span className="text-gradient-gold">Events</span>
-                </h2>
-                <p className="text-muted-foreground">Cherished moments from celebrations we've hosted</p>
+          <div className="space-y-8">
+            <div className="text-center mb-8">
+              <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-2">
+                Past <span className="text-gradient-gold">Events</span>
+              </h2>
+              <p className="text-muted-foreground">Cherished moments from celebrations we've hosted</p>
+            </div>
+            {allEventCategories.map((category, index) => (
+              <div key={category.id} style={{ animationDelay: `${index * 0.1}s` }}>
+                <GalleryGrid category={category} />
               </div>
-              {eventCategories.map((category, index) => (
-                <div key={category.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                  <GalleryGrid category={category} />
-                </div>
-              ))}
-            </TabsContent>
-
-            <TabsContent value="services" className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-2">
-                  Our <span className="text-gradient-gold">Services</span>
-                </h2>
-                <p className="text-muted-foreground">Excellence in every detail we provide</p>
-              </div>
-              {serviceCategories.map((category, index) => (
-                <div key={category.id} style={{ animationDelay: `${index * 0.1}s` }}>
-                  <GalleryGrid category={category} />
-                </div>
-              ))}
-            </TabsContent>
-          </Tabs>
+            ))}
+          </div>
         </div>
       </section>
 

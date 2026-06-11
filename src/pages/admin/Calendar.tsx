@@ -63,6 +63,7 @@ const AdminCalendar = () => {
   const [selectedHallFilter, setSelectedHallFilter] = useState<string>("all");
   const [managerHallId, setManagerHallId] = useState<string | null>(null);
   const [managerHallIds, setManagerHallIds] = useState<string[]>([]);
+  const [managerHallsLoaded, setManagerHallsLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const currentYear = currentMonth.getFullYear();
   const currentMonthIndex = currentMonth.getMonth();
@@ -91,7 +92,12 @@ const AdminCalendar = () => {
   // Fetch manager's hall assignments
   useEffect(() => {
     const fetchManagerHalls = async () => {
-      if (!user?.id || isAdminOrAbove) return;
+      if (isAdminOrAbove) {
+        setManagerHallsLoaded(true);
+        return;
+      }
+
+      if (!user?.id) return;
 
       const { data, error } = await supabase
         .from("hall_managers")
@@ -104,6 +110,7 @@ const AdminCalendar = () => {
         setManagerHallIds(hallIds);
         setManagerHallId(hallIds[0]); // Keep for backward compat
       }
+      setManagerHallsLoaded(true);
     };
 
     fetchManagerHalls();
@@ -146,9 +153,18 @@ const AdminCalendar = () => {
   // Fetch bookings and closed dates for the visible month range
   useEffect(() => {
     const fetchData = async () => {
+      if (!isAdminOrAbove && !managerHallsLoaded) return;
+
       setLoading(true);
       const start = startOfWeek(startOfMonth(currentMonth));
       const end = endOfWeek(endOfMonth(currentMonth));
+
+      if (!isAdminOrAbove && managerHallIds.length === 0) {
+        setBookings([]);
+        setClosedDates([]);
+        setLoading(false);
+        return;
+      }
 
       // Build booking query
       let bookingQuery = supabase
@@ -190,7 +206,7 @@ const AdminCalendar = () => {
     };
 
     fetchData();
-  }, [currentMonth, managerHallIds, isAdminOrAbove]);
+  }, [currentMonth, managerHallIds, managerHallsLoaded, isAdminOrAbove]);
 
   // Generate calendar days
   const calendarDays = useMemo(() => {

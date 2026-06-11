@@ -30,6 +30,7 @@ import {
   Settings,
   MessageSquare,
   Home,
+  Image,
 } from 'lucide-react';
 
 const AdminSidebar = () => {
@@ -51,8 +52,10 @@ const AdminSidebar = () => {
     { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
     { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
     { title: 'User Management', url: '/admin/users', icon: Users },
+    { title: 'Manager Assignments', url: '/admin/managers', icon: UserCog },
     { title: 'All Halls', url: '/admin/halls', icon: Building2 },
     { title: 'All Bookings', url: '/admin/bookings', icon: Calendar },
+    { title: 'Gallery Albums', url: '/admin/gallery', icon: Image },
     { title: 'Contact Messages', url: '/admin/contact-messages', icon: MessageSquare },
     { title: 'Audit Logs', url: '/admin/audit-logs', icon: FileText },
     { title: 'Reports', url: '/admin/reports', icon: BarChart3 },
@@ -62,8 +65,8 @@ const AdminSidebar = () => {
   const adminItems = [
     { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
     { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
-    { title: 'Manager Assignments', url: '/admin/managers', icon: UserCog },
     { title: 'All Bookings', url: '/admin/bookings', icon: Calendar },
+    { title: 'Gallery Albums', url: '/admin/gallery', icon: Image },
     { title: 'Unacknowledged', url: '/admin/unacknowledged', icon: AlertTriangle },
     { title: 'Contact Messages', url: '/admin/contact-messages', icon: MessageSquare },
     { title: 'Reports', url: '/admin/reports', icon: BarChart3 },
@@ -75,6 +78,7 @@ const AdminSidebar = () => {
     { title: 'Calendar', url: '/admin/calendar', icon: CalendarDays },
     { title: 'My Bookings', url: '/admin/bookings', icon: Calendar },
     { title: 'New Booking', url: '/admin/new-booking', icon: Calendar },
+    { title: 'Gallery Albums', url: '/admin/gallery', icon: Image },
     { title: 'Settings', url: '/admin/settings', icon: Settings },
   ];
 

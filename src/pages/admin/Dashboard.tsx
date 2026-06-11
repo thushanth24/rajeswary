@@ -64,38 +64,66 @@ const Dashboard = () => {
           .order('created_at', { ascending: false });
         setBungalowBookings(bungalowData || []);
       } else {
+        let assignedHallIds: string[] = [];
+        const shouldScopeToManagerHalls = isHallManager && !isAdmin && user?.id;
+
+        if (shouldScopeToManagerHalls) {
+          const { data: hallManagerData } = await supabase
+            .from('hall_managers')
+            .select('hall_id, halls(name)')
+            .eq('user_id', user.id)
+            .eq('is_active', true);
+
+          assignedHallIds = (hallManagerData || []).map((row: any) => row.hall_id).filter(Boolean);
+
+          const hallNames = (hallManagerData || [])
+            .filter((row: any) => row.halls)
+            .map((row: any) => row.halls.name)
+            .join(', ');
+          setManagerHallName(hallNames || null);
+
+          if (assignedHallIds.length === 0) {
+            setBookings([]);
+            setHalls([]);
+            setInventoryStats({ total: 0, lowStock: 0 });
+            setLastUpdated(new Date());
+            return;
+          }
+        }
+
         // Fetch all bookings with hall info
-        const { data: bookingsData } = await supabase
+        let bookingsQuery = supabase
           .from('bookings')
           .select('id, reference_number, customer_name, event_date, event_type, status, created_at, acknowledged_at, hall_id, halls(name)')
           .order('created_at', { ascending: false });
 
+        if (assignedHallIds.length > 0) {
+          bookingsQuery = bookingsQuery.in('hall_id', assignedHallIds);
+        }
+
+        const { data: bookingsData } = await bookingsQuery;
+
         // Fetch halls
-        const { data: hallsData } = await supabase
+        let hallsQuery = supabase
           .from('halls')
           .select('id, name');
 
+        if (assignedHallIds.length > 0) {
+          hallsQuery = hallsQuery.in('id', assignedHallIds);
+        }
+
+        const { data: hallsData } = await hallsQuery;
+
         // Fetch inventory
-        const { data: inventoryData } = await supabase
+        let inventoryQuery = supabase
           .from('inventory')
           .select('quantity');
 
-        // For hall managers, get their hall names
-        if (isHallManager && user) {
-          const { data: hallManagerData } = await supabase
-            .from('hall_managers')
-            .select('halls(name)')
-            .eq('user_id', user.id)
-            .eq('is_active', true);
-          
-          if (hallManagerData && hallManagerData.length > 0) {
-            const hallNames = hallManagerData
-              .filter(h => h.halls)
-              .map(h => (h.halls as any).name)
-              .join(', ');
-            setManagerHallName(hallNames);
-          }
+        if (assignedHallIds.length > 0) {
+          inventoryQuery = inventoryQuery.in('hall_id', assignedHallIds);
         }
+
+        const { data: inventoryData } = await inventoryQuery;
 
         setBookings(bookingsData || []);
         setHalls(hallsData || []);
@@ -375,10 +403,12 @@ const Dashboard = () => {
                           <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-destructive" />
                           <p className="text-sm font-medium">Unacknowledged</p>
                         </a>
-                        <a href="/admin/managers" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <Users className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                          <p className="text-sm font-medium">Manager Assignments</p>
-                        </a>
+                        {isSuperAdmin && (
+                          <a href="/admin/managers" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
+                            <Users className="w-8 h-8 mx-auto mb-2 text-secondary" />
+                            <p className="text-sm font-medium">Manager Assignments</p>
+                          </a>
+                        )}
                         <a href="/admin/reports" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
                           <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
                           <p className="text-sm font-medium">View Reports</p>
