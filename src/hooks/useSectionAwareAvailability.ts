@@ -21,7 +21,7 @@ interface DateAvailability {
 }
 
 // Check if two time slots conflict
-function slotsConflict(
+export function slotsConflict(
   existingStart: string | null,
   existingEnd: string | null,
   newSlotId: string
@@ -43,7 +43,7 @@ function slotsConflict(
   return false;
 }
 
-function getSlotType(start: string | null, end: string | null): string {
+export function getSlotType(start: string | null, end: string | null): string {
   // Handle null times (legacy bookings) - treat as fullday to be safe
   if (!start || !end) return "fullday";
   

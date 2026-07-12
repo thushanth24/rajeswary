@@ -15,7 +15,7 @@ interface BlockedDateInfo {
   reason: "confirmed" | "closed" | "partial";
 }
 
-function getSlotType(start: string | null, end: string | null): string {
+export function getSlotType(start: string | null, end: string | null): string {
   if (!start || !end) return "fullday";
   const normalizedStart = start.substring(0, 5);
   const normalizedEnd = end.substring(0, 5);
@@ -26,7 +26,7 @@ function getSlotType(start: string | null, end: string | null): string {
 }
 
 // Check if a date is fully booked (no available slots) - defined outside hook
-function isDateFullyBooked(bookings: BookingInfo[], totalSections: number): boolean {
+export function isDateFullyBooked(bookings: BookingInfo[], totalSections: number): boolean {
   const hasMultipleSections = totalSections > 1;
 
   const checkSlotBlocked = (slotId: string): boolean => {
