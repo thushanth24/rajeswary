@@ -49,6 +49,7 @@ import {
   Gem,
   UtensilsCrossed,
   CreditCard,
+  Download,
 } from "lucide-react";
 
 type BookingStep = 1 | 2 | 3;
@@ -104,6 +105,15 @@ const getTimeSlots = (t: (key: string) => string) => [
 
 const BOOKING_REF_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const MIN_ADVANCE_AMOUNT = 5000;
+
+function escapeHtml(value: string | number | null | undefined) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 function generateBookingReference() {
   const year = new Date().getFullYear();
@@ -819,6 +829,92 @@ const BookingPage = () => {
     anthiyeddy: "Signature",
   };
 
+  const handleDownloadBookingProof = () => {
+    if (!bookingReference) return;
+
+    const submittedAt = format(new Date(), "PPP p");
+    const eventDate = bookingData.eventDate ? format(bookingData.eventDate, "PPP") : "-";
+    const timeSlotLabel = timeSlots.find((ts) => ts.id === bookingData.timeSlot)?.label || "-";
+    const menuName =
+      displayMenus[bookingData.mealType as keyof typeof displayMenus]?.find(
+        (menu) => menu.id === bookingData.menuPackage
+      )?.name || "-";
+    const services = selectedServiceLabels.length > 0 ? selectedServiceLabels.join(", ") : "-";
+    const fileName = `booking-proof-${bookingReference}.html`;
+
+    const receiptHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Booking Proof ${escapeHtml(bookingReference)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #1f1f1f; margin: 0; background: #f7f4ee; }
+    .page { max-width: 760px; margin: 32px auto; padding: 32px; background: #fff; border: 1px solid #d9c38b; }
+    .header { border-bottom: 2px solid #c9a962; padding-bottom: 18px; margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 28px; color: #7a4f12; }
+    .subtitle { margin: 8px 0 0; color: #555; }
+    .reference { margin: 24px 0; padding: 18px; background: #fbf4df; border: 1px solid #d9c38b; text-align: center; }
+    .reference strong { display: block; font-size: 28px; letter-spacing: 2px; color: #7a4f12; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    th { width: 38%; color: #666; font-weight: 600; }
+    .notice { margin-top: 24px; padding: 14px 16px; background: #fff7e6; border: 1px solid #f0b84f; color: #6b4700; }
+    .footer { margin-top: 24px; font-size: 12px; color: #666; }
+    @media print { body { background: #fff; } .page { margin: 0; border: 0; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="header">
+      <h1>Booking Request Proof</h1>
+      <p class="subtitle">Raajeshwariy Groups - generated on ${escapeHtml(submittedAt)}</p>
+    </div>
+
+    <div class="reference">
+      <span>Booking Reference</span>
+      <strong>${escapeHtml(bookingReference)}</strong>
+    </div>
+
+    <h2>Customer Details</h2>
+    <table>
+      <tr><th>Name</th><td>${escapeHtml(bookingData.name)}</td></tr>
+      <tr><th>Phone</th><td>${escapeHtml(bookingData.phone)}</td></tr>
+      <tr><th>Email</th><td>${escapeHtml(bookingData.email || "-")}</td></tr>
+    </table>
+
+    <h2>Booking Details</h2>
+    <table>
+      <tr><th>Mandapam</th><td>${escapeHtml(selectedHall?.name || "-")}</td></tr>
+      <tr><th>Section</th><td>${escapeHtml(selectedSectionName || "-")}</td></tr>
+      <tr><th>Event Type</th><td>${escapeHtml(eventTypeLabel || "-")}</td></tr>
+      <tr><th>Event Date</th><td>${escapeHtml(eventDate)}</td></tr>
+      <tr><th>Time Slot</th><td>${escapeHtml(timeSlotLabel)}</td></tr>
+      <tr><th>Expected Guests</th><td>${escapeHtml(bookingData.guestCount || "-")}</td></tr>
+      <tr><th>Menu</th><td>${escapeHtml(menuName)}</td></tr>
+      <tr><th>Add-on Services</th><td>${escapeHtml(services)}</td></tr>
+    </table>
+
+    <div class="notice">
+      This is proof that your booking request was submitted. The booking is not confirmed until our team confirms it and the required advance payment is received.
+    </div>
+
+    <p class="footer">Please keep this reference for future communication.</p>
+  </main>
+</body>
+</html>`;
+
+    const blob = new Blob([receiptHtml], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   // selectedSectionName is defined above in the canProceed section
 
   if (isSubmitted) {
@@ -1000,9 +1096,20 @@ const BookingPage = () => {
                   </div>
                 )}
                 
-                <Button asChild variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/5">
-                  <a href="/">{t("booking.submitted.returnHome")}</a>
-                </Button>
+                <div className="flex flex-col sm:flex-row justify-center gap-3">
+                  {bookingReference && (
+                    <Button
+                      onClick={handleDownloadBookingProof}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Booking Proof
+                    </Button>
+                  )}
+                  <Button asChild variant="outline" className="border-foreground/30 text-foreground hover:bg-foreground/5">
+                    <a href="/">{t("booking.submitted.returnHome")}</a>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>

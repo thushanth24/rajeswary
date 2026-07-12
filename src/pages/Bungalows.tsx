@@ -39,6 +39,7 @@ import {
   Upload,
   Info,
   Wifi,
+  Download,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -63,6 +64,28 @@ interface FormState {
   idProofFile: File | null;
   purpose: string;
   specialRequests: string;
+}
+
+interface BungalowBookingProof {
+  bookingId: string;
+  generatedAt: string;
+  fullName: string;
+  mobileNumber: string;
+  email: string;
+  address: string;
+  roomType: string;
+  assignedRoom: string;
+  acPreference: AcPref;
+  packageType: PkgType;
+  checkIn: string;
+  checkOut: string;
+  nights: number;
+  adults: number;
+  children: number;
+  purpose: string;
+  specialRequests: string;
+  totalAmount: number;
+  paymentStatus: "pending" | "paid";
 }
 
 const DEFAULT_FORM: FormState = {
@@ -92,6 +115,14 @@ const ID_PROOF_TYPES = [
   { value: "business_registration", label: "Business Registration" },
 ];
 
+const PACKAGE_LABELS: Record<PkgType, string> = {
+  roomOnly: "Room Only",
+  bbWithRoom: "Bed & Breakfast",
+  fullBoard: "Full Board",
+};
+
+const BUNGALOW_PROOF_STORAGE_PREFIX = "bungalow-booking-proof:";
+
 const AMENITY_ICONS: Record<string, React.ReactNode> = {
   "Air Conditioner": <Snowflake className="h-3 w-3" />,
   "Fan": <Snowflake className="h-3 w-3" />,
@@ -110,6 +141,95 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
 
 function getTariff(bungalows: Bungalow[], type: string, acPref: AcPref) {
   return bungalows.find(b => b.type === type && b.acType === acPref)?.tariff ?? null;
+}
+
+function escapeHtml(value: string | number | null | undefined) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function downloadBungalowBookingProof(proof: BungalowBookingProof) {
+  const fileName = `bungalow-booking-proof-${proof.bookingId}.html`;
+  const receiptHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bungalow Booking Proof ${escapeHtml(proof.bookingId)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #1f1f1f; margin: 0; background: #f7f4ee; }
+    .page { max-width: 760px; margin: 32px auto; padding: 32px; background: #fff; border: 1px solid #d9c38b; }
+    .header { border-bottom: 2px solid #c9a962; padding-bottom: 18px; margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 28px; color: #7a4f12; }
+    .subtitle { margin: 8px 0 0; color: #555; }
+    .reference { margin: 24px 0; padding: 18px; background: #fbf4df; border: 1px solid #d9c38b; text-align: center; }
+    .reference strong { display: block; font-size: 20px; letter-spacing: 1px; color: #7a4f12; word-break: break-all; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+    th { width: 38%; color: #666; font-weight: 600; }
+    .notice { margin-top: 24px; padding: 14px 16px; background: #ecfdf3; border: 1px solid #86c99a; color: #215732; }
+    .footer { margin-top: 24px; font-size: 12px; color: #666; }
+    @media print { body { background: #fff; } .page { margin: 0; border: 0; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="header">
+      <h1>Bungalow Booking Proof</h1>
+      <p class="subtitle">Raajeshwariy Groups - generated on ${escapeHtml(proof.generatedAt)}</p>
+    </div>
+
+    <div class="reference">
+      <span>Booking Reference</span>
+      <strong>${escapeHtml(proof.bookingId)}</strong>
+    </div>
+
+    <h2>Customer Details</h2>
+    <table>
+      <tr><th>Name</th><td>${escapeHtml(proof.fullName)}</td></tr>
+      <tr><th>Mobile</th><td>${escapeHtml(proof.mobileNumber)}</td></tr>
+      <tr><th>Email</th><td>${escapeHtml(proof.email || "-")}</td></tr>
+      <tr><th>Address</th><td>${escapeHtml(proof.address || "-")}</td></tr>
+    </table>
+
+    <h2>Stay Details</h2>
+    <table>
+      <tr><th>Room Type</th><td>${escapeHtml(proof.roomType)}</td></tr>
+      <tr><th>Assigned Room</th><td>${escapeHtml(proof.assignedRoom)}</td></tr>
+      <tr><th>AC Preference</th><td>${escapeHtml(proof.acPreference)}</td></tr>
+      <tr><th>Package</th><td>${escapeHtml(PACKAGE_LABELS[proof.packageType])}</td></tr>
+      <tr><th>Check-in</th><td>${escapeHtml(proof.checkIn)}</td></tr>
+      <tr><th>Check-out</th><td>${escapeHtml(proof.checkOut)}</td></tr>
+      <tr><th>Nights</th><td>${escapeHtml(proof.nights)}</td></tr>
+      <tr><th>Guests</th><td>${escapeHtml(`${proof.adults} adult(s), ${proof.children} child(ren)`)}</td></tr>
+      <tr><th>Purpose</th><td>${escapeHtml(proof.purpose || "-")}</td></tr>
+      <tr><th>Special Requests</th><td>${escapeHtml(proof.specialRequests || "-")}</td></tr>
+      <tr><th>Total Amount</th><td>Rs ${escapeHtml(proof.totalAmount.toLocaleString())}</td></tr>
+      <tr><th>Payment Status</th><td>${escapeHtml(proof.paymentStatus === "paid" ? "Paid" : "Pending")}</td></tr>
+    </table>
+
+    <div class="notice">
+      This is proof that your bungalow booking payment was completed and the booking request was submitted.
+    </div>
+
+    <p class="footer">Please keep this booking reference for future communication.</p>
+  </main>
+</body>
+</html>`;
+
+  const blob = new Blob([receiptHtml], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 async function getFunctionErrorMessage(error: unknown) {
@@ -353,6 +473,7 @@ const BungalowsPage = () => {
   const [showDialog, setShowDialog] = useState(false);
   const [form, setForm] = useState<FormState>({ ...DEFAULT_FORM });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successfulBookingProof, setSuccessfulBookingProof] = useState<BungalowBookingProof | null>(null);
   // Live availability inside the dialog (checked when dates + roomType change)
   const [dialogAvail, setDialogAvail] = useState<{ ac: number; nonAc: number } | null>(null);
 
@@ -360,7 +481,19 @@ const BungalowsPage = () => {
 
   useEffect(() => {
     const payment = searchParams.get("payment");
+    const bookingId = searchParams.get("booking");
     if (payment === "success") {
+      if (bookingId) {
+        const storedProof = localStorage.getItem(`${BUNGALOW_PROOF_STORAGE_PREFIX}${bookingId}`);
+        if (storedProof) {
+          try {
+            const parsedProof = JSON.parse(storedProof) as BungalowBookingProof;
+            setSuccessfulBookingProof({ ...parsedProof, paymentStatus: "paid" });
+          } catch {
+            setSuccessfulBookingProof(null);
+          }
+        }
+      }
       toast({
         title: "Payment Successful!",
         description: "Your room booking is confirmed. We look forward to welcoming you.",
@@ -552,6 +685,32 @@ const BungalowsPage = () => {
 
       if (bookingError) throw bookingError;
       const bookingId: string = newBooking.id;
+      const bookingProof: BungalowBookingProof = {
+        bookingId,
+        generatedAt: format(new Date(), "PPP p"),
+        fullName: form.fullName.trim(),
+        mobileNumber: form.mobileNumber.trim(),
+        email: form.email.trim(),
+        address: form.address.trim(),
+        roomType: form.roomType,
+        assignedRoom: assignedRoom.name,
+        acPreference: form.acPreference,
+        packageType: form.packageType,
+        checkIn: format(form.checkInDate, "PPP"),
+        checkOut: format(form.checkOutDate, "PPP"),
+        nights,
+        adults: parseInt(form.adults) || 1,
+        children: parseInt(form.children) || 0,
+        purpose: form.purpose.trim(),
+        specialRequests: form.specialRequests.trim(),
+        totalAmount: totalPrice,
+        paymentStatus: "pending",
+      };
+
+      localStorage.setItem(
+        `${BUNGALOW_PROOF_STORAGE_PREFIX}${bookingId}`,
+        JSON.stringify(bookingProof)
+      );
 
       // 4. Get PayHere checkout form data (hash generated server-side)
       const nameParts = form.fullName.trim().split(" ");
@@ -566,7 +725,7 @@ const BungalowsPage = () => {
             email: form.email || "",
             phone: form.mobileNumber,
             hallName: `${form.roomType} — ${form.acPreference === "AC" ? "With AC" : "Without AC"}`,
-            returnUrl: "https://raajeshwariygroups.com/bungalows?payment=success",
+            returnUrl: `https://raajeshwariygroups.com/bungalows?payment=success&booking=${bookingId}`,
             cancelUrl: `https://raajeshwariygroups.com/bungalows?payment=cancelled`,
           },
         }
@@ -638,6 +797,27 @@ const BungalowsPage = () => {
       <section className="relative py-8 bg-card border-b border-secondary/20">
         <DecorativeBorder position="top" />
         <div className="container mx-auto px-4 lg:px-8 space-y-6">
+          {successfulBookingProof && (
+            <div className="mx-auto max-w-3xl rounded-lg border border-emerald-500/40 bg-emerald-500/10 p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-semibold text-emerald-700 dark:text-emerald-400">
+                    Bungalow booking confirmed
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Reference: <span className="font-mono text-foreground">{successfulBookingProof.bookingId}</span>
+                  </p>
+                </div>
+                <Button
+                  onClick={() => downloadBungalowBookingProof(successfulBookingProof)}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download Booking Proof
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Policy badges */}
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
