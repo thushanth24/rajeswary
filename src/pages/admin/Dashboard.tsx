@@ -7,7 +7,6 @@ import {
   Building2,
   Calendar,
   Package,
-  Users,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -308,8 +307,8 @@ const Dashboard = () => {
               ))}
             </div>
 
-            {/* Recent Bungalow Bookings & Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Bungalow Bookings */}
+            <div>
               <Card className="card-traditional">
                 <CardHeader>
                   <CardTitle className="font-serif">Recent Bungalow Bookings</CardTitle>
@@ -342,82 +341,13 @@ const Dashboard = () => {
                   )}
                 </CardContent>
               </Card>
-
-              <Card className="card-traditional">
-                <CardHeader>
-                  <CardTitle className="font-serif">Quick Actions</CardTitle>
-                  <CardDescription>Common tasks</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    <a href="/admin/bungalow-bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
-                      <p className="text-sm font-medium">Manage Bookings</p>
-                    </a>
-                    <a href="/admin/settings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                      <Package className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                      <p className="text-sm font-medium">Settings</p>
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </>
         ) : (
           <>
-            {/* Recent Bookings & Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Bookings */}
+            <div>
               <RecentBookings bookings={bookings} />
-              
-              {/* Quick Actions */}
-              <Card className="card-traditional">
-                <CardHeader>
-                  <CardTitle className="font-serif">Quick Actions</CardTitle>
-                  <CardDescription>Common tasks based on your role</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    {isHallManager && (
-                      <>
-                        <a href="/admin/new-booking" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
-                          <p className="text-sm font-medium">New Manual Booking</p>
-                        </a>
-                        <a href="/admin/bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <Clock className="w-8 h-8 mx-auto mb-2 text-accent" />
-                          <p className="text-sm font-medium">View Pending</p>
-                        </a>
-                        <a href="/admin/inventory" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <Package className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                          <p className="text-sm font-medium">Manage Inventory</p>
-                        </a>
-                      </>
-                    )}
-                    {(isSuperAdmin || isAdmin) && (
-                      <>
-                        <a href="/admin/bookings" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <Calendar className="w-8 h-8 mx-auto mb-2 text-primary" />
-                          <p className="text-sm font-medium">View All Bookings</p>
-                        </a>
-                        <a href="/admin/unacknowledged" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-destructive" />
-                          <p className="text-sm font-medium">Unacknowledged</p>
-                        </a>
-                        {isSuperAdmin && (
-                          <a href="/admin/managers" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                            <Users className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                            <p className="text-sm font-medium">Manager Assignments</p>
-                          </a>
-                        )}
-                        <a href="/admin/reports" className="p-4 border rounded-lg hover:bg-muted/50 transition-colors text-center">
-                          <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
-                          <p className="text-sm font-medium">View Reports</p>
-                        </a>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
             </div>
 
             {/* Real-time Stats Grid */}

@@ -1,6 +1,9 @@
 
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RESEND_FROM_EMAIL =
+  Deno.env.get("RESEND_FROM_EMAIL") ||
+  "Raajeshwariy Groups <info@raajeshwariygroups.com>";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +12,10 @@ const corsHeaders = {
 };
 
 const sendEmail = async (to: string[], subject: string, html: string) => {
+  if (!RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -16,7 +23,7 @@ const sendEmail = async (to: string[], subject: string, html: string) => {
       Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: "Chandra Hall Bookings <onboarding@resend.dev>",
+      from: RESEND_FROM_EMAIL,
       to,
       subject,
       html,
@@ -83,7 +90,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div style="background: linear-gradient(135deg, #1a1814 0%, #2d2a24 100%); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
             <!-- Header -->
             <div style="padding: 30px; text-align: center; border-bottom: 2px solid #c9a962;">
-              <h1 style="color: #c9a962; margin: 0; font-size: 28px; letter-spacing: 2px;">CHANDRA HALL</h1>
+              <h1 style="color: #c9a962; margin: 0; font-size: 28px; letter-spacing: 2px;">RAAJESHWARIY GROUPS</h1>
               <p style="color: #d4c5a9; margin: 10px 0 0 0; font-size: 12px; letter-spacing: 3px;">BOOKING CANCELLATION</p>
             </div>
             
@@ -138,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
             
             <!-- Footer -->
             <div style="padding: 20px 30px; background-color: #1a1814; text-align: center;">
-              <p style="color: #c9a962; margin: 0; font-size: 12px;">© Chandra Hall - Creating Memorable Celebrations</p>
+              <p style="color: #c9a962; margin: 0; font-size: 12px;">Raajeshwariy Groups - Wedding Halls & Event Services</p>
             </div>
           </div>
         </div>
