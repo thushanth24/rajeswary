@@ -566,8 +566,9 @@ const BookingPage = () => {
         return;
       }
 
-      // bookingData.hallId is already the UUID
-      const hallUUID = bookingData.hallId;
+      // bookingData.hallId may be a slug when preselected via URL (?hall=slug),
+      // so prefer the UUID resolved from the halls table
+      const hallUUID = selectedHallUUID || bookingData.hallId;
 
       // Real-time date + time slot revalidation - fresh check from database before submitting
       if (bookingData.eventDate && hallUUID) {
@@ -759,7 +760,7 @@ const BookingPage = () => {
 
       // Send confirmation email (fire and forget - don't block the UI)
       if (trimmedEmail) {
-        const hallName = halls.find(h => h.slug === bookingData.hallId)?.name || 'Hall';
+        const hallName = selectedHall?.name || halls.find(h => h.slug === bookingData.hallId)?.name || 'Hall';
         const eventTypeName = eventTypeLabel;
 
         supabase.functions.invoke('send-booking-confirmation', {

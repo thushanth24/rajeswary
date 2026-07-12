@@ -48,3 +48,12 @@ Object.defineProperty(window, "ResizeObserver", {
 });
 
 window.scrollTo = vi.fn();
+
+// jsdom doesn't implement form.submit() (used for the PayHere hosted-checkout redirect)
+HTMLFormElement.prototype.submit = vi.fn();
+
+// jsdom doesn't implement pointer-capture or scrollIntoView (needed by Radix Select)
+Element.prototype.scrollIntoView = vi.fn();
+Element.prototype.hasPointerCapture = vi.fn().mockReturnValue(false);
+Element.prototype.setPointerCapture = vi.fn();
+Element.prototype.releasePointerCapture = vi.fn();
