@@ -30,6 +30,7 @@ import { HallReviews } from "@/components/hall/HallReviews";
 import { HallFloorPlan } from "@/components/hall/HallFloorPlan";
 import { HallEventPhotos } from "@/components/hall/HallEventPhotos";
 import { HallSectionsGallery } from "@/components/hall/HallSectionsGallery";
+import { HALLS, mapUrl } from "@/seo/seo";
 
 const HallDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -86,27 +87,37 @@ const HallDetailPage = () => {
   ];
 
   const hallAddress = hallAddresses[hall.slug];
+  const seoHall = HALLS[hall.slug];
   const venueSchema = {
     "@context": "https://schema.org",
     "@type": "EventVenue",
     "name": hall.name,
-    "alternateName": hall.name.replace("Raajeshwariy", "Rajeswary"),
+    ...(seoHall?.alternateName ? { alternateName: seoHall.alternateName } : {}),
     "description": hall.description,
     "url": `https://raajeshwariygroups.com/halls/${hall.slug}`,
     "image": hall.image,
     "address": {
       "@type": "PostalAddress",
       "streetAddress": hallAddress?.street || "",
-      "addressLocality": hallAddress?.area || "Jaffna",
+      "addressLocality": hallAddress?.city || "Jaffna",
       "addressRegion": "Northern Province",
+      "postalCode": "40000",
       "addressCountry": "LK"
     },
+    ...(seoHall
+      ? {
+          geo: { "@type": "GeoCoordinates", latitude: seoHall.lat, longitude: seoHall.lng },
+          hasMap: mapUrl(seoHall),
+          telephone: seoHall.phone,
+        }
+      : { telephone: primaryNumber }),
+    "priceRange": "$$",
+    "openingHours": "Mo-Su 09:00-18:00",
     "maximumAttendeeCapacity": hall.capacity.max,
     "amenityFeature": facilities.filter(f => f.available).map(f => ({
       "@type": "LocationFeatureSpecification",
       "name": f.name
-    })),
-    "telephone": primaryNumber
+    }))
   };
 
   return (

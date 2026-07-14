@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { LanguageSync } from "@/components/LanguageSync";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { RouteSeo } from "@/components/seo/RouteSeo";
 import ProtectedRoute from "@/components/admin/ProtectedRoute";
@@ -22,6 +23,7 @@ import Booking from "./pages/Booking";
 import Bungalows from "./pages/Bungalows";
 import Gallery from "./pages/Gallery";
 import Charity from "./pages/Charity";
+import AreaLanding from "./pages/AreaLanding";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -49,6 +51,29 @@ import GalleryAlbums from "./pages/admin/GalleryAlbums";
 
 const queryClient = new QueryClient();
 
+// Public routes rendered under both the English tree ("") and the Tamil
+// tree ("/ta") so each language has its own indexable URL. Language is
+// derived from the URL prefix by <LanguageSync>.
+const publicRoutes = (prefix: string) => (
+  <>
+    <Route path={prefix === "" ? "/" : prefix} element={<Index />} />
+    <Route path={`${prefix}/halls`} element={<Halls />} />
+    <Route path={`${prefix}/halls/:slug`} element={<HallDetail />} />
+    <Route path={`${prefix}/wedding-halls/:area`} element={<AreaLanding />} />
+    <Route path={`${prefix}/services`} element={<Services />} />
+    <Route path={`${prefix}/menus`} element={<Menus />} />
+    <Route path={`${prefix}/about`} element={<About />} />
+    <Route path={`${prefix}/contact`} element={<Contact />} />
+    <Route path={`${prefix}/booking`} element={<Booking />} />
+    <Route path={`${prefix}/bungalows`} element={<Bungalows />} />
+    <Route path={`${prefix}/gallery`} element={<Gallery />} />
+    <Route path={`${prefix}/charity`} element={<Charity />} />
+    <Route path={`${prefix}/refund-policy`} element={<RefundPolicy />} />
+    <Route path={`${prefix}/privacy-policy`} element={<PrivacyPolicy />} />
+    <Route path={`${prefix}/terms-and-conditions`} element={<TermsAndConditions />} />
+  </>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
@@ -59,25 +84,17 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <LanguageSync />
               <RouteSeo />
             <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/halls" element={<Halls />} />
-              <Route path="/halls/:slug" element={<HallDetail />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/menus" element={<Menus />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/booking" element={<Booking />} />
-              <Route path="/bungalows" element={<Bungalows />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/charity" element={<Charity />} />
+              {/* Public Routes (English) */}
+              {publicRoutes("")}
+              {/* Public Routes (Tamil mirror) */}
+              {publicRoutes("/ta")}
+
+              {/* Auth (English only, noindex) */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/refund-policy" element={<RefundPolicy />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
               {/* Admin Routes - Protected */}
               <Route

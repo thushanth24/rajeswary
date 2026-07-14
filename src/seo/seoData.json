@@ -1,0 +1,296 @@
+{
+  "site": {
+    "name": "Raajeshwariy Groups",
+    "url": "https://raajeshwariygroups.com",
+    "defaultImage": "/og-cover.jpg",
+    "logo": "/logo.png"
+  },
+  "pages": {
+    "/": {
+      "title": "Raajeshwariy Groups | Wedding Halls & Mandapams in Jaffna",
+      "description": "Premium wedding halls and mandapams across Jaffna — Kondavil, Tellipalai, Kokuvil, Urumpirai and Chunnakam. Check availability and book your wedding, reception or ceremony online.",
+      "titleTa": "ராஜேஸ்வரி குழுமம் | யாழ்ப்பாணத்தில் திருமண மண்டபங்கள்",
+      "descriptionTa": "யாழ்ப்பாணத்தில் கொண்டாவில், தெல்லிப்பழை, கொக்குவில், உரும்பிராய், சுன்னாகம் பகுதிகளில் தரமான திருமண மண்டபங்கள். இன்றே உங்கள் திருமண மண்டபத்தை முன்பதிவு செய்யுங்கள்."
+    },
+    "/halls": {
+      "title": "Wedding Halls in Jaffna | 5 Premium Mandapams | Raajeshwariy Groups",
+      "description": "Browse all five Raajeshwariy wedding halls in Jaffna — AC halls, parking, dining and stage facilities in Kondavil, Tellipalai, Kokuvil, Urumpirai and near Chunnakam.",
+      "titleTa": "யாழ்ப்பாண திருமண மண்டபங்கள் | ராஜேஸ்வரி குழுமம்",
+      "descriptionTa": "யாழ்ப்பாணத்தில் உள்ள ஐந்து ராஜேஸ்வரி திருமண மண்டபங்களைப் பாருங்கள் — குளிரூட்டப்பட்ட மண்டபங்கள், வாகன தரிப்பிடம், சாப்பாட்டு மண்டபம் மற்றும் மேடை வசதிகள்."
+    },
+    "/services": {
+      "title": "Wedding Services in Jaffna | Decoration, Catering, Photography | Raajeshwariy Groups",
+      "description": "Complete wedding services in Jaffna: decoration, catering, photography, DJ, makeup and vehicles. One-stop planning for weddings and receptions at our venues.",
+      "titleTa": "யாழ்ப்பாணத்தில் திருமண சேவைகள் | அலங்காரம், உணவு, புகைப்படம்",
+      "descriptionTa": "யாழ்ப்பாணத்தில் முழுமையான திருமண சேவைகள்: அலங்காரம், உணவு வழங்கல், புகைப்படம், DJ, ஒப்பனை மற்றும் வாகனங்கள்."
+    },
+    "/menus": {
+      "title": "Wedding Menus & Catering in Jaffna | Veg & Non-Veg | Raajeshwariy Groups",
+      "description": "Traditional Jaffna Tamil wedding catering — banana leaf feasts, vegetarian and non-vegetarian menus for weddings, receptions and ceremonies.",
+      "titleTa": "திருமண உணவு பட்டியல் | யாழ்ப்பாண சமையல் | ராஜேஸ்வரி குழுமம்",
+      "descriptionTa": "பாரம்பரிய யாழ்ப்பாண திருமண உணவு — வாழை இலை விருந்து, சைவ மற்றும் அசைவ உணவு பட்டியல்கள்."
+    },
+    "/about": {
+      "title": "About Raajeshwariy Groups | 15+ Years of Weddings in Jaffna",
+      "description": "Jaffna's leading wedding venue company with 15+ years of experience, five premium halls and hundreds of celebrations. Also written as Rajeswary, Raajeswary or Rajeshwari.",
+      "titleTa": "ராஜேஸ்வரி குழுமம் பற்றி | 15+ ஆண்டுகால அனுபவம்",
+      "descriptionTa": "15+ ஆண்டுகால அனுபவமும் ஐந்து தரமான மண்டபங்களும் கொண்ட யாழ்ப்பாணத்தின் முன்னணி திருமண மண்டப நிறுவனம்."
+    },
+    "/contact": {
+      "title": "Contact Raajeshwariy Groups | Wedding Hall Enquiries in Jaffna",
+      "description": "Phone numbers, addresses and locations for all five Raajeshwariy wedding halls in Jaffna. Call or message us to arrange a site visit.",
+      "titleTa": "தொடர்பு கொள்ளுங்கள் | ராஜேஸ்வரி திருமண மண்டபங்கள் யாழ்ப்பாணம்",
+      "descriptionTa": "யாழ்ப்பாணத்தில் உள்ள ஐந்து ராஜேஸ்வரி திருமண மண்டபங்களின் தொலைபேசி எண்கள் மற்றும் முகவரிகள்."
+    },
+    "/booking": {
+      "title": "Book a Wedding Hall in Jaffna | Raajeshwariy Groups",
+      "description": "Check real-time availability and book your preferred Raajeshwariy wedding hall in Jaffna online.",
+      "titleTa": "திருமண மண்டப முன்பதிவு | ராஜேஸ்வரி குழுமம் யாழ்ப்பாணம்",
+      "descriptionTa": "உங்களுக்கு விருப்பமான ராஜேஸ்வரி திருமண மண்டபத்தின் காலி நாட்களைப் பார்த்து இணையத்தில் முன்பதிவு செய்யுங்கள்."
+    },
+    "/bungalows": {
+      "title": "Guest Bungalows in Jaffna | Raajeshwariy Groups",
+      "description": "Comfortable bungalow accommodation for wedding guests and families visiting Jaffna, offered by Raajeshwariy Groups.",
+      "titleTa": "விருந்தினர் தங்குமிடங்கள் | ராஜேஸ்வரி குழுமம் யாழ்ப்பாணம்",
+      "descriptionTa": "யாழ்ப்பாணம் வரும் திருமண விருந்தினர்களுக்கும் குடும்பங்களுக்கும் வசதியான தங்குமிட வசதிகள்."
+    },
+    "/gallery": {
+      "title": "Wedding Photo Gallery | Raajeshwariy Halls in Jaffna",
+      "description": "Photos from real weddings and events at Raajeshwariy venues in Jaffna — Chelva Mahal, Chelva Palace, Karpaka Raajeshwariy and more.",
+      "titleTa": "திருமண புகைப்பட தொகுப்பு | ராஜேஸ்வரி மண்டபங்கள்",
+      "descriptionTa": "யாழ்ப்பாணத்தில் உள்ள ராஜேஸ்வரி மண்டபங்களில் நடைபெற்ற திருமணங்கள் மற்றும் நிகழ்வுகளின் புகைப்படங்கள்."
+    },
+    "/charity": {
+      "title": "Charity & Community Work | Raajeshwariy Groups Jaffna",
+      "description": "Community initiatives by Raajeshwariy Groups — food, education and social support programmes across the Jaffna district.",
+      "titleTa": "அறப்பணிகள் | ராஜேஸ்வரி குழுமம் யாழ்ப்பாணம்",
+      "descriptionTa": "யாழ்ப்பாண மாவட்டம் முழுவதும் உணவு, கல்வி மற்றும் சமூக உதவித் திட்டங்கள்."
+    },
+    "/refund-policy": {
+      "title": "Refund Policy | Raajeshwariy Groups",
+      "description": "Refund and cancellation policy for hall bookings with Raajeshwariy Groups, Jaffna."
+    },
+    "/privacy-policy": {
+      "title": "Privacy Policy | Raajeshwariy Groups",
+      "description": "How Raajeshwariy Groups collects, uses and protects your personal information."
+    },
+    "/terms-and-conditions": {
+      "title": "Terms & Conditions | Raajeshwariy Groups",
+      "description": "Terms and conditions for bookings and use of Raajeshwariy Groups services."
+    }
+  },
+  "halls": {
+    "raajeshwariy-kondavil": {
+      "name": "Raajeshwariy Wedding Hall Kondavil",
+      "nameTa": "ராஜேஸ்வரி திருமண மண்டபம் கொண்டாவில்",
+      "alternateName": "Rajeswary Wedding Hall Kondavil",
+      "area": "Kondavil",
+      "areaTa": "கொண்டாவில்",
+      "street": "132, Palali Road, Kondavil",
+      "phone": "+94770228820",
+      "lat": 9.7028,
+      "lng": 80.013
+    },
+    "raajeshwariy-tellipalai": {
+      "name": "Raajeshwariy Wedding Hall Tellipalai",
+      "nameTa": "ராஜேஸ்வரி திருமண மண்டபம் தெல்லிப்பழை",
+      "alternateName": "Rajeswary Wedding Hall Tellipalai",
+      "area": "Tellipalai",
+      "areaTa": "தெல்லிப்பழை",
+      "street": "No 573, K.K.S Road, Tellipalai",
+      "phone": "+94212223999",
+      "lat": 9.7333,
+      "lng": 80.0333
+    },
+    "chelva-mahal": {
+      "name": "Chelva Mahal",
+      "nameTa": "செல்வா மஹால்",
+      "alternateName": "Chelva Mahal Kokuvil",
+      "area": "Kokuvil",
+      "areaTa": "கொக்குவில்",
+      "street": "10,12 Poonary Lane, Kokuvil",
+      "phone": "+94776002995",
+      "lat": 9.6835,
+      "lng": 80.0385
+    },
+    "chelva-palace": {
+      "name": "Chelva Palace",
+      "nameTa": "செல்வா பாலஸ்",
+      "alternateName": "Chelva Palace Poonary Marathadi",
+      "area": "Poonary Marathadi",
+      "areaTa": "பூனரி மரத்தடி",
+      "street": "No 1229, KKS Road, Poonary Marathadi",
+      "phone": "+94212219779",
+      "lat": 9.715,
+      "lng": 80.01
+    },
+    "karpaka-raajeshwariy-urumpirai": {
+      "name": "Karpaka Raajeshwariy Wedding Hall",
+      "nameTa": "கற்பக ராஜேஸ்வரி திருமண மண்டபம்",
+      "alternateName": "Karpaka Rajeswary Hall Urumpirai",
+      "area": "Urumpirai",
+      "areaTa": "உரும்பிராய்",
+      "street": "No. 69, Palali Road, Urumpirai",
+      "phone": "+94212054600",
+      "lat": 9.72,
+      "lng": 80.025
+    }
+  },
+  "areas": {
+    "kondavil": {
+      "name": "Kondavil",
+      "nameTa": "கொண்டாவில்",
+      "hallSlugs": ["raajeshwariy-kondavil"],
+      "title": "Wedding Halls in Kondavil, Jaffna | Raajeshwariy Groups",
+      "description": "Looking for a wedding hall in Kondavil? Raajeshwariy Wedding Hall on Palali Road offers an AC hall, parking, dining and stage. Check availability and book online.",
+      "titleTa": "கொண்டாவில் திருமண மண்டபம் | ராஜேஸ்வரி குழுமம்",
+      "descriptionTa": "கொண்டாவிலில் திருமண மண்டபம் தேடுகிறீர்களா? பலாலி வீதியில் அமைந்த ராஜேஸ்வரி திருமண மண்டபம் — குளிரூட்டல், வாகன தரிப்பிடம், சாப்பாட்டு மண்டபம்.",
+      "intro": "Kondavil sits on the Palali Road just a few kilometres north of Jaffna town, making it one of the most convenient areas for wedding guests travelling from anywhere in the peninsula. Raajeshwariy Wedding Hall Kondavil is located right on the main road, with easy access for wedding cars and buses, on-site parking and a fully air-conditioned hall.",
+      "introTa": "கொண்டாவில் யாழ்ப்பாண நகரத்திலிருந்து சில கிலோமீட்டர் வடக்கே பலாலி வீதியில் அமைந்துள்ளது. ராஜேஸ்வரி திருமண மண்டபம் கொண்டாவில் பிரதான வீதியிலேயே அமைந்துள்ளதால் திருமண வாகனங்களும் பேருந்துகளும் இலகுவாக வந்து சேரலாம். வாகன தரிப்பிடம் மற்றும் முழுமையாக குளிரூட்டப்பட்ட மண்டபம் உண்டு.",
+      "faqs": [
+        {
+          "q": "How far is the Kondavil hall from Jaffna town?",
+          "a": "Raajeshwariy Wedding Hall Kondavil is on Palali Road, roughly a 10-minute drive from Jaffna town centre.",
+          "qTa": "கொண்டாவில் மண்டபம் யாழ்ப்பாண நகரிலிருந்து எவ்வளவு தூரம்?",
+          "aTa": "ராஜேஸ்வரி திருமண மண்டபம் கொண்டாவில் பலாலி வீதியில் அமைந்துள்ளது — யாழ்ப்பாண நகர மையத்திலிருந்து சுமார் 10 நிமிட பயணம்."
+        },
+        {
+          "q": "Does the Kondavil wedding hall have parking?",
+          "a": "Yes, the venue has on-site parking for cars and space for wedding buses on the main road frontage.",
+          "qTa": "கொண்டாவில் மண்டபத்தில் வாகன தரிப்பிடம் உண்டா?",
+          "aTa": "ஆம், மண்டப வளாகத்தில் கார்களுக்கான தரிப்பிடமும் பிரதான வீதி முகப்பில் பேருந்துகளுக்கான இடமும் உண்டு."
+        },
+        {
+          "q": "How do I check available dates for the Kondavil hall?",
+          "a": "You can check real-time availability and book online on our booking page, or call +94 77 022 8820.",
+          "qTa": "கொண்டாவில் மண்டபத்தின் காலி நாட்களை எப்படி அறியலாம்?",
+          "aTa": "எங்கள் முன்பதிவு பக்கத்தில் காலி நாட்களைப் பார்த்து இணையத்தில் முன்பதிவு செய்யலாம், அல்லது +94 77 022 8820 என்ற எண்ணை அழைக்கலாம்."
+        }
+      ]
+    },
+    "tellipalai": {
+      "name": "Tellipalai",
+      "nameTa": "தெல்லிப்பழை",
+      "hallSlugs": ["raajeshwariy-tellipalai"],
+      "title": "Wedding Halls in Tellipalai, Jaffna | Raajeshwariy Groups",
+      "description": "Raajeshwariy Wedding Hall Tellipalai on K.K.S Road offers a spacious hall with dining, stage and parking for weddings and receptions. Book your date online.",
+      "titleTa": "தெல்லிப்பழை திருமண மண்டபம் | ராஜேஸ்வரி குழுமம்",
+      "descriptionTa": "தெல்லிப்பழை கே.கே.எஸ் வீதியில் அமைந்த ராஜேஸ்வரி திருமண மண்டபம் — விசாலமான மண்டபம், சாப்பாட்டு மண்டபம், மேடை மற்றும் வாகன தரிப்பிடம்.",
+      "intro": "Tellipalai is a well-known town on the Kankesanthurai (K.K.S) Road in the northern part of the Jaffna peninsula, home to the famous Durgai Amman temple. Raajeshwariy Wedding Hall Tellipalai is ideal for families in Tellipalai, Mallakam, Chunnakam and surrounding villages, with a spacious hall, dining facilities and stage.",
+      "introTa": "தெல்லிப்பழை யாழ்ப்பாண குடாநாட்டின் வடபகுதியில் கே.கே.எஸ் வீதியில் அமைந்த பிரசித்தி பெற்ற ஊர் — துர்க்கை அம்மன் ஆலயத்திற்கு பெயர் பெற்றது. ராஜேஸ்வரி திருமண மண்டபம் தெல்லிப்பழை, மல்லாகம், சுன்னாகம் மற்றும் சுற்றுப்புற கிராம குடும்பங்களுக்கு ஏற்றது.",
+      "faqs": [
+        {
+          "q": "Where exactly is the Tellipalai wedding hall?",
+          "a": "The hall is at No 573, K.K.S Road, Tellipalai — on the main Jaffna–Kankesanthurai road, easy to find for guests coming from either direction.",
+          "qTa": "தெல்லிப்பழை திருமண மண்டபம் எங்கே அமைந்துள்ளது?",
+          "aTa": "மண்டபம் இல. 573, கே.கே.எஸ் வீதி, தெல்லிப்பழையில் — யாழ்ப்பாணம்–காங்கேசன்துறை பிரதான வீதியில் அமைந்துள்ளது."
+        },
+        {
+          "q": "Is the Tellipalai hall suitable for large weddings?",
+          "a": "Yes, it is a spacious hall with dining and stage facilities. Contact us on +94 21 222 3999 to discuss guest numbers and seating.",
+          "qTa": "தெல்லிப்பழை மண்டபம் பெரிய திருமணங்களுக்கு ஏற்றதா?",
+          "aTa": "ஆம், சாப்பாட்டு மண்டபம் மற்றும் மேடை வசதிகளுடன் கூடிய விசாலமான மண்டபம். விருந்தினர் எண்ணிக்கை பற்றி +94 21 222 3999 இல் தொடர்பு கொள்ளுங்கள்."
+        },
+        {
+          "q": "Can I book the Tellipalai hall online?",
+          "a": "Yes — check availability and book on our booking page, or call to arrange a site visit first.",
+          "qTa": "தெல்லிப்பழை மண்டபத்தை இணையத்தில் முன்பதிவு செய்யலாமா?",
+          "aTa": "ஆம் — எங்கள் முன்பதிவு பக்கத்தில் காலி நாட்களைப் பார்த்து முன்பதிவு செய்யலாம், அல்லது நேரில் பார்வையிட அழைக்கலாம்."
+        }
+      ]
+    },
+    "kokuvil": {
+      "name": "Kokuvil",
+      "nameTa": "கொக்குவில்",
+      "hallSlugs": ["chelva-mahal"],
+      "title": "Wedding Halls in Kokuvil, Jaffna | Chelva Mahal | Raajeshwariy Groups",
+      "description": "Chelva Mahal in Kokuvil is our flagship wedding venue — an elegant hall close to Jaffna town with dining, stage and parking. Check dates and book online.",
+      "titleTa": "கொக்குவில் திருமண மண்டபம் | செல்வா மஹால்",
+      "descriptionTa": "கொக்குவிலில் அமைந்த செல்வா மஹால் — யாழ்ப்பாண நகருக்கு அருகில் உள்ள எங்கள் முதன்மை திருமண மண்டபம். இன்றே முன்பதிவு செய்யுங்கள்.",
+      "intro": "Kokuvil lies between Jaffna town and Kondavil, minutes from Jaffna Hindu College and the university area. Chelva Mahal, our flagship venue on Poonary Lane, is a popular choice for weddings and receptions for families from Kokuvil, Nallur and Jaffna town, combining an elegant hall with full dining facilities.",
+      "introTa": "கொக்குவில் யாழ்ப்பாண நகருக்கும் கொண்டாவிலுக்கும் இடையில் அமைந்துள்ளது. பூனரி ஒழுங்கையில் அமைந்த எங்கள் முதன்மை மண்டபமான செல்வா மஹால், கொக்குவில், நல்லூர் மற்றும் யாழ்ப்பாண நகர குடும்பங்களின் திருமணங்களுக்கும் வரவேற்பு நிகழ்வுகளுக்கும் பிரபலமான தேர்வாகும்.",
+      "faqs": [
+        {
+          "q": "What makes Chelva Mahal the flagship venue?",
+          "a": "Chelva Mahal combines an elegant main hall, full dining facilities and an experienced events team, and hosts many of our largest weddings.",
+          "qTa": "செல்வா மஹால் ஏன் முதன்மை மண்டபம்?",
+          "aTa": "நேர்த்தியான பிரதான மண்டபம், முழுமையான சாப்பாட்டு வசதிகள் மற்றும் அனுபவமிக்க குழுவுடன் எங்கள் பெரிய திருமணங்கள் பல இங்கு நடைபெறுகின்றன."
+        },
+        {
+          "q": "How close is Chelva Mahal to Jaffna town?",
+          "a": "The venue is in Kokuvil, about 5–10 minutes by car from Jaffna town centre and Nallur.",
+          "qTa": "செல்வா மஹால் யாழ்ப்பாண நகருக்கு எவ்வளவு அருகில்?",
+          "aTa": "மண்டபம் கொக்குவிலில் — யாழ்ப்பாண நகர மையம் மற்றும் நல்லூரிலிருந்து சுமார் 5–10 நிமிட கார் பயணம்."
+        },
+        {
+          "q": "How do I enquire about Chelva Mahal?",
+          "a": "Call +94 77 600 2995 or use our booking page to check available dates online.",
+          "qTa": "செல்வா மஹால் பற்றி எப்படி விசாரிப்பது?",
+          "aTa": "+94 77 600 2995 என்ற எண்ணை அழையுங்கள் அல்லது முன்பதிவு பக்கத்தில் காலி நாட்களைப் பாருங்கள்."
+        }
+      ]
+    },
+    "urumpirai": {
+      "name": "Urumpirai",
+      "nameTa": "உரும்பிராய்",
+      "hallSlugs": ["karpaka-raajeshwariy-urumpirai"],
+      "title": "Wedding Halls in Urumpirai, Jaffna | Karpaka Raajeshwariy | Raajeshwariy Groups",
+      "description": "Karpaka Raajeshwariy Wedding Hall on Palali Road, Urumpirai offers a beautiful venue with modern facilities for weddings and receptions. Book your date online.",
+      "titleTa": "உரும்பிராய் திருமண மண்டபம் | கற்பக ராஜேஸ்வரி",
+      "descriptionTa": "உரும்பிராய் பலாலி வீதியில் அமைந்த கற்பக ராஜேஸ்வரி திருமண மண்டபம் — நவீன வசதிகளுடன் கூடிய அழகிய மண்டபம்.",
+      "intro": "Urumpirai is a growing residential area on the Palali Road between Kondavil and Kopay. Karpaka Raajeshwariy Wedding Hall serves families across Urumpirai, Kopay, Neervely and the surrounding villages with a beautiful hall, modern facilities and easy main-road access.",
+      "introTa": "உரும்பிராய் கொண்டாவிலுக்கும் கோப்பாய்க்கும் இடையில் பலாலி வீதியில் அமைந்த வளர்ந்து வரும் குடியிருப்புப் பகுதி. கற்பக ராஜேஸ்வரி திருமண மண்டபம் உரும்பிராய், கோப்பாய், நீர்வேலி மற்றும் சுற்றுப்புற கிராம குடும்பங்களுக்கு சேவை செய்கிறது.",
+      "faqs": [
+        {
+          "q": "Where is Karpaka Raajeshwariy Wedding Hall located?",
+          "a": "At No. 69, Palali Road, Urumpirai — on the main road between Kondavil and Kopay, with easy access for guests.",
+          "qTa": "கற்பக ராஜேஸ்வரி மண்டபம் எங்கே உள்ளது?",
+          "aTa": "இல. 69, பலாலி வீதி, உரும்பிராய் — கொண்டாவிலுக்கும் கோப்பாய்க்கும் இடையிலான பிரதான வீதியில்."
+        },
+        {
+          "q": "What events can be held at the Urumpirai hall?",
+          "a": "Weddings, receptions, puberty ceremonies, engagements and other family functions.",
+          "qTa": "உரும்பிராய் மண்டபத்தில் என்ன நிகழ்வுகள் நடத்தலாம்?",
+          "aTa": "திருமணங்கள், வரவேற்பு நிகழ்வுகள், சமத்திய வீடு, நிச்சயதார்த்தம் மற்றும் ஏனைய குடும்ப நிகழ்வுகள்."
+        },
+        {
+          "q": "How do I book the Urumpirai wedding hall?",
+          "a": "Check availability on our booking page or call +94 21 205 4600 to arrange a visit.",
+          "qTa": "உரும்பிராய் மண்டபத்தை எப்படி முன்பதிவு செய்வது?",
+          "aTa": "முன்பதிவு பக்கத்தில் காலி நாட்களைப் பாருங்கள் அல்லது +94 21 205 4600 ஐ அழையுங்கள்."
+        }
+      ]
+    },
+    "chunnakam": {
+      "name": "Chunnakam",
+      "nameTa": "சுன்னாகம்",
+      "hallSlugs": ["chelva-palace", "raajeshwariy-tellipalai"],
+      "title": "Wedding Halls near Chunnakam, Jaffna | Raajeshwariy Groups",
+      "description": "Two Raajeshwariy venues minutes from Chunnakam town on the KKS Road — Chelva Palace and Raajeshwariy Wedding Hall Tellipalai. Check availability and book online.",
+      "titleTa": "சுன்னாகம் அருகில் திருமண மண்டபங்கள் | ராஜேஸ்வரி குழுமம்",
+      "descriptionTa": "சுன்னாகம் நகரிலிருந்து சில நிமிடங்களில் கே.கே.எஸ் வீதியில் இரண்டு ராஜேஸ்வரி மண்டபங்கள் — செல்வா பாலஸ் மற்றும் தெல்லிப்பழை மண்டபம்.",
+      "intro": "Chunnakam is the busiest market town in the northern Jaffna peninsula, on the Kankesanthurai (K.K.S) Road. Two of our venues serve families in and around Chunnakam: Chelva Palace at Poonary Marathadi on the KKS Road, and Raajeshwariy Wedding Hall Tellipalai a short drive further north — both minutes from Chunnakam town.",
+      "introTa": "சுன்னாகம் யாழ்ப்பாண குடாநாட்டின் வடபகுதியில் கே.கே.எஸ் வீதியில் அமைந்த பரபரப்பான சந்தை நகரம். சுன்னாகம் மற்றும் சுற்றுப்புற குடும்பங்களுக்கு எங்கள் இரண்டு மண்டபங்கள் சேவை செய்கின்றன: கே.கே.எஸ் வீதியில் பூனரி மரத்தடியில் அமைந்த செல்வா பாலஸ் மற்றும் சிறிது வடக்கே அமைந்த தெல்லிப்பழை மண்டபம்.",
+      "faqs": [
+        {
+          "q": "Which Raajeshwariy hall is closest to Chunnakam?",
+          "a": "Chelva Palace at No 1229, KKS Road, Poonary Marathadi is the closest, followed by Raajeshwariy Wedding Hall Tellipalai a few minutes further along the KKS Road.",
+          "qTa": "சுன்னாகத்திற்கு அருகிலுள்ள ராஜேஸ்வரி மண்டபம் எது?",
+          "aTa": "இல. 1229, கே.கே.எஸ் வீதி, பூனரி மரத்தடியில் அமைந்த செல்வா பாலஸ் மிக அருகில் உள்ளது; அதன் பின் தெல்லிப்பழை மண்டபம்."
+        },
+        {
+          "q": "Is Chelva Palace suitable for receptions?",
+          "a": "Yes — Chelva Palace is a royal-style venue suited for weddings, receptions and large family functions. Call +94 21 221 9779 for details.",
+          "qTa": "செல்வா பாலஸ் வரவேற்பு நிகழ்வுகளுக்கு ஏற்றதா?",
+          "aTa": "ஆம் — திருமணங்கள், வரவேற்புகள் மற்றும் பெரிய குடும்ப நிகழ்வுகளுக்கு ஏற்ற அரச பாணி மண்டபம். விபரங்களுக்கு +94 21 221 9779."
+        },
+        {
+          "q": "Can guests coming by train reach these venues easily?",
+          "a": "Yes — both venues are on or near the KKS Road, a short drive from Chunnakam railway station.",
+          "qTa": "புகையிரதத்தில் வரும் விருந்தினர்கள் இலகுவாக வர முடியுமா?",
+          "aTa": "ஆம் — இரண்டு மண்டபங்களும் கே.கே.எஸ் வீதியில் அமைந்துள்ளன, சுன்னாகம் புகையிரத நிலையத்திலிருந்து சிறிய கார் பயணம்."
+        }
+      ]
+    }
+  }
+}

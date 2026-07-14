@@ -1,4 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation, useNavigate } from "react-router-dom";
+import { switchLangPath } from "@/seo/seo";
 import { cn } from "@/lib/utils";
 
 interface LanguageSwitcherProps {
@@ -8,6 +10,16 @@ interface LanguageSwitcherProps {
 
 export function LanguageSwitcher({ className, variant = "default" }: LanguageSwitcherProps) {
   const { language, setLanguage } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const go = (lang: "en" | "ta") => {
+    setLanguage(lang);
+    const target = switchLangPath(lang, location.pathname) + location.search;
+    if (target !== location.pathname + location.search) {
+      navigate(target);
+    }
+  };
 
   return (
     <div
@@ -17,7 +29,7 @@ export function LanguageSwitcher({ className, variant = "default" }: LanguageSwi
       )}
     >
       <button
-        onClick={() => setLanguage("en")}
+        onClick={() => go("en")}
         className={cn(
           "px-2.5 py-1 text-xs font-medium rounded-full transition-all duration-200",
           language === "en"
@@ -29,7 +41,7 @@ export function LanguageSwitcher({ className, variant = "default" }: LanguageSwi
         {variant === "compact" ? "EN" : "English"}
       </button>
       <button
-        onClick={() => setLanguage("ta")}
+        onClick={() => go("ta")}
         className={cn(
           "px-2.5 py-1 text-xs font-medium rounded-full transition-all duration-200",
           language === "ta"
