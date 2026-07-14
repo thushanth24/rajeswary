@@ -25,7 +25,9 @@ const basePaths = [
 ];
 
 const taPath = (base) => (base === "/" ? "/ta" : `/ta${base}`);
-const abs = (p) => `${siteUrl}${p}`;
+// Trailing-slash form matches the host's served URLs (no-slash 301-redirects to it).
+const canon = (p) => (p === "/" ? "/" : p.endsWith("/") ? p : `${p}/`);
+const abs = (p) => `${siteUrl}${canon(p)}`;
 
 // Each base path emits an English and a Tamil URL entry, cross-linked with
 // xhtml:link hreflang alternates so Google clusters the two languages.

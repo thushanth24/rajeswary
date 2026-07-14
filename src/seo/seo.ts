@@ -57,17 +57,28 @@ export interface ResolvedMeta {
   lang: Lang;
 }
 
-const abs = (path: string) => `${SITE.url}${path === "/" ? "/" : path}`;
+// The host serves every non-root page at a trailing-slash URL (it 301-redirects
+// the no-slash form). Canonicals, hreflang and OG URLs use this form so they
+// match the actually-served URL and don't point at a redirect.
+export const canonicalize = (path: string) =>
+  path === "/" ? "/" : path.endsWith("/") ? path : `${path}/`;
+
+const abs = (path: string) => `${SITE.url}${canonicalize(path)}`;
 
 /** Strip a leading /ta prefix and report whether the path was Tamil. */
 export function parseLangPath(pathname: string): { lang: Lang; basePath: string } {
+  // Normalize a trailing slash (except the root) so "/halls/" and "/halls"
+  // resolve identically — otherwise the trailing-slash variant misses the
+  // PAGES lookup and wrongly falls through to the noindex 404 fallback.
+  const normalize = (p: string) => (p.length > 1 && p.endsWith("/") ? p.slice(0, -1) : p);
+
   if (pathname === "/ta" || pathname === "/ta/") {
     return { lang: "ta", basePath: "/" };
   }
   if (pathname.startsWith("/ta/")) {
-    return { lang: "ta", basePath: pathname.slice(3) };
+    return { lang: "ta", basePath: normalize(pathname.slice(3)) };
   }
-  return { lang: "en", basePath: pathname };
+  return { lang: "en", basePath: normalize(pathname) };
 }
 
 const localizedPath = (lang: Lang, basePath: string) =>

@@ -11,7 +11,10 @@ const SITE = seo.site;
 const OG_IMAGE = `${SITE.url}${SITE.defaultImage}`;
 const template = readFileSync(join(DIST, "index.html"), "utf8");
 
-const abs = (p) => `${SITE.url}${p === "/" ? "/" : p}`;
+// Trailing-slash canonical form — the host serves every non-root page at a
+// trailing-slash URL, so canonical/hreflang/og:url must match it.
+const canon = (p) => (p === "/" ? "/" : p.endsWith("/") ? p : `${p}/`);
+const abs = (p) => `${SITE.url}${canon(p)}`;
 const taPath = (base) => (base === "/" ? "/ta" : `/ta${base}`);
 const enc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
