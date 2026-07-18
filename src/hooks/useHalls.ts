@@ -23,8 +23,8 @@ const staticImages: Record<string, string> = {
 
 // Contact numbers per hall slug
 export const hallContactNumbers: Record<string, { primary: string; landline?: string }> = {
-  'chelva-mahal': { primary: '+94 77 600 2995', landline: '+94 21 222 8123' },
-  'chelva-palace': { primary: '0212 219 779' },
+  'chelva-mahal': { primary: '0212 219 779' },
+  'chelva-palace': { primary: '+94 77 600 2995', landline: '+94 21 222 8123' },
   'raajeshwariy-kondavil': { primary: '0770228820' },
   'karpaka-raajeshwariy-urumpirai': { primary: '+94 21 555 6789' },
   'raajeshwariy-tellipalai': { primary: '0212 223 999' },
@@ -32,8 +32,8 @@ export const hallContactNumbers: Record<string, { primary: string; landline?: st
 
 // Addresses per hall slug
 export const hallAddresses: Record<string, { street: string; area: string; city: string }> = {
-  'chelva-mahal': { street: '10,12 Poonary Lane', area: 'Kokuvil', city: 'Jaffna' },
-  'chelva-palace': { street: 'No 1229, KKS Road', area: 'Poonary Marathadi', city: 'Jaffna' },
+  'chelva-mahal': { street: 'No 1229, KKS Road', area: 'Poonary Marathadi', city: 'Jaffna' },
+  'chelva-palace': { street: '10,12 Poonary Lane', area: 'Kokuvil', city: 'Jaffna' },
   'raajeshwariy-kondavil': { street: '132, Palali Road', area: 'Kondavil', city: 'Jaffna' },
   'karpaka-raajeshwariy-urumpirai': { street: 'No. 69, Palali Road', area: 'Urumpirai', city: 'Jaffna' },
   'raajeshwariy-tellipalai': { street: 'No 573, K.K.S Road', area: 'Tellipalai', city: 'Jaffna' },

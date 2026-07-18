@@ -166,11 +166,9 @@ const ContactPage = () => {
       title: "Chelva Mahal",
       content: (
         <div className="text-muted-foreground space-y-1">
-          <p>10,12 Poonary Lane, Kokuvil, Jaffna, Sri Lanka</p>
+          <p>No 1229, KKS Road, Poonary Marathadi, Jaffna</p>
           <div>
-            <CopyableText text="0776002995" />
-            <br />
-            <CopyableText text="0212228123" />
+            <CopyableText text="0212219779" />
           </div>
         </div>
       ),
@@ -180,9 +178,11 @@ const ContactPage = () => {
       title: "Chelva Palace",
       content: (
         <div className="text-muted-foreground space-y-1">
-          <p>No 1229, KKS Road, Poonary Marathadi, Jaffna</p>
+          <p>10,12 Poonary Lane, Kokuvil, Jaffna, Sri Lanka</p>
           <div>
-            <CopyableText text="0212219779" />
+            <CopyableText text="0776002995" />
+            <br />
+            <CopyableText text="0212228123" />
           </div>
         </div>
       ),
