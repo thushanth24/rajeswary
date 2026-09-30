@@ -977,9 +977,9 @@ const BookingsManagement = () => {
   };
 
   useEffect(() => {
-    if (!isAdmin || !isDetailDialogOpen) return;
+    if ((!isAdmin && !isHallManager) || !isDetailDialogOpen) return;
     fetchHallSections(editValues.hall_id);
-  }, [isAdmin, isDetailDialogOpen, editValues.hall_id]);
+  }, [isAdmin, isHallManager, isDetailDialogOpen, editValues.hall_id]);
 
   const handleEditSave = async () => {
     if (!selectedBooking) return;
@@ -1320,7 +1320,7 @@ const BookingsManagement = () => {
                     </span>
                   )}
                 </DialogTitle>
-                {isAdmin && !isEditing && (
+                {(isAdmin || isHallManager) && !isEditing && (
                   <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                     Edit Details
                   </Button>
